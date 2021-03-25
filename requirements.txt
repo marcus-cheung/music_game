@@ -1,0 +1,7 @@
+Flask
+gunicorn
+spotipy.oauth2
+spotipy
+flask_socketio
+datetime
+flask_session

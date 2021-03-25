@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+</head>
+  <body>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js" integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            
+            socket.on('connect', ()=> {
+              window.location.href  = 'http://127.0.0.1:5000/'
+            });
+        })
+
+    </script>
+  </body>
+</html>

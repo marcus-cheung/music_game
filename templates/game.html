@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Room</title>
+</head>
+  <body>
+
+    <div class="message_holder"></div>
+    
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js" integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            
+            {# Broadcasts a connection event #}
+            socket.on('connect', function() {
+            socket.emit('connected_to_room', {'url': window.location.href});
+            });
+
+            socket.on('display_players', (data) => {
+                document.querySelector('.message_holder').innerHTML = ( '<div><b style="color: #000">'+data+'</div>')
+            })
+            
+
+        })
+
+    </script>
+  </body>
+</html>

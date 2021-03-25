@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+</head>
+  <body>
+    <form action="http://127.0.0.1:5000/spotify-login/">
+      <input type="submit" value="Login with Spotify" />
+    </form>
+
+    <h3 style='color: #ccc;font-size: 30px;' id="placeholder">Make Room</h3>
+    <div class="message_holder">
+
+    </div>
+        <input type="text" id="username" placeholder="Username", autocomplete="off">
+        <input type="text" id="gameformat" placeholder="Game Mode", autocomplete="off">
+        <input type="text" id="pin" placeholder="Make Pin", autocomplete="off">
+        <input type="submit" id="create_game"/>
+
+        <input type="text" id="roomcode" placeholder="Room Code", autocomplete="off">
+        <input type="text" id="password" placeholder="Game Password", autocomplete="off">
+        <input type="submit" id="join_game"/>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js" integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            {# Sends message to application.py #}
+            document.querySelector('#create_game').onclick = () => {
+                socket.emit('make_room', {
+                    'username': document.querySelector('#username').value,
+                    'gamemode': document.querySelector('#gameformat').value,
+                    'password': document.querySelector('#pin').value
+                })
+            }
+
+            document.querySelector('#join_game').onclick = () => {
+                socket.emit('join_room', {
+                    'username': document.querySelector('#username').value,
+                    'roomcode': document.querySelector('#roomcode').value,
+                    'password': document.querySelector('#password').value
+                })
+            }
+
+
+            socket.on('room_made', (data) => {
+                window.location.href = data
+            })
+
+
+            socket.on('password_correct', (data) => {
+                window.location.href = data
+            })
+            
+            socket.on('wrong_pass', () => {
+                document.querySelector('.message_holder').innerHTML += ( '<div><b style="color: #000">Wrong Password</div>')
+            })
+            
+            socket.on('Room_noexist', () => {
+                document.querySelector('.message_holder').innerHTML += ( '<div><b style="color: #000">Room doesn\'t exist</div>')
+            })
+
+        
+        })
+
+    </script>
+  </body>
+</html>
