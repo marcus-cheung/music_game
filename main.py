@@ -82,7 +82,7 @@ def makeRoom(data):
         gamestates[room-1000].allow(session['unique'])
         gamestates[room-1000].addUser(user)
         #redirect to the game room
-        socketio.emit('room_made', f'{myurl}game/{room}' )
+        socketio.emit('room_made', myurl+f'game/{room}' )
 
 
 @socketio.on('join_room')
@@ -97,7 +97,7 @@ def joinRoom(data):
     if gamestates[room-1000].password == password:
         gamestates[room-1000].allow(session['unique'])
         gamestates[room-1000].addUser(user)
-        socketio.emit('password_correct', f'{myurl}game/{room}')
+        socketio.emit('password_correct', myurl+f'game/{room}')
     #saying wrong password
     else:
         socketio.emit('wrong_pass')
