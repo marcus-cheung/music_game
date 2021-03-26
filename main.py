@@ -28,9 +28,6 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-
-
-
 myurl = "http://127.0.0.1:5000/"
 
 # auth stuff
@@ -38,7 +35,7 @@ SPOTIPY_CLIENT_ID = "f50f20e747fb4bda8d9352696004cda4"
 SPOTIPY_CLIENT_SECRET = "8adcb482dbf04ddbb261b7740309325e"
 SPOTIPY_REDIRECT_URI = myurl + "spotify-login/callback"
 SCOPE = "user-library-read"
-API_BASE = 'https://accounts.spotify.com'
+API_BASE = "https://accounts.spotify.com"
 
 
 # main page
@@ -47,27 +44,26 @@ def main():
     session["unique"] = datetime.now().time()
     return render_template("mainmenu.html")
 
+
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
-    # If access to spotify granted
-    if not session.get('token_info'):
-
-        #adds spotify log in button
-        print('removing')
-        socketio.emit('add_spotify_button')
+    # If no access to spotify adds spotify log in button
+    if not session.get("token_info"):
+        # adds spotify log in button
+        socketio.emit("add_spotify_button")
+    # if has access shows playlists
     else:
-        #refreshes token:
-        session['token_info'], authorized = get_token(session)
-
-
-        #show personal playlists
+        # refreshes token:
+        session["token_info"], authorized = get_token(session)
+        # show personal playlists
         session.modified = True
         if not authorized:
-            print('notauthorized')
+            print("notauthorized")
         data = request.form
-        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
         playlists = sp.current_user_playlists()
+
 
 # spotify login
 @app.route("/spotify-login/")
@@ -78,38 +74,56 @@ def spotify_login():
         return redirect(myurl)
     # if not logged in redirect to spotify api authorisation
     else:
-        sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET, redirect_uri = SPOTIPY_REDIRECT_URI, scope = SCOPE)
+        sp_oauth = spotipy.oauth2.SpotifyOAuth(
+            client_id=SPOTIPY_CLIENT_ID,
+            client_secret=SPOTIPY_CLIENT_SECRET,
+            redirect_uri=SPOTIPY_REDIRECT_URI,
+            scope=SCOPE,
+        )
         return redirect(sp_oauth.get_authorize_url())
+
 
 # After authorization saves token_info to cookies and redirects to main
 @app.route("/spotify-login/callback/")
 def authentication():
-    code = request.args.get('code')
-    sp_oauth = oauth2.SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET, redirect_uri = SPOTIPY_REDIRECT_URI, scope = SCOPE)
+    code = request.args.get("code")
+    sp_oauth = oauth2.SpotifyOAuth(
+        client_id=SPOTIPY_CLIENT_ID,
+        client_secret=SPOTIPY_CLIENT_SECRET,
+        redirect_uri=SPOTIPY_REDIRECT_URI,
+        scope=SCOPE,
+    )
     token_info = sp_oauth.get_access_token(code)
-    #Saving the access token along with all other token related info
+    # Saving the access token along with all other token related info
     session["token_info"] = token_info
     return redirect(myurl)
 
 
-#Checks valid token, if not valid refreshes and returns new token
+# Checks valid token, if not valid refreshes and returns new token
 def get_token(session):
     token_valid = False
     token_info = session.get("token_info", {})
     # Checking if the session already has a token stored
-    if not (session.get('token_info', False)):
+    if not (session.get("token_info", False)):
         token_valid = False
         return token_info, token_valid
 
     # Checking if token has expired
     now = int(time.time())
-    is_token_expired = session.get('token_info').get('expires_at') - now < 60
+    is_token_expired = session.get("token_info").get("expires_at") - now < 60
 
     # Refreshing token if it has expired
-    if (is_token_expired):
+    if is_token_expired:
         # Don't reuse a SpotifyOAuth object because they store token info
-        sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET, redirect_uri = SPOTIPY_REDIRECT_URI, scope = SCOPE)
-        token_info = sp_oauth.refresh_access_token(session.get('token_info').get('refresh_token'))
+        sp_oauth = spotipy.oauth2.SpotifyOAuth(
+            client_id=SPOTIPY_CLIENT_ID,
+            client_secret=SPOTIPY_CLIENT_SECRET,
+            redirect_uri=SPOTIPY_REDIRECT_URI,
+            scope=SCOPE,
+        )
+        token_info = sp_oauth.refresh_access_token(
+            session.get("token_info").get("refresh_token")
+        )
 
     token_valid = True
     return token_info, token_valid
@@ -174,10 +188,6 @@ def joinRoom(data):
     # saying wrong password
     else:
         socketio.emit("wrong_pass")
-
-
-
-
 
 
 @socketio.on("logout_spotify")
