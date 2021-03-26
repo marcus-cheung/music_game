@@ -45,24 +45,29 @@ API_BASE = 'https://accounts.spotify.com'
 @app.route("/")
 def main():
     session["unique"] = datetime.now().time()
-    if session.get("token_info") == None:
-        return render_template("mainmenu_default.html")
-    else:
-        return render_template("mainmenu_spotify.html")
+    return render_template("mainmenu.html")
 
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
-def updatePlaylists():
+def setupMain():
     # If access to spotify granted
-    if session.get('token_info'):
+    if not session.get('token_info'):
+
+        #adds spotify log in button
+        print('removing')
+        socketio.emit('add_spotify_button')
+    else:
+        #refreshes token:
         session['token_info'], authorized = get_token(session)
+
+
+        #show personal playlists
         session.modified = True
         if not authorized:
             print('notauthorized')
         data = request.form
         sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
         playlists = sp.current_user_playlists()
-        print(playlists)
 
 # spotify login
 @app.route("/spotify-login/")
@@ -80,7 +85,6 @@ def spotify_login():
 @app.route("/spotify-login/callback/")
 def authentication():
     code = request.args.get('code')
-    print(code)
     sp_oauth = oauth2.SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET, redirect_uri = SPOTIPY_REDIRECT_URI, scope = SCOPE)
     token_info = sp_oauth.get_access_token(code)
     #Saving the access token along with all other token related info
@@ -92,7 +96,6 @@ def authentication():
 def get_token(session):
     token_valid = False
     token_info = session.get("token_info", {})
-    print(token_info)
     # Checking if the session already has a token stored
     if not (session.get('token_info', False)):
         token_valid = False
@@ -116,8 +119,7 @@ def get_token(session):
 @socketio.on("make_room")
 def makeRoom(data):
     # defaults playlist_id
-    playlist_id = data["playlist"]
-    print(playlist_id)
+    playlists = data["playlists"]
     user = classes.User(
         username=data.get("username"),
         unique=session.get("unique"),
