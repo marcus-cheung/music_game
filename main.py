@@ -28,9 +28,7 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-@app.route("/test/", methods=["GET", "POST"])
-def hello_world():
-    return render_template("chat.html")
+
 
 
 myurl = "http://127.0.0.1:5000/"
@@ -90,11 +88,11 @@ def authentication():
     return redirect(myurl)
 
 
-#Checks valid token, if not refreshes
+#Checks valid token, if not valid refreshes and returns new token
 def get_token(session):
     token_valid = False
     token_info = session.get("token_info", {})
-
+    print(token_info)
     # Checking if the session already has a token stored
     if not (session.get('token_info', False)):
         token_valid = False
@@ -106,7 +104,7 @@ def get_token(session):
 
     # Refreshing token if it has expired
     if (is_token_expired):
-        # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
+        # Don't reuse a SpotifyOAuth object because they store token info
         sp_oauth = spotipy.oauth2.SpotifyOAuth(client_id = SPOTIPY_CLIENT_ID, client_secret = SPOTIPY_CLIENT_SECRET, redirect_uri = SPOTIPY_REDIRECT_URI, scope = SCOPE)
         token_info = sp_oauth.refresh_access_token(session.get('token_info').get('refresh_token'))
 
@@ -143,6 +141,7 @@ def makeRoom(data):
         socketio.emit("room_made", myurl + f"game/{room}")
 
 
+# when join room pressed
 @socketio.on("join_room")
 def joinRoom(data):
     user = classes.User(
@@ -191,7 +190,7 @@ def runGame(room):
         not gamestates[room - 1000]
         or session.get("unique") not in gamestates[room - 1000].allowed
     ):
-        return render_template("backtomain.html")
+        return redirect(myurl)
     else:
         return render_template("game.html")
 
