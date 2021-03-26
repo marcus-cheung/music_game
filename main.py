@@ -8,9 +8,11 @@ import random
 from datetime import datetime
 
 #making a flask socket object
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+app.config['SECRET_KEY'] = 'z\xe4\xdc\xc4)\xf1\xad\x8dF\x07EVv8k\x14\xda\xd8\xd0\x8a\xc4\xbc\xaew\x98\xf1\x0f\xfa\x01\x90'
 socketio = SocketIO(app)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['DEBUG'] = True
 #session stuff
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
@@ -67,6 +69,9 @@ def login():
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on('make_room')
 def makeRoom(data):
+    #defaults playlist_id
+    playlist_id = data['playlist']
+    print(playlist_id)
     user = classes.User(username = data.get('username'), unique = session.get('unique'), spotify_acc = session.get('token')) 
     room = random.randint(1000,9999)
     if len(active_rooms) == 9000:
@@ -84,7 +89,6 @@ def makeRoom(data):
         #redirect to the game room
         socketio.emit('room_made', myurl+f'game/{room}' )
 
-
 @socketio.on('join_room')
 def joinRoom(data):
     user = classes.User(username = data.get('username'), unique = session.get('unique'), spotify_acc = session.get('token')) 
@@ -93,8 +97,16 @@ def joinRoom(data):
     # if room is active
     if room not in active_rooms:
         socketio.emit('Room_noexist')
+    #check if too many people
+    elif len(gamestates[room-1000].users)>gamestates[room-1000].max_users:
+        socketio.emit('Room_full')
+    #checking no password case
+    elif not gamestates[room-1000].password:
+        gamestates[room-1000].allow(session['unique'])
+        gamestates[room-1000].addUser(user)
+        socketio.emit('password_correct', myurl+f'game/{room}')
     #checking is password correct then redirecting to the room
-    if gamestates[room-1000].password == password:
+    elif gamestates[room-1000].password and gamestates[room-1000].password == password:
         gamestates[room-1000].allow(session['unique'])
         gamestates[room-1000].addUser(user)
         socketio.emit('password_correct', myurl+f'game/{room}')
@@ -102,9 +114,25 @@ def joinRoom(data):
     else:
         socketio.emit('wrong_pass')
 
+@socketio.on('connected_to_main')
+def updatePlaylists():
+    # If access to spotify granted
+    if session.get('token'):
+        spotify = spotipy.Spotify(session.get('token'))
+        
+
+
+
+
+@socketio.on('logout_spotify')
+def logout():
+    session.pop('key')
+
+
+
 @app.route('/game/<int:room>/')
 def runGame(room):
-    # If gamestate doesn't exist or user is not whitelisted
+    # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
     if not gamestates[room-1000] or session.get('unique') not in gamestates[room-1000].allowed:
         return render_template('backtomain.html')
     else:
