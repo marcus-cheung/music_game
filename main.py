@@ -38,12 +38,10 @@ SPOTIPY_CLIENT_ID = "f50f20e747fb4bda8d9352696004cda4"
 SPOTIPY_CLIENT_SECRET = "8adcb482dbf04ddbb261b7740309325e"
 SPOTIPY_REDIRECT_URI = myurl + "spotify-login/"
 SCOPE = "user-library-read"
+API_BASE = 'https://accounts.spotify.com'
 sp_oauth = oauth2.SpotifyOAuth(
     SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope=SCOPE
 )
-API_BASE = 'https://accounts.spotify.com'
-
-
 
 
 # main page
@@ -63,7 +61,6 @@ def authentication():
     if session.get("token"):
         print("Access token available! Trying to get user information...")
         return render_template("Logged_in.html")
-
     # if not check for callback and add to cookies
     else:
         code = request.args.get("code")
@@ -77,6 +74,7 @@ def authentication():
             })
         res_body = res.json()
         session['token'] = res_body.get("access_token")
+        sp_oauth = oauth2.SpotifyOAuth(SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI, scope=SCOPE)
     return render_template("spotify.html")
 
 
