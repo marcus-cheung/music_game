@@ -52,6 +52,7 @@
 </head>
 
 <body>
+    <div class="message_holder"></div>
     <img src="/static/assets/music_notes.gif" alt="music_notes" width=100 />
     <div class="spotify">
         <form action="http://127.0.0.1:5000/spotify-login/">
@@ -130,8 +131,12 @@
                 document.querySelector('.message_holder').innerHTML += ('<div><b style="color: #000">Room full</div>')
             })
 
-            socket.on('connect', function() {
-            socket.emit('connected_to_main', {'url': window.location.href});
+            socket.on('display_players', (data) => {
+                document.querySelector('.message_holder').innerHTML = ( '<div><b style="color: #000">'+data+'</div>')
+            })
+
+            socket.on('connect', ()=> {
+            socket.emit('connected_to_main');
             });
 
 

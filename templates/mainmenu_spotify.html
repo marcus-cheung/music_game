@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Main Menu</title>
+    <title>Main Menu/Spotify in</title>
     <style>
         @font-face {
             font-family: font;
@@ -52,7 +52,10 @@
 </head>
 
 <body>
+    <div class="message_holder"></div>
     <img src="/static/assets/music_notes.gif" alt="music_notes" width=100 />
+    <div class="spotify">
+    </div>
     <p>Music Game</p>
 
     <div class="make_join_game">
@@ -63,7 +66,6 @@
     </div>
     <p>What playlists</p>
     <div class='playlist_div'>
-
         <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
         <label for="vehicle1"> I have a bike</label><br>
         <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
@@ -91,6 +93,10 @@
                     'password': document.querySelector('#pin').value
                 })
             }
+
+            const dialog = document.createElement('dialog');
+            dialog.setAttribute('open', '');
+            dialog.append('hi');
 
             document.querySelector('#join_game').onclick = () => {
                 socket.emit('join_room', {
@@ -121,6 +127,15 @@
             socket.on('Room_full', () => {
                 document.querySelector('.message_holder').innerHTML += ('<div><b style="color: #000">Room full</div>')
             })
+
+            socket.on('display_players', (data) => {
+                document.querySelector('.message_holder').innerHTML = ( '<div><b style="color: #000">'+data+'</div>')
+            })
+
+            socket.on('connect', ()=> {
+            socket.emit('connected_to_main');
+            });
+
 
 
         })

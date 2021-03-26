@@ -2,11 +2,8 @@ from random import randint
 class GameState():
     round = 0
     max_users = 8
-    def __init__(self, room_number, playlist_id = None, password=None):
-        if playlist_id == None:
-            self.playlist_id = 'spotify:playlist:6UeSakyzhiEt4NB3UAd6NQ'
-        else:
-            self.playlist_id = playlist_id
+    def __init__(self, room_number, playlists = [], password=None):
+        self.playlists = playlists
         self.users = []
         self.allowed = []
         self.password = password
