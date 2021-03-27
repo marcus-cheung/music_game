@@ -132,8 +132,9 @@ def get_token(session):
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
 def makeRoom(data):
+    print('making room')
     # defaults playlist_id
-    playlists = data["playlists"]
+    #playlists = data["playlists"]
     user = classes.User(
         username=data.get("username"),
         unique=session.get("unique"),
@@ -164,35 +165,36 @@ def joinRoom(data):
         username=data.get("username"),
         unique=session.get("unique"),
     )
-    room = int(data["roomcode"])
     password = data["password"]
-    # if room is active
-    if room not in active_rooms:
-        socketio.emit("Room_noexist")
-    # check if too many people
-    elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
-        socketio.emit("Room_full")
-    # checking no password case
-    elif not gamestates[room - 1000].password:
-        gamestates[room - 1000].allow(session["unique"])
-        gamestates[room - 1000].addUser(user)
-        socketio.emit("password_correct", myurl + f"game/{room}")
-    # checking is password correct then redirecting to the room
-    elif (
-        gamestates[room - 1000].password
-        and gamestates[room - 1000].password == password
-    ):
-        gamestates[room - 1000].allow(session["unique"])
-        gamestates[room - 1000].addUser(user)
-        socketio.emit("password_correct", myurl + f"game/{room}")
-    # saying wrong password
-    else:
-        socketio.emit("wrong_pass")
+    if data["roomcode"] != "":
+        room = int(data["roomcode"])
+        # if room is active
+        if room not in active_rooms:
+            socketio.emit("Room_noexist")
+        # check if too many people
+        elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
+            socketio.emit("Room_full")
+        # checking no password case
+        elif not gamestates[room - 1000].password:
+            gamestates[room - 1000].allow(session["unique"])
+            gamestates[room - 1000].addUser(user)
+            socketio.emit("password_correct", myurl + f"game/{room}")
+        # checking is password correct then redirecting to the room
+        elif (
+            gamestates[room - 1000].password
+            and gamestates[room - 1000].password == password
+        ):
+            gamestates[room - 1000].allow(session["unique"])
+            gamestates[room - 1000].addUser(user)
+            socketio.emit("password_correct", myurl + f"game/{room}")
+        # saying wrong password
+        else:
+            socketio.emit("wrong_pass")
 
 
 @socketio.on("logout_spotify")
 def logout():
-    session.pop("key")
+    session.pop("token_info")
 
 
 @app.route("/game/<int:room>/")
@@ -205,7 +207,6 @@ def runGame(room):
         return redirect(myurl)
     else:
         return render_template("game.html")
-
 
 @socketio.on("connected_to_room")
 def getplayers(data):

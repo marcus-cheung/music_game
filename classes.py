@@ -8,6 +8,7 @@ class GameState():
         self.allowed = []
         self.password = password
         self.room_number = room_number
+        self.special = randint(100000,999999)
 
     def allow(self, unique):
         self.allowed.append(unique)
@@ -18,6 +19,11 @@ class GameState():
 
     def kickUser(self, user):
         self.users.remove(user)
+
+class guessArtist(GameState):
+    def __init__(self):
+        super().__init__(self, room_number, playlists = [], password=None)
+
 
 
 class User():
