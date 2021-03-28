@@ -17,7 +17,7 @@ app.config[
 ] = "z\xe4\xdc\xc4)\xf1\xad\x8dF\x07EVv8k\x14\xda\xd8\xd0\x8a\xc4\xbc\xaew\x98\xf1\x0f\xfa\x01\x90"
 socketio = SocketIO(app)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["DEBUG"] = False
+app.config["DEBUG"] = True
 # session stuff
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -29,6 +29,7 @@ gamestates = [None] * 9000
 
 
 myurl = "http://127.0.0.1:5000/"
+
 
 # auth stuff
 SPOTIPY_CLIENT_ID = "f50f20e747fb4bda8d9352696004cda4"
@@ -42,9 +43,8 @@ API_BASE = "https://accounts.spotify.com"
 @app.route("/")
 def main():
     session["unique"] = datetime.now().time()
-    return render_template("mainmenu.html")
-
-
+    return render_template("mainmenu copy.html")
+    
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
@@ -133,6 +133,7 @@ def get_token(session):
 @socketio.on("make_room")
 def makeRoom(data):
     print('making room')
+    #print(data['playlists'])
     # defaults playlist_id
     #playlists = data["playlists"]
     user = classes.User(
@@ -149,7 +150,7 @@ def makeRoom(data):
             room = random.randint(1000, 9999)
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
-        gamestates[room - 1000] = classes.GameState(
+        gamestates[room - 1000] = classes.GameState(rounds = data['rounds'],
             room_number=room, password=data.get("password")
         )
         gamestates[room - 1000].allow(session["unique"])
@@ -217,12 +218,15 @@ def getplayers(data):
     print(string, gamestates[room - 1000].users)
     socketio.emit("display_players", string)
 
+def getSongs():
+    return 'hi'
 
 # on disconnect from game removes user
 @socketio.on("disconnect")
 def disconnect():
     pass
 
+ 
 
 # run server
 if __name__ == "__main__":

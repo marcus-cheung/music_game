@@ -1,9 +1,9 @@
 from random import randint
 class GameState():
-    round = 0
     max_users = 8
-    def __init__(self, room_number, playlists = [], password=None):
+    def __init__(self, room_number, rounds, playlists = [], password=None):
         self.playlists = playlists
+        self.rounds = rounds
         self.users = []
         self.allowed = []
         self.password = password
