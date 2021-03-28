@@ -2,8 +2,11 @@ from random import randint
 class GameState():
     max_users = 8
     def __init__(self, room_number, rounds, playlists = [], password=None):
+        if rounds == '':
+            self.rounds = 8
+        else:
+            self.rounds = rounds
         self.playlists = playlists
-        self.rounds = rounds
         self.users = []
         self.allowed = []
         self.password = password
@@ -28,11 +31,9 @@ class guessArtist(GameState):
 
 class User():
     score = 0
-    def __init__(self, unique, username = None):
-        if not username:
+    def __init__(self, unique, username):
+        if username=='':
             self.username = 'Guest'+str(randint(10000,99999))
         else:
             self.username = username
         self.unique = unique
-    def returnElements(self):
-        return {'score': self.score, 'spotify_acc': self.spotify_acc, 'username':self.username}

@@ -44,7 +44,8 @@ API_BASE = "https://accounts.spotify.com"
 def main():
     session["unique"] = datetime.now().time()
     return render_template("mainmenu copy.html")
-    
+
+
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
@@ -63,14 +64,16 @@ def setupMain():
         data = request.form
         sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
         playlists_info = sp.current_user_playlists()
-        socketio.emit('add_playlist','data')
-        playlists = []
-        for playlist in playlists_info['items']:
+        socketio.emit("add_playlist", "data")
+        for playlist in playlists_info["items"]:
             dct = {}
-            dct['name'] = playlist['name']
-            dct['id'] = playlist['id']
-            playlists.append(dct)
-        print(playlists)
+            playlist_id = "spotify:playlist:" + playlist["id"]
+            name = playlist["name"]
+            dct["label"] = f'<label for="{name}">{name}</label><br>'
+            dct[
+                "checkbox"
+            ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
+            socketio.emit("add_playlist", dct)
 
 
 # spotify login
@@ -140,31 +143,23 @@ def get_token(session):
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
 def makeRoom(data):
-    print('making room')
-    #print(data['playlists'])
-    # defaults playlist_id
-    #playlists = data["playlists"]
     user = classes.User(
         username=data.get("username"),
         unique=session.get("unique"),
     )
     room = random.randint(1000, 9999)
-    if len(active_rooms) == 9000:
-        pass
-        # print(socketio.emit('server_full'))
-    else:
-        # find an availible room code
-        while room in active_rooms:
-            room = random.randint(1000, 9999)
-        active_rooms.append(room)
-        # create a gamestate in list of gamestates at index = room number
-        gamestates[room - 1000] = classes.GameState(rounds = data['rounds'],
-            room_number=room, password=data.get("password")
-        )
-        gamestates[room - 1000].allow(session["unique"])
-        gamestates[room - 1000].addUser(user)
-        # redirect to the game room
-        socketio.emit("room_made", myurl + f"game/{room}")
+    # find an availible room code
+    while room in active_rooms:
+        room = random.randint(1000, 9999)
+    active_rooms.append(room)
+    # create a gamestate in list of gamestates at index = room number
+    gamestates[room - 1000] = classes.GameState(
+        rounds=data["rounds"], room_number=room, password=data.get("password")
+    )
+    gamestates[room - 1000].allow(session["unique"])
+    gamestates[room - 1000].addUser(user)
+    # redirect to the game room
+    socketio.emit("room_made", myurl + f"game/{room}")
 
 
 # when join room pressed
@@ -184,15 +179,12 @@ def joinRoom(data):
         elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
             socketio.emit("Room_full")
         # checking no password case
-        elif not gamestates[room - 1000].password:
+        elif gamestates[room - 1000].password == "":
             gamestates[room - 1000].allow(session["unique"])
             gamestates[room - 1000].addUser(user)
             socketio.emit("password_correct", myurl + f"game/{room}")
         # checking is password correct then redirecting to the room
-        elif (
-            gamestates[room - 1000].password
-            and gamestates[room - 1000].password == password
-        ):
+        elif gamestates[room - 1000].password == password:
             gamestates[room - 1000].allow(session["unique"])
             gamestates[room - 1000].addUser(user)
             socketio.emit("password_correct", myurl + f"game/{room}")
@@ -217,24 +209,25 @@ def runGame(room):
     else:
         return render_template("game.html")
 
+
 @socketio.on("connected_to_room")
 def getplayers(data):
     room = int(data["url"][27:31])
     string = ""
     for user in gamestates[room - 1000].users:
         string += user.username + "  "
-    print(string, gamestates[room - 1000].users)
     socketio.emit("display_players", string)
 
+
 def getSongs():
-    return 'hi'
+    return "hi"
+
 
 # on disconnect from game removes user
 @socketio.on("disconnect")
 def disconnect():
     pass
 
- 
 
 # run server
 if __name__ == "__main__":
