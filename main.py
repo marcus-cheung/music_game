@@ -17,7 +17,7 @@ app.config[
 ] = "z\xe4\xdc\xc4)\xf1\xad\x8dF\x07EVv8k\x14\xda\xd8\xd0\x8a\xc4\xbc\xaew\x98\xf1\x0f\xfa\x01\x90"
 socketio = SocketIO(app)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 # session stuff
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -62,7 +62,15 @@ def setupMain():
             print("notauthorized")
         data = request.form
         sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
-        playlists = sp.current_user_playlists()
+        playlists_info = sp.current_user_playlists()
+        socketio.emit('add_playlist','data')
+        playlists = []
+        for playlist in playlists_info['items']:
+            dct = {}
+            dct['name'] = playlist['name']
+            dct['id'] = playlist['id']
+            playlists.append(dct)
+        print(playlists)
 
 
 # spotify login

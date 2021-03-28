@@ -16,13 +16,13 @@
 
 <body>
     <div class="header">
-            <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
+        <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
         <a href="http://127.0.0.1:5000/spotify-login/">
-            <img class="magnify" style='display:block' id='spotify_button' src="/static/assets/spotify.png" />
+            <img class="magnify" style='display:none' id='spotify_button' src="/static/assets/spotify.png" />
         </a>
     </div>
     <div class="wrapper">
-        <div class="make_join_game">
+        <div class="make_game">
             <input type="text" id="username" placeholder="Username" , autocomplete="off">
             <select name="gamemode" id="gamemode">
                 <option value="" selected disabled hidden>Select gamemode</option>
@@ -34,15 +34,17 @@
                 autocomplete="off">
             <input type="text" id="pin" placeholder="Make Pin" , autocomplete="off">
             <input class="magnify" type="submit" id="create_game" value="Make a game" />
-        </div>
-        <div size=50%>What Playlist</div>
-        <div class='playlist_div'>
-            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-            <label for="vehicle1"> I have a bike</label><br>
-            <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
-            <label for="vehicle2"> I have a car</label><br>
-            <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
-            <label for="vehicle3"> I have a boat</label><br>
+
+
+            <div class='playlist_div' id='playlist_div'>
+                <div size=50%>What Playlist</div>
+                <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+                <label for="vehicle1"> I have a bike</label><br>
+                <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
+                <label for="vehicle2"> I have a car</label><br>
+                <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
+                <label for="vehicle3"> I have a boat</label><br>
+            </div>
         </div>
         <div class="make_join_game">
             <input type="text" id="roomcode" placeholder="Room Code" , autocomplete="off">
@@ -107,6 +109,17 @@
             socket.on('Room_full', () => {
                 alert('Room is full!')
             })
+
+            socket.on('add_playlist', (data) => {
+                var div = document.getElementById('playlist_div');
+                var i;
+                for (i = 0; i < 10; i++) {
+                    div.innerHTML += 'Extra stuff';
+                }
+                
+            }
+
+            )
 
         })
 

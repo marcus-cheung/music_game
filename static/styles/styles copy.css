@@ -32,13 +32,13 @@ body {
 
 .wrapper {
     outline:tomato;
-    width:50%;
+    width:80%;
     height:200px;
     border:1px solid red;
     margin: 0 auto;
 }
 
-.wrapper .make_join_game input {
+.wrapper .make_game input {
     border: 0px;
     padding: 2px;
     margin: 0px;
@@ -48,13 +48,12 @@ body {
     color: #ffffff
 }
 
-.wrapper .playlist_div {
+.wrapper .make_game .playlist_div {
     font-family: font;
-    border: 0;
     background-color: black;
     padding: 30px;
     border-radius: 25px;
     text-align: left;
     font-size: 20px;
-    height: 100px;
+    height: 10%;
 }
