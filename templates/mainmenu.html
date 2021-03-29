@@ -6,42 +6,72 @@
     <title>Main Menu</title>
     <link rel="stylesheet" href="static/styles/styles.css">
 </head>
+<style>
+    .magnify:hover,
+    .magnify :focus {
+        transition: .2s;
+        transform: scale(1.15);
+    }
+</style>
 
 <body>
-    <p style="text-align:center">Music Game</p>
-    <img src="/static/assets/music_notes.gif" alt="music_notes" width=100 />
-    <div class="spotify">
-        <form action="http://127.0.0.1:5000/spotify-login/">
-            <input style='display:none' id='spotify_button' type="image" src="/static/assets/spotify.png" width=200
-                background=0 />
-        </form>
-    </div>
-
-    <div class="make_join_game">
-        <input type="text" id="username" placeholder="Username" , autocomplete="off">
-        <select name="gamemode" id="gamemode">
-            <option value="" selected disabled hidden>Select gamemode</option>
-            <option value="artist">Guess the artist</option>
-            <option value="song">Guess the song name</option>
-            <option value="year">Guess the year</option>
-        </select>
-        <input type="number" min="1" max="20" id="rounds" placeholder="Number of rounds" , autocomplete="off">
-        <input type="text" id="pin" placeholder="Make Pin" , autocomplete="off">
-        <input type="submit" id="create_game" value="Make a game" />
-    </div>
-    <p>What playlists</p>
-    <div class='playlist_div'>
-        <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-        <label for="vehicle1"> I have a bike</label><br>
-        <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
-        <label for="vehicle2"> I have a car</label><br>
-        <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
-        <label for="vehicle3"> I have a boat</label><br>
-    </div>
-    <div class="make_join_game">
-        <input type="text" id="roomcode" placeholder="Room Code" , autocomplete="off">
-        <input type="text" id="password" placeholder="Game Password" , autocomplete="off">
-        <input type="submit" id="join_game" value="Join a game" />
+    <div class='wrapper' id='wrapper'>
+        <div class="header">
+            <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
+            <a href="http://127.0.0.1:5000/spotify-login/">
+                <img class="magnify" style='display:none' id='spotify_button' src="/static/assets/spotify.png" />
+            </a>
+        </div>
+        <div class="console">
+            <div class="make_game">
+                <div class='buttons'>
+                    <select name="gamemode" id="gamemode">
+                        <option value="song">Song</option>
+                        <option value="artist">Artist</option>
+                        <option value="year">Year</option>
+                        <option value="year">Mixed</option>
+                    </select>
+                    <select id="rounds">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8" selected>8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <input type="text" id="pin" placeholder="Make Pin">
+                </div>
+                <div text-align='center'>What Playlist</div>
+                <div class='playlist_div' id='playlist_div'>
+                    <input type="checkbox" id="Billboard Hot 100" name="checkbox"
+                        value="spotify:playlist:6UeSakyzhiEt4NB3UAd6NQ">
+                    <label for="Billboard Hot 100">Billboard Hot 100</label><br>
+                </div>
+                <div><input class="magnify" type="submit" id="create_game" value="Make a game" /></div>
+            </div>
+            <div class="user">
+                <input type="text" id="username" placeholder="Username" maxlength="12" , autocomplete="off">
+            </div>
+            <div class="join_game">
+                <input type="text" id="roomcode" placeholder="Room Code" , autocomplete="off">
+                <input type="text" id="password" placeholder="Game Password" , autocomplete="off">
+                <input type="submit" id="join_game" value="Join a game" />
+            </div>
+        </div>
     </div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
         integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
@@ -51,17 +81,24 @@
             var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
             document.querySelector('#create_game').onclick = () => {
+                var arr = [];
+                var checkboxes = document.getElementsByName('checkbox');
+                for (var checkbox of checkboxes) {
+                    if (checkbox.checked) {
+                        arr.push(checkbox.value);
+                    }
+                }
+                document.getElementById('wrapper').style.display='none'
+
                 socket.emit('make_room', {
                     'username': document.querySelector('#username').value,
                     'gamemode': document.querySelector('#gamemode').value,
                     'rounds': document.querySelector('#rounds').value,
                     'password': document.querySelector('#pin').value,
+                    'playlists': arr
                 })
             }
 
-            const dialog = document.createElement('dialog');
-            dialog.setAttribute('open', '');
-            dialog.append('hi');
 
             document.querySelector('#join_game').onclick = () => {
                 socket.emit('join_room', {
@@ -71,6 +108,11 @@
                 })
             }
 
+
+            socket.on('invalid_rounds', () => {
+                document.getElementById('wrapper').style.display='block'
+                alert('Error: Number of rounds exceeds number of songs.')
+            })
 
             socket.on('connect', () => {
                 socket.emit('connected_to_main');
@@ -101,7 +143,22 @@
                 alert('Room is full!')
             })
 
+            socket.on('no_gamemode', () => {
+                alert('Choose a game mode!')
+            })
+
+
+            socket.on('add_playlist', (data) => {
+                const div = document.getElementById('playlist_div');
+                if ("checkbox" in data && "label" in data) {
+                    div.innerHTML += data.checkbox;
+                    div.innerHTML += data.label
+                }
+            })
+
+
         })
+
 
     </script>
 </body>

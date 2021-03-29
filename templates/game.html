@@ -25,11 +25,16 @@
 
       socket.on('connect', function () {
         socket.emit('connected_to_room', { 'url': window.location.href });
-      });
+      })
+
+      socket.on('disconnect', ()=> {
+        socket.emit('disconnect_game', { 'url': window.location.href });
+      })
 
       socket.on('display_players', (data) => {
         document.querySelector('.message_holder').innerHTML = ('<div><b style="text-align: center; color: #000000">'+data+'</div>')
       })
+      
 
       document.querySelector('#start').onclick = () => {
         document.getElementById('lobby').style.display = "none"

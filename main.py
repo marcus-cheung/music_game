@@ -47,7 +47,7 @@ API_BASE = "https://accounts.spotify.com"
 @app.route("/")
 def main():
     session["unique"] = datetime.now().time()
-    return render_template("mainmenu copy.html")
+    return render_template("mainmenu.html")
 
 
 # If user logged into spotify adds playlists as options
@@ -165,7 +165,7 @@ def makeRoom(data):
             tracks.extend(results['items'])
         allsongs.extend(tracks)
     if len(allsongs) < int(data['rounds']):
-        socketio.emit('little_songs')
+        socketio.emit('invalid_rounds')
     else:
         # choose random from allsongs
         for i in range(int(data['rounds'])):
@@ -187,7 +187,7 @@ def makeRoom(data):
             song_artists = song['artists'][0]['name']
             print(song_name)
             print(song_artists)
-            download_music_file(song_name + ' ' + song_artists, room, str(song_counter))
+            #download_music_file(song_name + ' ' + song_artists, room, str(song_counter))
             song_counter += 1
         #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
@@ -259,14 +259,15 @@ def getplayers(data):
         socketio.emit("display_players", string)
 
 
-def getSongs():
-    return "hi"
-
 
 # on disconnect from game removes user
-@socketio.on("disconnect")
+@socketio.on("disconnect_game")
 def disconnect():
-    pass
+    print('disconnect')
+    room = int(data["url"][27:31])
+    directory =  'static/music' + '/' + str(room)
+    if os.path.isdir(directory):
+        shutil.rmtree(directory)
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
     destination = 'static/music/' + str(roomnumber)
