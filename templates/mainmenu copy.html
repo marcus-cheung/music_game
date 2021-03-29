@@ -26,16 +26,36 @@
             <div class="make_game">
                 <div class='buttons'>
                     <select name="gamemode" id="gamemode">
-                        <option value="" selected disabled hidden>Select gamemode</option>
-                        <option value="artist">Guess the artist</option>
                         <option value="song">Guess the song name</option>
+                        <option value="artist">Guess the artist</option>
                         <option value="year">Guess the year</option>
+                        <option value="year">Mixed</option>
                     </select>
-                    <input type="number" min="1" max="20" id="rounds" placeholder="Number of rounds" size="10px" ,
-                        autocomplete="off">
-                    <input type="text" id="pin" placeholder="Make Pin" , autocomplete="off">
+                    <select id="rounds">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8" selected>8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+                    <input type="text" id="pin" placeholder="Make Pin">
                 </div>
-                <div size=50%>What Playlist</div>
+                <div text-align='center'>What Playlist</div>
                 <div class='playlist_div' id='playlist_div'>
                     <input type="checkbox" id="Billboard Hot 100" name="checkbox"
                         value="spotify:playlist:6UeSakyzhiEt4NB3UAd6NQ">
@@ -44,7 +64,7 @@
                 <div><input class="magnify" type="submit" id="create_game" value="Make a game" /></div>
             </div>
             <div class="user">
-                <input type="text" id="username" placeholder="Username" , autocomplete="off">
+                <input type="text" id="username" placeholder="Username" maxlength="12" , autocomplete="off">
             </div>
             <div class="join_game">
                 <input type="text" id="roomcode" placeholder="Room Code" , autocomplete="off">
@@ -114,6 +134,14 @@
 
             socket.on('Room_full', () => {
                 alert('Room is full!')
+            })
+
+            socket.on('no_gamemode', () => {
+                alert('Choose a game mode!')
+            })
+
+            socket.on('invalid_rounds', () => {
+                alert('Invalid number of rounds!')
             })
 
             socket.on('add_playlist', (data) => {

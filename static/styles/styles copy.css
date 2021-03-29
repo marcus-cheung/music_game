@@ -8,7 +8,7 @@ body {
     font-family: font;
     color: #ffffff;
     background: #1d1d1d;
-    font-size: 30px;
+    font-size: 10px;
 }
 
 .header {
@@ -31,33 +31,21 @@ body {
 
 .console {
     outline: tomato;
-    width: 95%;
-    height: 500px;
-    border: 1px solid purple;
+    display:block;
     margin: 0 auto;
+    width: 80%;
+    height: 500px;
 }
 
 .console .make_game {
-    outline: tomato;
     float: left;
     width: 30%;
-    height: 500px;
-}
-
-.console .user {
-    width: 40%;
-    float: left;
-    height: 500px;
-}
-
-.console .join_game {
-    width: 30%;
-    float: left;
     height: 500px;
 }
 
 .console .make_game .buttons * {
-    margin: 0 auto;
+    float: left;
+    margin-left:5px;
     width: 30%;
     height: 10%
 }
@@ -66,4 +54,21 @@ body {
     height: 80%;
     width: 100%;
     overflow: auto;
+}
+
+.console .user {
+    width: 40%;
+    float: left;
+    height: 500px;
+}
+
+.console .user #username {
+    display: block;
+    margin: 0 auto
+}
+
+.console .join_game {
+    width: 30%;
+    float: left;
+    height: 500px;
 }

@@ -154,7 +154,7 @@ def makeRoom(data):
     active_rooms.append(room)
     # create a gamestate in list of gamestates at index = room number
     gamestates[room - 1000] = classes.GameState(
-        rounds=data["rounds"], room_number=room, password=data.get("password")
+        rounds=data['rounds'], room_number=room, password=data.get("password")
     )
     gamestates[room - 1000].allow(session["unique"])
     gamestates[room - 1000].addUser(user)

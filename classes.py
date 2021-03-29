@@ -1,17 +1,22 @@
 from random import randint
-class GameState():
+
+
+class GameState:
     max_users = 8
-    def __init__(self, room_number, rounds, playlists = [], password=None):
-        if rounds == '':
-            self.rounds = 8
-        else:
-            self.rounds = rounds
+
+    def __init__(
+        self, room_number, rounds, roundlength=90, playlists=[], password=None
+    ):
+        #On call
+        self.room_number = room_number
+        self.rounds = rounds
+        self.roundlength = roundlength
         self.playlists = playlists
+        self.password = password
+        #Mutated when making/joining room
         self.users = []
         self.allowed = []
-        self.password = password
-        self.room_number = room_number
-        self.special = randint(100000,999999)
+        self.song = []
 
     def allow(self, unique):
         self.allowed.append(unique)
@@ -23,17 +28,18 @@ class GameState():
     def kickUser(self, user):
         self.users.remove(user)
 
+
 class guessArtist(GameState):
     def __init__(self):
-        super().__init__(self, room_number, playlists = [], password=None)
+        super().__init__(self, room_number, playlists=[], password=None)
 
 
-
-class User():
+class User:
     score = 0
+
     def __init__(self, unique, username):
-        if username=='':
-            self.username = 'Guest'+str(randint(10000,99999))
+        if username == "":
+            self.username = "Guest" + str(randint(10000, 99999))
         else:
             self.username = username
         self.unique = unique
