@@ -26,9 +26,9 @@
             <div class="make_game">
                 <div class='buttons'>
                     <select name="gamemode" id="gamemode">
-                        <option value="song">Guess the song name</option>
-                        <option value="artist">Guess the artist</option>
-                        <option value="year">Guess the year</option>
+                        <option value="song">Song</option>
+                        <option value="artist">Artist</option>
+                        <option value="year">Year</option>
                         <option value="year">Mixed</option>
                     </select>
                     <select id="rounds">
@@ -106,6 +106,10 @@
                 })
             }
 
+
+            socket.on('little_songs', () => {
+                alert('Error: Number of rounds greater than number of songs.')
+            })
 
             socket.on('connect', () => {
                 socket.emit('connected_to_main');

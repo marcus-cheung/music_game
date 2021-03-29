@@ -1,23 +1,20 @@
 from random import randint
-
-
+import spotipy
 class GameState:
     max_users = 8
 
     def __init__(
-        self, room_number, rounds, roundlength=90, playlists=[], password=None
+        self, room_number, gamemode, songs, roundlength=90, password=None
     ):
         #On call
         self.room_number = room_number
-        self.rounds = rounds
+        self.gamemode = gamemode
         self.roundlength = roundlength
-        self.playlists = playlists
         self.password = password
+        self.song = songs
         #Mutated when making/joining room
         self.users = []
         self.allowed = []
-        self.song = []
-
     def allow(self, unique):
         self.allowed.append(unique)
 
@@ -27,11 +24,7 @@ class GameState:
 
     def kickUser(self, user):
         self.users.remove(user)
-
-
-class guessArtist(GameState):
-    def __init__(self):
-        super().__init__(self, room_number, playlists=[], password=None)
+        
 
 
 class User:
