@@ -29,7 +29,6 @@ class GameState:
 
 class User:
     score = 0
-
     def __init__(self, unique, username):
         if username == "":
             self.username = "Guest" + str(randint(10000, 99999))

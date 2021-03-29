@@ -9,6 +9,10 @@ from datetime import datetime
 import requests
 import time
 import json
+import pafy
+from youtubesearchpython import VideosSearch
+import os
+import shutil
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -174,11 +178,28 @@ def makeRoom(data):
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(
             songs = songs, gamemode = data['gamemode'], room_number=room, password=data.get("password")
-        )
+        )   
+        makeDir(room)
+        # Add songs to directory
+        song_counter = 1
+        for song in songs:
+            song_name = song['name']
+            song_artists = song['artists'][0]['name']
+            print(song_name)
+            print(song_artists)
+            download_music_file(song_name + ' ' + song_artists, room, str(song_counter))
+            song_counter += 1
+        #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
         gamestates[room - 1000].addUser(user)
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}")
+
+def makeDir(room):
+    directory =  'static/music' + '/' + str(room)
+    if os.path.isdir(directory):
+        shutil.rmtree(directory)
+    os.mkdir(directory)
 
 # when join room pressed
 @socketio.on("join_room")
@@ -247,6 +268,36 @@ def getSongs():
 def disconnect():
     pass
 
+def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
+    destination = 'static/music/' + str(roomnumber)
+    path = destination + '/' + filename + '.' + filetype
+    if lyric:
+        query += ' lyric'
+    top_result = VideosSearch(query, limit=1).result()['result'][0]
+    url = top_result['link']
+    print(url)
+    video = pafy.new(url)
+    audiostreams = video.audiostreams
+    filetype_audiostreams = []
+    final_file = None
+    for audiostream in audiostreams:
+        print(audiostream)
+        print(audiostream.bitrate)
+        if audiostream.extension == filetype:
+            filetype_audiostreams.append(audiostream)
+    for audiostream in filetype_audiostreams:
+        print(audiostream)
+        if audiostream.bitrate==bitrate:
+            final_file = audiostream
+        else:
+            final_file = filetype_audiostreams[len(filetype_audiostreams) - 1]
+    # if os.path.isdir(destination):
+    #     print('Error: Directory does not exist')
+    print(final_file)
+    # Overwrite existing file if it exists
+    if os.path.isfile(path):
+        os.remove(path)
+    final_file.download(path)
 
 # run server
 if __name__ == "__main__":
