@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, request, redirect
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 import spotipy.oauth2 as oauth2
 from flask_session import Session
 import spotipy
@@ -148,14 +148,13 @@ def get_token(session):
 @socketio.on("make_room")
 def makeRoom(data):
     #making user to later add to gamestate
-    user = classes.User(
-        username=data.get("username"),
+    user = classes.User(username = data['username'],
         unique=session.get("unique"),
     )
     #choosing songs
     sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
     allsongs = []
-    songs = []
+    song_infos = []
     #make list of allsongs
     for playlist in data['playlists']:
         results = sp.user_playlist_tracks(sp.current_user()['display_name'],playlist)
@@ -170,24 +169,24 @@ def makeRoom(data):
         # choose random from allsongs
         for i in range(int(data['rounds'])):
             x = random.randint(0,len(allsongs) - 1)
-            songs.append(allsongs.pop(x)['track'])
+            song_infos.append(allsongs.pop(x)['track'])
         room = random.randint(1000, 9999)
         while room in active_rooms:
             room = random.randint(1000, 9999)
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(
-            songs = songs, gamemode = data['gamemode'], room_number=room, password=data.get("password")
-        )   
-        makeDir(room)
+            song_infos = song_infos, gamemode = data['gamemode'], room_number=room, password=data.get("password")
+        )
+        #makeDir(room)
         # Add songs to directory
         song_counter = 1
-        for song in songs:
+        for song in song_infos:
             song_name = song['name']
-            song_artists = song['artists'][0]['name']
+            song_artist = song['artists'][0]['name']
             print(song_name)
-            print(song_artists)
-            #download_music_file(song_name + ' ' + song_artists, room, str(song_counter))
+            print(song_artist)
+            #download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
             song_counter += 1
         #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
@@ -249,6 +248,7 @@ def runGame(room):
         return render_template("game.html")
 
 
+#What happens on game connect
 @socketio.on("connected_to_room")
 def getplayers(data):
     room = int(data["url"][27:31])
@@ -299,6 +299,48 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
     if os.path.isfile(path):
         os.remove(path)
     final_file.download(path)
+
+@app.route('/chat/')
+def chatroom():
+    return render_template('chat.html')
+
+
+# Sends chat messages to everyone in room
+@socketio.on('message_send')
+def onMSG(data):
+    print('msg received from client')
+    room = int(data['room'])
+    gamestate = gamestates[room - 1000]
+    gamestate_users = gamestate.users
+    list_unique = [user.unique for user in gamestate_users]
+    index = list_unique.index(session['unique'])
+    username = [user for user in gamestate_users][index].username
+    
+    
+
+    #if already answered
+    if gamestate_users[index].already_answered:
+        socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
+    #If haven't answered
+    else:
+        #if answer correct
+        if data['msg'] == gamestate.answers[gamestate.current_round-1]:    
+            join_room('correct' + str(room))
+            socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
+            gamestate_users[index].already_answered = True
+            #Add them to the list of correctly answered users
+            gamestates[room - 1000].correct.append(gamestate_users[index])
+        #if wrong, just send the message
+        else:
+            socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])
+    
+    
+
+
+@socketio.on('connected_chat')
+def connected_chat(room):
+    join_room(room)
+
 
 # run server
 if __name__ == "__main__":

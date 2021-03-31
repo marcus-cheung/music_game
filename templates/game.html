@@ -12,8 +12,11 @@
   <div id='lobby'>
     <button type="button" id='start'>Start</button>
     <p style='text-align: left;'>Players in the lobby:</p>
-    <div class="message_holder"></div>
-  </div>
+    <input type="text" id="user_input" placeholder="Type here" autocomplete="off">
+    <button id="send_message" type="button"> Send </button>
+    <div class="message_holder" id='message_holder'
+      style='overflow:auto; width: 300px; height:500px; overflow-wrap: break-word;'></div>
+    </div>
 
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
@@ -21,24 +24,52 @@
   <script type="text/javascript" charset="utf-8">
     document.addEventListener('DOMContentLoaded', () => {
       var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
-
-      socket.on('connect', function () {
-        socket.emit('connected_to_room', { 'url': window.location.href });
+      const url = window.location.href
+      const room = url.substring(27, 31)
+      socket.on('connect', () => {
+        socket.emit('connected_chat', room)
       })
 
-      socket.on('disconnect', ()=> {
-        socket.emit('disconnect_game', { 'url': window.location.href });
+      document.querySelector('#send_message').onclick = () => {
+        console.log('button clicked')
+        socket.emit('message_send', {
+          'msg': document.getElementById('user_input').value,
+          'room': room        
+        })
+        document.getElementById('user_input').value = ''
+      }
+
+      socket.on('chat', (data) => {
+        console.log('check')
+        let div = document.getElementById('message_holder');
+        let old_height = div.scrollHeight
+        let username = data.username
+        let msg = data.msg
+        let correct = data.correct
+        let element = ''
+        console.log(correct)
+        if (correct)
+        {
+          element = `<div class='correct' style = 'color:green'>${username}: ${msg}</div>`
+          console.log('Correct')
+        }
+        else
+        {
+          element = `<div class='wrong' >${username}: ${msg}</div>`
+          console.log('Incorrect')
+        }
+        div.innerHTML += element
+        console.log(div.scrollTop)
+        console.log(old_height)
+        
+        
+        if (div.scrollTop + 500 == old_height) { // 500 = height of message_holder
+          div.scrollTop = div.scrollHeight;
+        }
+        console.log(div.scrollHeight)
+
       })
 
-      socket.on('display_players', (data) => {
-        document.querySelector('.message_holder').innerHTML = ('<div><b style="text-align: center; color: #000000">'+data+'</div>')
-      })
-      
-
-      document.querySelector('#start').onclick = () => {
-        document.getElementById('lobby').style.display = "none"
-            }
 
     })
 

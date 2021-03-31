@@ -29,7 +29,7 @@
                         <option value="song">Song</option>
                         <option value="artist">Artist</option>
                         <option value="year">Year</option>
-                        <option value="year">Mixed</option>
+                        <option value="mix">Mixed</option>
                     </select>
                     <select id="rounds">
                         <option value="1">1</option>
@@ -114,9 +114,11 @@
                 alert('Error: Number of rounds exceeds number of songs.')
             })
 
-            socket.on('connect', () => {
-                socket.emit('connected_to_main');
-            })
+            socket.emit('connected_to_main');
+
+            // socket.on('connect', () => {
+            //     socket.emit('connected_to_main');
+            // })
 
             socket.on('add_spotify_button', () => {
                 document.getElementById("spotify_button").style.display = "block";
