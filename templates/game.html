@@ -10,7 +10,7 @@
 <body>
 
   <div id='lobby'>
-    <button type="button" id='start'>Start</button>
+    <button type="button" id='start' style = 'display:none'>Start</button>
     <p style='text-align: left;'>Players in the lobby:</p>
     <input type="text" id="user_input" placeholder="Type here" autocomplete="off">
     <button id="send_message" type="button"> Send </button>
@@ -29,8 +29,9 @@
       const room = url.substring(27, 31)
       var round = 1
       socket.on('connect', () => {
-        socket.emit('connected_chat', room)
+        socket.emit('connected_to_room', room)
       })
+
 
       document.querySelector('#send_message').onclick = () => {
         console.log('button clicked')
@@ -79,8 +80,20 @@
       
       socket.on('start_round', (data) => {
         round ++
-        play_audio( {{ url_for('static', filename='music/1.m4a')}})
+        console.log('Round started')
+        play_audio(data.music_file)
       })
+
+      document.getElementById('start').onclick = () => {
+        socket.emit('start_game', room)
+        document.getElementById('start').style.display = "none"
+      }
+
+      socket.on('host', () => {
+        document.getElementById('start').style.display = "block"
+        console.log('success')
+      })
+
 
     })
 

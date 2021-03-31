@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, url_for
 from flask_socketio import SocketIO, join_room, leave_room
 import spotipy.oauth2 as oauth2
 from flask_session import Session
@@ -169,6 +169,17 @@ def makeRoom(data):
         # choose random from allsongs
         for i in range(int(data['rounds'])):
             x = random.randint(0,len(allsongs) - 1)
+            #Check if song already in list of songs
+            while allsongs[x]['track'] in song_infos:
+                #remove duplicate song
+                allsongs.pop(x)
+                # Breaks loop if allsongs empty
+                if len(allsongs)==0:
+                    socketio.emit('invalid_rounds')
+                    break 
+                #generates new index to check
+                x = random.randint(0,len(allsongs) - 1)
+            #Appends valid song to song_infos
             song_infos.append(allsongs.pop(x)['track'])
         room = random.randint(1000, 9999)
         while room in active_rooms:
@@ -176,7 +187,7 @@ def makeRoom(data):
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(
-            song_infos = song_infos, gamemode = data['gamemode'], room_number=room, password=data.get("password")
+            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], room_number=room, password=data.get("password")
         )
         makeDir(room)
         # Add songs to directory
@@ -194,6 +205,7 @@ def makeRoom(data):
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}")
 
+
 def makeDir(room):
     directory =  'static/music' + '/' + str(room)
     if os.path.isdir(directory):
@@ -210,6 +222,7 @@ def joinRoom(data):
     password = data["password"]
     if data["roomcode"] != "":
         room = int(data["roomcode"])
+
         # if room is active
         if room not in active_rooms:
             socketio.emit("Room_noexist")
@@ -231,6 +244,7 @@ def joinRoom(data):
             socketio.emit("wrong_pass")
 
 
+
 @socketio.on("logout_spotify")
 def logout():
     session.pop("token_info")
@@ -250,24 +264,15 @@ def runGame(room):
 
 #What happens on game connect
 @socketio.on("connected_to_room")
-def getplayers(data):
-    room = int(data["url"][27:31])
-    if gamestates[room - 1000]:
-        string = ""
-        for user in gamestates[room - 1000].users:
-            string += user.username + "  "
-        socketio.emit("display_players", string)
+def getplayers(room):
+    room = room
+    join_room(room)
+    #if is host add start button
+    print(session['unique'], getGame(room).host)
+    if session['unique']==getGame(room).host:
+        print('check')
+        socketio.emit('host')
 
-
-
-# on disconnect from game removes user
-@socketio.on("disconnect_game")
-def disconnect():
-    print('disconnect')
-    room = int(data["url"][27:31])
-    directory =  'static/music' + '/' + str(room)
-    if os.path.isdir(directory):
-        shutil.rmtree(directory)
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
     destination = 'static/music/' + str(roomnumber)
@@ -327,10 +332,10 @@ def onMSG(data):
             gamestate.correct.append(gamestate_users[index])
             
             #check if round should be ended
-            if len (gamestate.unique) == len (gamestate.correct):
-                end_round(room)
+            if len (gamestate.users) == len (gamestate.correct):
+                end_round(str(room))
             #check if game will end
-            if gamestate.current_round == len(gamestate.songs):
+            if gamestate.current_round == len(gamestate.song_infos):
                 pass
         #if wrong, just send the message
         else:
@@ -338,25 +343,33 @@ def onMSG(data):
 
 
 def end_round(room):
-    gamestate = gamestates[room - 1000]
-    # Get list of user/score from that round ordered
+    gamestate = getGame(room)
+    # Get list of user/scoretotal/gain from that round ordered
     lst = gamestate.getScoreDATA()
     # Ends the round on server-side
     gamestate.endRound()
     # Emits event to clients to end round
-    socketio.emit('end_round', room=room)
+    socketio.emit('end_round', lst, room=room)
     # Wait five seconds and then start round
     start_round(room)
     
 
 def start_round(room):
-    socketoio.emit('start_round', room=room)
+    current_round = getGame(room).current_round
+    new_music_file = url_for('static', filename=f'music/{room}/{current_round}.m4a')
+    socketio.emit('start_round', {'music_file': new_music_file}, room=room)
+    print('round started')
     # TODO
 
-@socketio.on('connected_chat')
-def connected_chat(room):
-    join_room(room)
 
+@socketio.on('start_game')
+def start_game(room):
+    # TODO: Error-checking: make sure that answers and songs all have enough elements
+    # TODO: Some front-end start-up messages
+    start_round(room)
+
+def getGame(room):
+    return gamestates[int(room) - 1000]
 
 # run server
 if __name__ == "__main__":

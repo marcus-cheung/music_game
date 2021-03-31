@@ -4,7 +4,7 @@ class GameState:
     max_users = 8
 
     def __init__(
-        self, room_number, gamemode, song_infos, roundlength=90, password=None
+        self, room_number, gamemode, song_infos, host, roundlength=90, password=None
     ):
         #On call
         self.room_number = room_number
@@ -13,6 +13,8 @@ class GameState:
         # Duration of each round
         self.roundlength = roundlength
         self.password = password
+        # Host
+        self.host = host
         # List of song_infos passed from spotipy when 'make room'
         self.song_infos = song_infos
         #Used each round
@@ -44,21 +46,22 @@ class GameState:
     def kickUser(self, user):
         self.users.remove(user)
 
-    def getscoreDATA(self):
-        return [{'username': user.username, 'score': user.score+}
+    def getScoreDATA(self):
+        lst = []
         for user in self.correct:
-            gain = 100-self.correct.index*5
-            
-
-
+            gain = 100-self.correct.index(user)*5
+            lst.append({'username': user.username, 'score': user.score+gain, 'gain': gain})
+        return lst
 
     def endRound(self):
         for user in self.users:
-            user.score += round_score(user)
-        if self.current_round == len(self.songs):
+            user.score += 100-self.correct.index(user)*5
+        # Check if all rounds are up
+        if self.current_round == len(self.song_infos):
             self.endGame()
-        self.current_round+=1
-        self.correct = []
+        else:
+            self.current_round+=1
+            self.correct = []
     
     def endGame(self):
         # TODO
