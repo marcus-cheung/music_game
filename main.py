@@ -178,7 +178,7 @@ def makeRoom(data):
         gamestates[room - 1000] = classes.GameState(
             song_infos = song_infos, gamemode = data['gamemode'], room_number=room, password=data.get("password")
         )
-        #makeDir(room)
+        makeDir(room)
         # Add songs to directory
         song_counter = 1
         for song in song_infos:
@@ -186,7 +186,7 @@ def makeRoom(data):
             song_artist = song['artists'][0]['name']
             print(song_name)
             print(song_artist)
-            #download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
+            download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
             song_counter += 1
         #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
@@ -276,25 +276,23 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
         query += ' lyric'
     top_result = VideosSearch(query, limit=1).result()['result'][0]
     url = top_result['link']
-    print(url)
+    # print(url)
     video = pafy.new(url)
     audiostreams = video.audiostreams
     filetype_audiostreams = []
     final_file = None
     for audiostream in audiostreams:
-        print(audiostream)
-        print(audiostream.bitrate)
+        # print(audiostream)
+        # print(audiostream.bitrate)
         if audiostream.extension == filetype:
             filetype_audiostreams.append(audiostream)
     for audiostream in filetype_audiostreams:
-        print(audiostream)
+        # print(audiostream)
         if audiostream.bitrate==bitrate:
             final_file = audiostream
         else:
             final_file = filetype_audiostreams[len(filetype_audiostreams) - 1]
-    # if os.path.isdir(destination):
-    #     print('Error: Directory does not exist')
-    print(final_file)
+
     # Overwrite existing file if it exists
     if os.path.isfile(path):
         os.remove(path)
@@ -315,27 +313,45 @@ def onMSG(data):
     list_unique = [user.unique for user in gamestate_users]
     index = list_unique.index(session['unique'])
     username = [user for user in gamestate_users][index].username
-    
-    
-
     #if already answered
     if gamestate_users[index].already_answered:
         socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
     #If haven't answered
     else:
         #if answer correct
-        if data['msg'] == gamestate.answers[gamestate.current_round-1]:    
+        if data['msg'].lower() == gamestate.answers[gamestate.current_round-1]:    
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
             gamestate_users[index].already_answered = True
             #Add them to the list of correctly answered users
-            gamestates[room - 1000].correct.append(gamestate_users[index])
+            gamestate.correct.append(gamestate_users[index])
+            
+            #check if round should be ended
+            if len (gamestate.unique) == len (gamestate.correct):
+                end_round(room)
+            #check if game will end
+            if gamestate.current_round == len(gamestate.songs):
+                pass
         #if wrong, just send the message
         else:
             socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])
-    
+
+
+def end_round(room):
+    gamestate = gamestates[room - 1000]
+    # Get list of user/score from that round ordered
+    lst = gamestate.getScoreDATA()
+    # Ends the round on server-side
+    gamestate.endRound()
+    # Emits event to clients to end round
+    socketio.emit('end_round', room=room)
+    # Wait five seconds and then start round
+    start_round(room)
     
 
+def start_round(room):
+    socketoio.emit('start_round', room=room)
+    # TODO
 
 @socketio.on('connected_chat')
 def connected_chat(room):

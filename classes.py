@@ -15,6 +15,9 @@ class GameState:
         self.password = password
         # List of song_infos passed from spotipy when 'make room'
         self.song_infos = song_infos
+        #Used each round
+        self.correct = []
+        self.current_round = 1
         #Mutated when making/joining room
         self.users = []
         self.allowed = []
@@ -22,16 +25,14 @@ class GameState:
         #get the answers
         for song_info in self.song_infos:
             if self.gamemode == 'song':
-                self.answers.append(song_info['name'])
+                self.answers.append(song_info['name'].lower())
             if self.gamemode == 'year':
                 release_date = song_info['album']['release_date']
                 year = release_date[0:4]
                 self.answers.append(year)
             if self.gamemode == 'artist':
-                self.answers.append(song_info['artists'][0]['name'])
-        #Used each round
-        self.correct = []
-        self.current_round = 1
+                self.answers.append(song_info['artists'][0]['name'].lower())
+        
         
     def allow(self, unique):
         self.allowed.append(unique)
@@ -42,7 +43,26 @@ class GameState:
 
     def kickUser(self, user):
         self.users.remove(user)
+
+    def getscoreDATA(self):
+        return [{'username': user.username, 'score': user.score+}
+        for user in self.correct:
+            gain = 100-self.correct.index*5
+            
+
+
+
+    def endRound(self):
+        for user in self.users:
+            user.score += round_score(user)
+        if self.current_round == len(self.songs):
+            self.endGame()
+        self.current_round+=1
+        self.correct = []
     
+    def endGame(self):
+        # TODO
+        pass
         
 
 

@@ -21,11 +21,13 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename='scripts/music.js') }}"></script>
   <script type="text/javascript" charset="utf-8">
     document.addEventListener('DOMContentLoaded', () => {
       var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
       const url = window.location.href
       const room = url.substring(27, 31)
+      var round = 1
       socket.on('connect', () => {
         socket.emit('connected_chat', room)
       })
@@ -70,6 +72,15 @@
 
       })
 
+      socket.on('end_round', (data) => {
+        //score page
+
+      })
+      
+      socket.on('start_round', (data) => {
+        round ++
+        play_audio( {{ url_for('static', filename='music/1.m4a')}})
+      })
 
     })
 
