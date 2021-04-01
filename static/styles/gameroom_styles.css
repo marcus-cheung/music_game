@@ -81,6 +81,10 @@ body {
     background: ivory
 }
 
+.midsection .chat .message_holder *{
+    padding:3px;
+}
+
 .midsection .chat .user_join_1 {
     color: red;
     background: grey

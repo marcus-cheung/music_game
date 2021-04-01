@@ -265,12 +265,12 @@ def runGame(room):
 #What happens on game connect: Prints user joined, if host add start button
 @socketio.on("connected_to_room")
 def gameConnect(room):
-    print(f'{room} passed in')
     join_room(room)
     #Print user
-    username = getUser(getGame(room))
-    print(username)
-    #socketio.emit('user_joined', username, room=room)
+    user = getUser(getGame(room))
+    print(user.username)
+    if request.sid :
+        socketio.emit('user_joined', user.username, room=room)
     #if is host add start button
     if getGame(room) and getGame(room).host and session['unique']==getGame(room).host:
         getGame(room).host_reqID = request.sid
@@ -307,10 +307,10 @@ def onMSG(data):
                 #Add them to the list of correctly answered users
                 gamestate.correct.append(user)
                 #check if round should be ended
-                if len (gamestate.users) == len (gamestate.correct):
+                if len(gamestate.users) == len(gamestate.correct):
+                    print('round end')
                     # check if game will end
                     if gamestate.current_round == len(gamestate.song_infos):
-                        print('msg that ends game')
                         end_game(str(room))
                     else:
                         end_round(str(room))          
@@ -388,7 +388,6 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
         query += ' lyric'
     top_result = VideosSearch(query, limit=1).result()['result'][0]
     url = top_result['link']
-    # print(url)
     video = pafy.new(url)
     audiostreams = video.audiostreams
     filetype_audiostreams = []

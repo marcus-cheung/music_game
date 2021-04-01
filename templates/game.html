@@ -55,7 +55,6 @@
       var bgcolor = 1
 
       socket.on('connect', () => {
-        console.log('connected to game')
         socket.emit('connected_to_room', room)
       })
 
@@ -160,7 +159,7 @@
         let correct = data.correct
         let element = ''
 
-        element = `<div class='user_join_${bgcolor}'><b>${username}</b> Joined!</div>`
+        element = `<div class='user_join_${bgcolor}'><b>${data}</b> Joined!</div>`
         bgcolor *= -1
 
         div.innerHTML += element
