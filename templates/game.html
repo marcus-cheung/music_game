@@ -4,95 +4,174 @@
 <head>
   <meta charset="UTF-8">
   <title>Game Room</title>
-  <link rel="stylesheet" href="static/styles/styles.css">
+  <link rel="stylesheet" href="/static/styles/gameroom_styles.css">
 </head>
 
 <body>
-
-  <div id='lobby'>
-    <button type="button" id='start' style = 'display:none'>Start</button>
-    <p style='text-align: left;'>Players in the lobby:</p>
-    <input type="text" id="user_input" placeholder="Type here" autocomplete="off">
-    <button id="send_message" type="button"> Send </button>
-    <div class="message_holder" id='message_holder'
-      style='overflow:auto; width: 300px; height:500px; overflow-wrap: break-word;'></div>
+  <div class="header">
+    <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
+  </div>
+  <div class='midsection'>
+    <div class='hint'></div>
+    <div class='chat' id='chat'>
+      <div class="message_holder" id='message_holder'></div>
+      <div class='new_msg' id='new_msg'>New Message ↓</div>
+      <input type="text" id="user_input" placeholder="Type your guess/chat" autocomplete="off">
+      <button id="send_message" type="button"
+        style="display:'none'; position: absolute; left: -9999px; width: 1px; height: 1px;"></button>
     </div>
+    <div class='right_area'>
+      <div class='lobby' id='lobby'>
+        <button type="button" id='start' style='display:none'>Start Game</button>
+        <div id="end_modal" class="modal">
+          <div class="modal-content">
+            <button type="button" id='new_game' style='display:none'>Start New Game</button>
+            <button type="button" id="back_to_lobby">Back to home</button>
+          </div>
+        </div>
+        <span>placeholder</span>
+      </div>
+      <div class='players' id='players'></div>
+    </div>
+
+  </div>
+
 
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
-  <script src="{{ url_for('static', filename='scripts/music.js') }}"></script>
+  <!-- <script src="{{ url_for('static', filename='scripts/music.js') }}"></script> -->
   <script type="text/javascript" charset="utf-8">
+    function play_audio(file) {
+      audio = new Audio(file);
+      audio.play();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
       const url = window.location.href
       const room = url.substring(27, 31)
       var round = 1
+      var bgcolor = 1
+
       socket.on('connect', () => {
+        console.log('connected to game')
         socket.emit('connected_to_room', room)
       })
 
-
+      var input = document.getElementById("user_input");
+      input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          document.getElementById("send_message").click();
+        }
+      });
       document.querySelector('#send_message').onclick = () => {
-        console.log('button clicked')
-        socket.emit('message_send', {
-          'msg': document.getElementById('user_input').value,
-          'room': room        
-        })
+        if (document.getElementById('user_input').value != '')
+          socket.emit('message_send', {
+            'msg': document.getElementById('user_input').value,
+            'room': room
+          })
         document.getElementById('user_input').value = ''
       }
 
       socket.on('chat', (data) => {
-        console.log('check')
         let div = document.getElementById('message_holder');
         let old_height = div.scrollHeight
         let username = data.username
         let msg = data.msg
         let correct = data.correct
         let element = ''
-        console.log(correct)
-        if (correct)
-        {
-          element = `<div class='correct' style = 'color:green'>${username}: ${msg}</div>`
-          console.log('Correct')
+        //If correct answer
+        if (correct) {
+          element = `<div class='correct_${bgcolor}'><b>${username}:</b> ${msg}</div>`
+          bgcolor *= -1
+          //audio.pause()
         }
-        else
-        {
-          element = `<div class='wrong' >${username}: ${msg}</div>`
-          console.log('Incorrect')
+        else {
+          element = `<div class='wrong_${bgcolor}' ><b>${username}:</b> ${msg}</div>`
+          console.log(element)
+          bgcolor *= -1
         }
         div.innerHTML += element
-        console.log(div.scrollTop)
-        console.log(old_height)
-        
-        
-        if (div.scrollTop + 500 == old_height) { // 500 = height of message_holder
+
+
+        if (div.scrollTop + 534 == old_height) { // 433 = height of message_holder
           div.scrollTop = div.scrollHeight;
         }
-        console.log(div.scrollHeight)
-
+        else {
+          document.getElementById('new_msg').style.display = 'block'
+        }
       })
 
       socket.on('end_round', (data) => {
         //score page
-
+        audio.pause();
       })
-      
+
       socket.on('start_round', (data) => {
-        round ++
+        round++
         console.log('Round started')
-        play_audio(data.music_file)
+        file = data.music_file
+        play_audio(file)
       })
 
       document.getElementById('start').onclick = () => {
         socket.emit('start_game', room)
         document.getElementById('start').style.display = "none"
+
       }
 
       socket.on('host', () => {
         document.getElementById('start').style.display = "block"
         console.log('success')
       })
+
+      socket.on('update_scores', (data) => {
+        // Add display of round number
+        var score_string = ''
+        for (i = 0; i < data.length; i++) {
+          score_string += `<span>User: ${data[i].username}, Score: ${data[i].score}, Gain: ${data[i].gain}</span><br>`
+        }
+        document.getElementById('players').innerHTML += score_string
+      })
+
+      //#3
+      socket.on('end_game', (data) => {
+        audio.pause();
+        document.getElementById('end_modal').style.display = 'block';
+
+
+      })
+
+      socket.on('host_end', () => {
+        document.getElementById('new_game').style.display = 'block'
+      })
+
+      document.getElementById('back_to_lobby').onclick = () => {
+        window.location.href = 'http://127.0.0.1:5000/'
+      }
+
+      socket.on('user_joined', (data) => {
+        let div = document.getElementById('message_holder');
+        let old_height = div.scrollHeight
+        let username = data.username
+        let msg = data.msg
+        let correct = data.correct
+        let element = ''
+
+        element = `<div class='user_join_${bgcolor}'><b>${username}</b> Joined!</div>`
+        bgcolor *= -1
+
+        div.innerHTML += element
+        if (div.scrollTop + 534 == old_height) { // 433 = height of message_holder
+          div.scrollTop = div.scrollHeight;
+        }
+        else {
+          document.getElementById('new_msg').style.display = 'block'
+        }
+      })
+
 
 
     })

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Main Menu</title>
-    <link rel="stylesheet" href="static/styles/styles.css">
+    <link rel="stylesheet" href="/static/styles/mainmenu_styles.css">
 </head>
 <style>
     .magnify:hover,
@@ -73,6 +73,7 @@
             </div>
         </div>
     </div>
+    <div class='loading' id='loading'>LOADING...</div>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
         integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
         crossorigin="anonymous"></script>
@@ -88,7 +89,8 @@
                         arr.push(checkbox.value);
                     }
                 }
-                document.getElementById('wrapper').style.display='none'
+                document.getElementById('wrapper').style.display = 'none'
+                document.getElementById('loading').style.display = 'block'
 
                 socket.emit('make_room', {
                     'username': document.querySelector('#username').value,
@@ -110,15 +112,14 @@
 
 
             socket.on('invalid_rounds', () => {
-                document.getElementById('wrapper').style.display='block'
+                document.getElementById('wrapper').style.display = 'block'
                 alert('Error: Number of rounds exceeds number of songs.')
             })
 
-            socket.emit('connected_to_main');
 
-            // socket.on('connect', () => {
-            //     socket.emit('connected_to_main');
-            // })
+            socket.on('connect', () => {
+                socket.emit('connected_to_main');
+            })
 
             socket.on('add_spotify_button', () => {
                 document.getElementById("spotify_button").style.display = "block";
@@ -157,6 +158,8 @@
                     div.innerHTML += data.label
                 }
             })
+
+
 
 
         })

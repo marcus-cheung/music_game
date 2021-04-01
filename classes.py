@@ -1,5 +1,7 @@
 from random import randint
 import spotipy
+
+
 class GameState:
     max_users = 8
 
@@ -15,11 +17,13 @@ class GameState:
         self.password = password
         # Host
         self.host = host
+        self.host_reqID = None
         # List of song_infos passed from spotipy when 'make room'
         self.song_infos = song_infos
         #Used each round
         self.correct = []
         self.current_round = 1
+        self.round_start = False
         #Mutated when making/joining room
         self.users = []
         self.allowed = []
@@ -50,27 +54,21 @@ class GameState:
         lst = []
         for user in self.correct:
             gain = 100-self.correct.index(user)*5
-            lst.append({'username': user.username, 'score': user.score+gain, 'gain': gain})
+            user.score += gain
+            lst.append({'username': user.username, 'score': user.score, 'gain': gain})
         return lst
 
     def endRound(self):
         for user in self.users:
-            user.score += 100-self.correct.index(user)*5
+            user.already_answered = False
         # Check if all rounds are up
-        if self.current_round == len(self.song_infos):
-            self.endGame()
-        else:
+        if self.current_round != len(self.song_infos):
             self.current_round+=1
             self.correct = []
-    
-    def endGame(self):
-        # TODO
-        pass
         
 
 
 class User:
-    score = 0
     def __init__(self, unique, username):
         if username == "":
             self.username = "Guest" + str(randint(10000, 99999))
@@ -78,4 +76,4 @@ class User:
             self.username = username
         self.unique = unique
         self.already_answered = False
-        self.score
+        self.score = 0
