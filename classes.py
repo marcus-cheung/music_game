@@ -101,12 +101,14 @@ class User:
 
 # Sanitizes a string
 def sanitize(answer):
-    special_char = 'ñńçčćàááâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
-    translation = 'nncccaaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
-    table = answer.maketrans(special_char,translation)
+    string = answer.lower()
+    special_char = 'ñńçčćàáâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
+    translation = 'nncccaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
+    table = string.maketrans(special_char,translation)
     #Special chars fixed, spaces removed, lowercase
-    string = answer.translate(table).replace(" ", "").lower()
+    string = string.translate(table).replace(" ", "")
     return string
+
 
 def answer_variations(answer):
     answers = [answer]
