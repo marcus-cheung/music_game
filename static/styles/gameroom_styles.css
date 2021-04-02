@@ -112,7 +112,7 @@ body {
     font-size: 30px
 }
 
-.midsection .chat .new_msg {
+.new_msg {
     opacity: 50%;
     background: red;
 }

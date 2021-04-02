@@ -29,7 +29,7 @@
             <button type="button" id="back_to_lobby">Back to home</button>
           </div>
         </div>
-        <span>placeholder</span>
+        <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="10">
       </div>
       <div class='players' id='players'></div>
     </div>
@@ -45,6 +45,10 @@
     function play_audio(file) {
       audio = new Audio(file);
       audio.play();
+      let volume = document.querySelector("#volume_control");
+      volume.addEventListener("change", function (e) {
+        audio.volume = e.currentTarget.value / 100;
+      })
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -89,7 +93,6 @@
         }
         else {
           element = `<div class='wrong_${bgcolor}' ><b>${username}:</b> ${msg}</div>`
-          console.log(element)
           bgcolor *= -1
         }
         div.innerHTML += element
@@ -110,7 +113,6 @@
 
       socket.on('start_round', (data) => {
         round++
-        console.log('Round started')
         file = data.music_file
         play_audio(file)
       })
@@ -118,12 +120,10 @@
       document.getElementById('start').onclick = () => {
         socket.emit('start_game', room)
         document.getElementById('start').style.display = "none"
-
       }
 
       socket.on('host', () => {
         document.getElementById('start').style.display = "block"
-        console.log('success')
       })
 
       socket.on('update_scores', (data) => {
@@ -139,17 +139,29 @@
       socket.on('end_game', (data) => {
         audio.pause();
         document.getElementById('end_modal').style.display = 'block';
-
-
       })
 
       socket.on('host_end', () => {
         document.getElementById('new_game').style.display = 'block'
       })
 
+
       document.getElementById('back_to_lobby').onclick = () => {
         window.location.href = 'http://127.0.0.1:5000/'
       }
+
+      document.getElementById('new_game').onclick = () => {
+        console.log('New game starting')
+        socket.emit('new_game_clicked', room)
+      }
+
+      socket.on('start_new', () => {
+        console.log('starting')
+        round = 1
+        document.getElementById('end_modal').style.display = 'none'
+        socket.emit('start_game', room)
+      })
+
 
       socket.on('user_joined', (data) => {
         let div = document.getElementById('message_holder');

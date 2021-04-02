@@ -13,6 +13,7 @@ import pafy
 from youtubesearchpython import VideosSearch
 import os
 import shutil
+import time
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -63,8 +64,6 @@ def setupMain():
         session["token_info"], authorized = get_token(session)
         # show personal playlists
         session.modified = True
-        if not authorized:
-            print("notauthorized")
         data = request.form
         sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
         playlists_info = sp.current_user_playlists()
@@ -114,34 +113,6 @@ def authentication():
     return redirect(myurl)
 
 
-# Checks valid token, if not valid refreshes and returns new token
-def get_token(session):
-    token_valid = False
-    token_info = session.get("token_info", {})
-    # Checking if the session already has a token stored
-    if not (session.get("token_info", False)):
-        token_valid = False
-        return token_info, token_valid
-
-    # Checking if token has expired
-    now = int(time.time())
-    is_token_expired = session.get("token_info").get("expires_at") - now < 60
-
-    # Refreshing token if it has expired
-    if is_token_expired:
-        # Don't reuse a SpotifyOAuth object because they store token info
-        sp_oauth = spotipy.oauth2.SpotifyOAuth(
-            client_id=SPOTIPY_CLIENT_ID,
-            client_secret=SPOTIPY_CLIENT_SECRET,
-            redirect_uri=SPOTIPY_REDIRECT_URI,
-            scope=SCOPE,
-        )
-        token_info = sp_oauth.refresh_access_token(
-            session.get("token_info").get("refresh_token")
-        )
-
-    token_valid = True
-    return token_info, token_valid
 
 
 # when make_room_button is pressed on main page create a room and add this user to the room
@@ -152,6 +123,7 @@ def makeRoom(data):
         unique=session.get("unique"),
     )
     #choosing songs
+    session['token_info'], authorize = get_token(session)
     sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
     allsongs = []
     song_infos = []
@@ -181,13 +153,14 @@ def makeRoom(data):
                 x = random.randint(0,len(allsongs) - 1)
             #Appends valid song to song_infos
             song_infos.append(allsongs.pop(x)['track'])
+        #Gets free room number
         room = random.randint(1000, 9999)
         while room in active_rooms:
             room = random.randint(1000, 9999)
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(
-            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], room_number=room, password=data.get("password")
+            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), room_number=room, password=data.get("password"), playlists = data['playlists']
         )
         makeDir(room)
         # Add songs to directory
@@ -205,12 +178,6 @@ def makeRoom(data):
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 
-
-def makeDir(room):
-    directory =  'static/music' + '/' + str(room)
-    if os.path.isdir(directory):
-        shutil.rmtree(directory)
-    os.mkdir(directory)
 
 # when join room pressed
 @socketio.on("join_room")
@@ -244,7 +211,6 @@ def joinRoom(data):
             socketio.emit("wrong_pass",room=request.sid)
 
 
-
 @socketio.on("logout_spotify")
 def logout():
     session.pop("token_info")
@@ -267,10 +233,9 @@ def runGame(room):
 def gameConnect(room):
     join_room(room)
     #Print user
-    user = getUser(getGame(room))
-    print(user.username)
-    if request.sid :
-        socketio.emit('user_joined', user.username, room=room)
+    gamestate = getGame(room)
+    user = getUser(gamestate)
+    socketio.emit('user_joined', user.username, room=room)
     #if is host add start button
     if getGame(room) and getGame(room).host and session['unique']==getGame(room).host:
         getGame(room).host_reqID = request.sid
@@ -299,8 +264,8 @@ def onMSG(data):
     else:
         # If round started
         if gamestate.round_start:
-            #if answer correct
-            if data['msg'].lower() == gamestate.answers[gamestate.current_round-1]:    
+            # if answer correct
+            if gamestate.checkAnswer(data['msg']):   
                 join_room('correct' + str(room))
                 socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room=request.sid)
                 user.already_answered = True
@@ -310,7 +275,9 @@ def onMSG(data):
                 if len(gamestate.users) == len(gamestate.correct):
                     print('round end')
                     # check if game will end
+                    print
                     if gamestate.current_round == len(gamestate.song_infos):
+                        print('gameend')
                         end_game(str(room))
                     else:
                         end_round(str(room))          
@@ -323,18 +290,19 @@ def onMSG(data):
 
 
 
-
 def end_round(room):
     gamestate = getGame(room)
     #Disable getting correct answer
     gamestate.round_start=False
     # Get list of user/scoretotal/gain from that round ordered
-    lst = gamestate.getScoreDATA()
-    socketio.emit('update_scores', lst, room=room)
-    # Ends the round on server-side
+    scores = gamestate.getScoreDATA()
+    socketio.emit('update_scores', scores, room=room)
+    # Get song info to be displayed
+    song_info = gamestate.getAnswer()
+    # Ends the round on server-side, also returns answer
     gamestate.endRound()
     # Emits event to clients to end round
-    socketio.emit('end_round', lst, room=room)
+    socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
     # Closes the room of correct answerers
     close_room('correct' + str(room))
     # Wait five seconds and then start round
@@ -347,7 +315,6 @@ def start_round(room):
     current_round = getGame(room).current_round
     new_music_file = url_for('static', filename=f'music/{room}/{current_round}.m4a')
     socketio.emit('start_round', {'music_file': new_music_file}, room=room)
-    print('round started')
     # TODO
 
 
@@ -357,20 +324,82 @@ def start_game(room):
     # TODO: Some front-end start-up messages
     start_round(room)
 
+
+@socketio.on('new_game_clicked')
+def new_game(room):
+    print('starting new game')
+    old_gamestate = getGame(room)
+    old_users = old_gamestate.users
+    old_pass = old_gamestate.password
+    old_host = old_gamestate.host
+    old_gamemode = old_gamestate.gamemode
+    old_playlists = old_gamestate.playlists
+    old_rounds = old_gamestate.rounds
+    #choosing songs
+    session['token_info'], authorize = get_token(session)
+    sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
+    allsongs = []
+    song_infos = []
+    #make list of allsongs
+    for playlist in old_playlists:
+        results = sp.user_playlist_tracks(sp.current_user()['display_name'],playlist)
+        tracks = results['items']
+        while results['next']:
+            results = sp.next(results)
+            tracks.extend(results['items'])
+        allsongs.extend(tracks)
+    # choose random from allsongs
+    for i in range(old_rounds):
+        x = random.randint(0,len(allsongs) - 1)
+        #Check if song already in list of songs
+        while allsongs[x]['track'] in song_infos:
+            #remove duplicate song
+            allsongs.pop(x)
+            # Breaks loop if allsongs empty
+            if len(allsongs)==0:
+                socketio.emit('invalid_rounds', room=request.sid)
+                break 
+            #generates new index to check
+            x = random.randint(0,len(allsongs) - 1)
+        #Appends valid song to song_infos
+        song_infos.append(allsongs.pop(x)['track'])
+    # create a gamestate in list of gamestates at index = room number
+    gamestates[int(room) - 1000] = classes.GameState(
+        song_infos = song_infos, host = old_host, gamemode = old_gamemode, users = old_users, room_number=room, password=old_pass, rounds = old_rounds, playlists = old_playlists
+    )
+    makeDir(room)
+    # Add songs to directory
+    song_counter = 1
+    for song in song_infos:
+        song_name = song['name']
+        song_artist = song['artists'][0]['name']
+        print(song_name)
+        print(song_artist)
+        download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
+        song_counter += 1
+    # Now everything ready, start round client side
+    time.sleep(5)
+    socketio.emit('start_new', room = room)
+
+
+
+
+
 #2
 def end_game(room):
-    lst = getGame(room).getScoreDATA()
+    gamestate = getGame(room)
+    scores = gamestate.getScoreDATA()
+    song_info = gamestate.getAnswer()
+    gamestate.endRound()
     #Opens end modal for all users
-    socketio.emit('end_game', lst, room=room)
+    socketio.emit('end_game', {'scores':scores,'song_info':song_info}, room=room)
     #Adds start new button for host
-    socketio.emit('host_end', room = getGame(room).host_reqID)
+    socketio.emit('host_end', room = gamestate.host_reqID)
     # Wipes directory
     directory =  'static/music/' + room
     shutil.rmtree(directory)
-    #Makes gamestate=none
-    gamestates[int(room)-1000] = None
-    # Ends the socket io rooms
-    closeRooms(room)
+    # Close correct room
+    close_room('correct' + str(room))
 
 #Called on end of game or if room is empty
 def closeRooms(room):
@@ -380,6 +409,12 @@ def closeRooms(room):
 def getGame(room):
     return gamestates[int(room) - 1000]
 
+def makeDir(room):
+    directory =  'static/music' + '/' + str(room)
+    #checks if directory exists
+    if os.path.isdir(directory):
+        shutil.rmtree(directory)
+    os.mkdir(directory)
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
     destination = 'static/music/' + str(roomnumber)
@@ -403,11 +438,41 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
             final_file = audiostream
         else:
             final_file = filetype_audiostreams[len(filetype_audiostreams) - 1]
-
     # Overwrite existing file if it exists
     if os.path.isfile(path):
         os.remove(path)
     final_file.download(path)
+
+
+# Checks valid token, if not valid refreshes and returns new token
+def get_token(session):
+    token_valid = False
+    token_info = session.get("token_info", {})
+    # Checking if the session already has a token stored
+    if not (session.get("token_info", False)):
+        token_valid = False
+        return token_info, token_valid
+
+    # Checking if token has expired
+    now = int(time.time())
+    is_token_expired = session.get("token_info").get("expires_at") - now < 60
+
+    # Refreshing token if it has expired
+    if is_token_expired:
+        # Don't reuse a SpotifyOAuth object because they store token info
+        sp_oauth = spotipy.oauth2.SpotifyOAuth(
+            client_id=SPOTIPY_CLIENT_ID,
+            client_secret=SPOTIPY_CLIENT_SECRET,
+            redirect_uri=SPOTIPY_REDIRECT_URI,
+            scope=SCOPE,
+        )
+        token_info = sp_oauth.refresh_access_token(
+            session.get("token_info").get("refresh_token")
+        )
+
+    token_valid = True
+    return token_info, token_valid
+
 
 
 # run server
