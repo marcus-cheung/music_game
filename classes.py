@@ -101,8 +101,8 @@ class User:
 
 # Sanitizes a string
 def sanitize(answer):
-    special_char = 'ñńçčćàáâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
-    translation = 'nncccaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
+    special_char = 'ñńçčćàááâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
+    translation = 'nncccaaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
     table = answer.maketrans(special_char,translation)
     #Special chars fixed, spaces removed, lowercase
     string = answer.translate(table).replace(" ", "").lower()

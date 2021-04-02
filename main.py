@@ -170,7 +170,7 @@ def makeRoom(data):
             song_artist = song['artists'][0]['name']
             print(song_name)
             print(song_artist)
-            download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
+            download_music_file(song_name + ' ' + song_artist, room, song_name)
             song_counter += 1
         #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
@@ -311,12 +311,13 @@ def end_round(room):
 
 def start_round(room):
     # Make it possible to get correct answer
-    getGame(room).round_start=True
-    current_round = getGame(room).current_round
-    new_music_file = url_for('static', filename=f'music/{room}/{current_round}.m4a')
+    gamestate = getGame(room)
+    gamestate.round_start=True
+    current_round = gamestate.current_round
+    song_name = gamestate.song_infos[gamestate.current_round-1]['name']
+    new_music_file = url_for('static', filename=f'music/{room}/{song_name}.m4a')
     socketio.emit('start_round', {'music_file': new_music_file}, room=room)
     # TODO
-
 
 @socketio.on('start_game')
 def start_game(room):
@@ -375,15 +376,10 @@ def new_game(room):
         song_artist = song['artists'][0]['name']
         print(song_name)
         print(song_artist)
-        download_music_file(song_name + ' ' + song_artist, room, str(song_counter))
+        download_music_file(song_name + ' ' + song_artist, room, song_name)
         song_counter += 1
     # Now everything ready, start round client side
-    time.sleep(5)
     socketio.emit('start_new', room = room)
-
-
-
-
 
 #2
 def end_game(room):
