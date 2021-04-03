@@ -1,6 +1,13 @@
 Flask
-spotipy
-spotipy.oauth2
 flask_socketio
-datetime
 flask_session
+spotipy
+random
+datetime
+requests
+time
+pafy
+youtubesearchpython
+os
+shutil
+time

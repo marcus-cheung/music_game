@@ -8,7 +8,6 @@ import random
 from datetime import datetime
 import requests
 import time
-import json
 import pafy
 from youtubesearchpython import VideosSearch
 import os
