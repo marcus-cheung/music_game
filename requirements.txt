@@ -10,3 +10,4 @@ youtube-search-python
 gunicorn
 eventlet
 gevent-websocket
+youtube_dl
