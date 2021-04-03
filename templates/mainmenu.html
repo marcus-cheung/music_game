@@ -79,8 +79,8 @@
         crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         document.addEventListener('DOMContentLoaded', () => {
-            var socket = io();
             const url = 'https://epic-game.herokuapp.com/';
+            var socket = io.connect(url);
             document.querySelector('#create_game').onclick = () => {
                 var arr = [];
                 var checkboxes = document.getElementsByName('checkbox');
