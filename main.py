@@ -12,7 +12,6 @@ import pafy
 from youtubesearchpython import VideosSearch
 import os
 import shutil
-import time
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
