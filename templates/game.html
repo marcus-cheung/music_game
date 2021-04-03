@@ -52,9 +52,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-      const url = window.location.href
-      const room = url.substring(27, 31)
+      const url = 'https://epic-game.herokuapp.com/'
+      var socket = io.connect(url);
+      const room = url.substring(url.length + 6, url.length + 10)
       var round = 1
       var bgcolor = 1
 
@@ -147,7 +147,7 @@
 
 
       document.getElementById('back_to_lobby').onclick = () => {
-        window.location.href = 'http://127.0.0.1:5000/'
+        window.location.href = url
       }
 
       document.getElementById('new_game').onclick = () => {

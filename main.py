@@ -31,7 +31,7 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-myurl = "http://127.0.0.1:5000/"
+myurl = "https://epic-game.herokuapp.com/"
 
 
 # auth stuff
@@ -50,7 +50,7 @@ def main():
 
 
 # If user logged into spotify adds playlists as options
-@socketio.on("connected_to_main")
+@socketito.on("connected_to_main")
 def setupMain():
     # If no access to spotify adds spotify log in button
     if not session.get("token_info"):
