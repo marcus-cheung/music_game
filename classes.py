@@ -1,12 +1,12 @@
 from random import randint
 import spotipy
-import re
+import string
 
 class GameState:
     max_users = 8
 
     def __init__(
-        self, room_number, gamemode, song_infos, rounds, host, playlists, users = [], roundlength=90, password=None
+        self, room_number, gamemode, song_infos, rounds, host, playlists, users, roundlength=90, password=None
     ):
         #On call
         self.room_number = room_number
@@ -27,7 +27,7 @@ class GameState:
         self.current_round = 1
         self.round_start = False
         #Mutated when making/joining room
-        self.users = users
+        self.users = []
         self.allowed = []
         self.answers = []
         self.sockets = []
@@ -123,7 +123,8 @@ def answer_variations(answer):
     answers.append(no_paren)
     answers.append(no_sqrBracket)
     answers.append(no_hyphen)
-    print(answers)
+    for x in answers:
+        answers.append(remove_punc(x))
     return answers
 
 def remove_paren(string):
@@ -131,13 +132,18 @@ def remove_paren(string):
         return string[0:string.index('(')] + string[string.index(')')+1:]
     else:
         return string
+
 def remove_sqrBracket(string):
     if '[' and ']' in string:
         return string[0:string.index('[')] + string[string.index(']')+1:]
     else:
         return string
+
 def remove_hyphen(string):
     if '-' in string:
         return string[0:string.index('-')]
     else:
         return string
+        
+def remove_punc(s):
+    return s.translate(str.maketrans('', '', string.punctuation))

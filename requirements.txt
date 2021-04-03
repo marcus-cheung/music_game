@@ -1,7 +1,6 @@
 Flask
-gunicorn
-spotipy.oauth2
 spotipy
+spotipy.oauth2
 flask_socketio
 datetime
 flask_session

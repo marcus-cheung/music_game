@@ -160,7 +160,7 @@ def makeRoom(data):
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(
-            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), room_number=room, password=data.get("password"), playlists = data['playlists']
+            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), users = [], room_number=room, password=data.get("password"), playlists = data['playlists']
         )
         makeDir(room)
         # Add songs to directory
@@ -272,10 +272,11 @@ def onMSG(data):
                 #Add them to the list of correctly answered users
                 gamestate.correct.append(user)
                 #check if round should be ended
+                print(len(gamestate.users))
+                print(len(gamestate.correct))
                 if len(gamestate.users) == len(gamestate.correct):
                     print('round end')
                     # check if game will end
-                    print
                     if gamestate.current_round == len(gamestate.song_infos):
                         print('gameend')
                         end_game(str(room))
