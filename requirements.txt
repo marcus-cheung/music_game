@@ -5,4 +5,4 @@ spotipy
 datetime
 requests
 pafy
-youtubesearchpython
+youtube-search-python
