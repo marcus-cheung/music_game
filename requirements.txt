@@ -6,3 +6,6 @@ datetime
 requests
 pafy
 youtube-search-python
+gunicorn
+eventlet
+gevent-websocket
