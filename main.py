@@ -18,7 +18,7 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.config[
     "SECRET_KEY"
 ] = "z\xe4\xdc\xc4)\xf1\xad\x8dF\x07EVv8k\x14\xda\xd8\xd0\x8a\xc4\xbc\xaew\x98\xf1\x0f\xfa\x01\x90"
-socketio = SocketIO(app)
+socketio = SocketIO(app, logger=True, engineio_logger=True, always_connect=True)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["DEBUG"] = False
 # session stuff
