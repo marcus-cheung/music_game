@@ -52,6 +52,7 @@ def main():
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
+    print('Connected to main')
     # If no access to spotify adds spotify log in button
     if not session.get("token_info"):
         # adds spotify log in button
