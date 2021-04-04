@@ -180,7 +180,9 @@ def makeRoom(data):
         gamestates[room - 1000].allow(session["unique"])
         gamestates[room - 1000].addUser(user)
         # redirect to the game room
+        print('first checkechecek')
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
+        print('checkcheckcehck')
 
 
 # when join room pressed

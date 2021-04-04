@@ -128,6 +128,8 @@
             })
 
             socket.on('room_made', (data) => {
+                console.log('room made')
+                console.log(data)
                 window.location.href = data
             })
 
