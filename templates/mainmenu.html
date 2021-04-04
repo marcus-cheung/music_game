@@ -133,7 +133,6 @@
             socket.on('password_correct', (data) => {
                 window.location.href = data
             })
-
             socket.on('wrong_pass', () => {
                 alert('Wrong password!')
             })

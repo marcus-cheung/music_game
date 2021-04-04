@@ -65,7 +65,6 @@ def setupMain():
         data = request.form
         sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
         playlists_info = sp.current_user_playlists()
-        socketio.emit("add_playlist", "data",room=request.sid)
         for playlist in playlists_info["items"]:
             dct = {}
             playlist_id = "spotify:playlist:" + playlist["id"]
