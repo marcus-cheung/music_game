@@ -46,16 +46,17 @@ API_BASE = "https://accounts.spotify.com"
 @app.route("/")
 def main():
     print('approute connect')
+    if not session.get('unique'):
+        session["unique"] = datetime.now().time()
+    print(session['unique'])
     return render_template("mainmenu.html")
 
 
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
-    print('Connected to main')
-    if not session.get('unique'):
-        session["unique"] = datetime.now().time()
-    print(session['unique'])
+    
+    
     # If no access to spotify adds spotify log in button
     if not session.get("token_info"):
         # adds spotify log in button
