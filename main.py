@@ -172,11 +172,12 @@ def makeRoom(data):
         for song in song_infos:
             song_name = song['name']
             song_artist = song['artists'][0]['name']
-            print(song_name)
+            print('Test:'+song_name)
             print(song_artist)
             #download_music_file(song_name + ' ' + song_artist, room, song_name)
             song_counter += 1
         #Whitelisting user
+        print('We got here!')
         gamestates[room - 1000].allow(session["unique"])
         gamestates[room - 1000].addUser(user)
         # redirect to the game room
