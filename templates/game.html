@@ -53,7 +53,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
-      var socket = io.connect(url);
+      var socket = io();
       const room = url.substring(url.length + 6, url.length + 10)
       var round = 1;
       var bgcolor = 1;

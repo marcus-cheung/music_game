@@ -18,7 +18,7 @@
     <div class='wrapper' id='wrapper'>
         <div class="header">
             <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
-            <a href="http://127.0.0.1:5000/spotify-login/">
+            <a href="https://epic-game.herokuapp.com/spotify-login/">
                 <img class="magnify" style='display:none' id='spotify_button' src="/static/assets/spotify.png" />
             </a>
         </div>
@@ -80,7 +80,7 @@
     <script type="text/javascript" charset="utf-8">
         document.addEventListener('DOMContentLoaded', () => {
             const url = 'https://epic-game.herokuapp.com/';
-            var socket = io.connect(url);
+            var socket = io();
             document.querySelector('#create_game').onclick = () => {
                 var arr = [];
                 var checkboxes = document.getElementsByName('checkbox');
