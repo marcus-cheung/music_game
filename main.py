@@ -49,6 +49,7 @@ def main():
     if not session.get('unique'):
         session["unique"] = datetime.now().time()
     print(session['unique'])
+    print(session.get('token_info'))
     return render_template("mainmenu.html")
 
 
@@ -120,13 +121,13 @@ def authentication():
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
 def makeRoom(data):
+    print('make room event received')
     #making user to later add to gamestate
     user = classes.User(username = data['username'],
         unique=session.get("unique"),
     )
     #choosing songs
     session['token_info'], authorize = get_token(session)
-    print(session.get('token_info'))
     sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
     allsongs = []
     song_infos = []
