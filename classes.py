@@ -81,7 +81,8 @@ class GameState:
     def checkAnswer(self, user_input):
         print('user_input')
         print(sanitize(user_input))
-        if sanitize(user_input) in self.answers[self.current_round-1]:
+        # if sanitize(user_input) in self.answers[self.current_round-1]:
+        if user_input in self.answers[self.current_round - 1]:
             print('Correct')
             return True
         else:
