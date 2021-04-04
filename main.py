@@ -126,6 +126,7 @@ def makeRoom(data):
     )
     #choosing songs
     session['token_info'], authorize = get_token(session)
+    print(session.get('token_info'))
     sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
     allsongs = []
     song_infos = []
