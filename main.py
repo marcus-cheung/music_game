@@ -174,11 +174,11 @@ def makeRoom(data):
             print(song_artist)
             #download_music_file(song_name + ' ' + song_artist, room, song_name)
             song_counter += 1
-            #Whitelisting user
-            gamestates[room - 1000].allow(session["unique"])
-            gamestates[room - 1000].addUser(user)
-            # redirect to the game room
-            socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
+        #Whitelisting user
+        gamestates[room - 1000].allow(session["unique"])
+        gamestates[room - 1000].addUser(user)
+        # redirect to the game room
+        socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 
 
 # when join room pressed
