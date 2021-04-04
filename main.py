@@ -46,6 +46,7 @@ API_BASE = "https://accounts.spotify.com"
 @app.route("/")
 def main():
     session["unique"] = datetime.now().time()
+    print(session['unique'])
     return render_template("mainmenu.html")
 
 
