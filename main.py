@@ -135,41 +135,41 @@ def makeRoom(data):
     if len(allsongs) < int(data['rounds']):
         socketio.emit('invalid_rounds', room=request.sid)
     else:
-        # choose random from allsongs
-        for i in range(int(data['rounds'])):
-            x = random.randint(0,len(allsongs) - 1)
-            #Check if song already in list of songs
-            while allsongs[x]['track'] in song_infos:
-                #remove duplicate song
-                allsongs.pop(x)
-                # Breaks loop if allsongs empty
-                if len(allsongs)==0:
-                    socketio.emit('invalid_rounds', room=request.sid)
-                    break 
-                #generates new index to check
-                x = random.randint(0,len(allsongs) - 1)
-            #Appends valid song to song_infos
-            song_infos.append(allsongs.pop(x)['track'])
-        #Gets free room number
-        room = random.randint(1000, 9999)
-        while room in active_rooms:
-            room = random.randint(1000, 9999)
-        active_rooms.append(room)
-        # create a gamestate in list of gamestates at index = room number
-        gamestates[room - 1000] = classes.GameState(
-            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), users = [], room_number=room, password=data.get("password"), playlists = data['playlists']
-        )
-        makeDir(room)
-        # Add songs to directory
-        song_counter = 1
-        for song in song_infos:
-            song_name = song['name']
-            song_artist = song['artists'][0]['name']
-            print(song_name)
-            print(song_artist)
-            #download_music_file(song_name + ' ' + song_artist, room, song_name)
-            song_counter += 1
-        #Whitelisting user
+        # # choose random from allsongs
+        # for i in range(int(data['rounds'])):
+        #     x = random.randint(0,len(allsongs) - 1)
+        #     #Check if song already in list of songs
+        #     while allsongs[x]['track'] in song_infos:
+        #         #remove duplicate song
+        #         allsongs.pop(x)
+        #         # Breaks loop if allsongs empty
+        #         if len(allsongs)==0:
+        #             socketio.emit('invalid_rounds', room=request.sid)
+        #             break 
+        #         #generates new index to check
+        #         x = random.randint(0,len(allsongs) - 1)
+        #     #Appends valid song to song_infos
+        #     song_infos.append(allsongs.pop(x)['track'])
+        # #Gets free room number
+        # room = random.randint(1000, 9999)
+        # while room in active_rooms:
+        #     room = random.randint(1000, 9999)
+        # active_rooms.append(room)
+        # # create a gamestate in list of gamestates at index = room number
+        # gamestates[room - 1000] = classes.GameState(
+        #     song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), users = [], room_number=room, password=data.get("password"), playlists = data['playlists']
+        # )
+        # makeDir(room)
+        # # Add songs to directory
+        # song_counter = 1
+        # for song in song_infos:
+        #     song_name = song['name']
+        #     song_artist = song['artists'][0]['name']
+        #     print(song_name)
+        #     print(song_artist)
+        #     #download_music_file(song_name + ' ' + song_artist, room, song_name)
+        #     song_counter += 1
+        # #Whitelisting user
         gamestates[room - 1000].allow(session["unique"])
         gamestates[room - 1000].addUser(user)
         # redirect to the game room
