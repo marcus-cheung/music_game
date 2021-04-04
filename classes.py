@@ -43,6 +43,7 @@ class GameState:
                 self.answers.append([year])
             if self.gamemode == 'artist':
                 self.answers.append([sanitize(song_info['artists'][0]['name'])])
+        print('gamestate made')
         
         
     def allow(self, unique):
