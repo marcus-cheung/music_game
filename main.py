@@ -166,7 +166,7 @@ def makeRoom(data):
         gamestates[room - 1000] = classes.GameState(
             song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), users = [], room_number=room, password=data.get("password"), playlists = data['playlists']
         )
-        #makeDir(room)
+        makeDir(room)
         # Add songs to directory
         song_counter = 1
         for song in song_infos:
@@ -174,7 +174,7 @@ def makeRoom(data):
             song_artist = song['artists'][0]['name']
             print('Test:'+song_name)
             print(song_artist)
-            #download_music_file(song_name + ' ' + song_artist, room, song_name)
+            download_music_file(song_name + ' ' + song_artist, room, song_name)
             song_counter += 1
         #Whitelisting user
         print('We got here!')
