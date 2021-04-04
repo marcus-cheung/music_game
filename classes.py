@@ -33,16 +33,16 @@ class GameState:
         self.sockets = []
         self.game_ended = False
         #get the answers
-        for song_info in self.song_infos:
-            if self.gamemode == 'song':
-                print('name: '+song_info['name'])
-                self.answers.append(answer_variations(song_info['name']))
-            if self.gamemode == 'year':
-                release_date = song_info['album']['release_date']
-                year = release_date[0:4]
-                self.answers.append([year])
-            if self.gamemode == 'artist':
-                self.answers.append([sanitize(song_info['artists'][0]['name'])])
+        # for song_info in self.song_infos:
+        #     if self.gamemode == 'song':
+        #         print('name: '+song_info['name'])
+        #         self.answers.append(answer_variations(song_info['name']))
+        #     if self.gamemode == 'year':
+        #         release_date = song_info['album']['release_date']
+        #         year = release_date[0:4]
+        #         self.answers.append([year])
+        #     if self.gamemode == 'artist':
+        #         self.answers.append([sanitize(song_info['artists'][0]['name'])])
         print('gamestate made')
         
         
