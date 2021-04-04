@@ -59,6 +59,7 @@
       var bgcolor = 1;
 
       socket.on('connect', () => {
+        console.log(room)
         socket.emit('connected_to_room', room)
       })
 
