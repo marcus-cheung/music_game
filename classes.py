@@ -35,15 +35,13 @@ class GameState:
         #get the answers
         for song_info in self.song_infos:
             if self.gamemode == 'song':
-                print('name: '+song_info['name'])
-                self.answers.append([song_info['name']])
-                # self.answers.append(answer_variations(song_info['name']))
-        #     if self.gamemode == 'year':
-        #         release_date = song_info['album']['release_date']
-        #         year = release_date[0:4]
-        #         self.answers.append([year])
-        #     if self.gamemode == 'artist':
-        #         self.answers.append([sanitize(song_info['artists'][0]['name'])])
+                self.answers.append(answer_variations(song_info['name']))
+            if self.gamemode == 'year':
+                release_date = song_info['album']['release_date']
+                year = release_date[0:4]
+                self.answers.append([year])
+            if self.gamemode == 'artist':
+                self.answers.append([sanitize(song_info['artists'][0]['name'])])
         print('gamestate made')
         
         
@@ -81,8 +79,7 @@ class GameState:
     def checkAnswer(self, user_input):
         print('user_input')
         print(sanitize(user_input))
-        # if sanitize(user_input) in self.answers[self.current_round-1]:
-        if user_input in self.answers[self.current_round - 1]:
+        if sanitize(user_input) in self.answers[self.current_round-1]:
             print('Correct')
             return True
         else:
@@ -126,8 +123,8 @@ def answer_variations(answer):
     answers.append(no_paren)
     answers.append(no_sqrBracket)
     answers.append(no_hyphen)
-    for x in answers:
-        answers.append(remove_punc(x))
+    # for x in answers:
+    #     answers.append(remove_punc(x))
     return answers
 
 def remove_paren(string):
