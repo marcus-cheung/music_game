@@ -395,7 +395,7 @@ def new_game(room):
         download_music_file(song_name + ' ' + song_artist, room, song_name)
         song_counter += 1
     #Preload on everyone's client
-    socketio.emit('send_song_paths', [myurl+'static/music/'+song['name']+'.m4a' for song in gamestate.song_infos], room=request.sid)
+    socketio.emit('send_song_paths', [myurl+'static/music/'+song['name']+'.m4a' for song in song_infos], room=request.sid)
     # Now everything ready, start round client side
     socketio.emit('start_new', room = room)
 
@@ -412,8 +412,8 @@ def end_game(room):
     # Wipes directory
     directory =  'static/music/' + room
     shutil.rmtree(directory)
-    # Close correct room
-    close_room('correct' + str(room))
+    # Close socketio rooms
+    closeRooms(room)
 
 #Called on end of game or if room is empty
 def closeRooms(room):
