@@ -166,9 +166,10 @@
         socket.emit('new_game_clicked', room) 
       }
 
-      socket.on('start_new', () => {
+      socket.on('start_new', (data) => {
         console.log('starting')
         document.getElementById('end_modal').style.display = 'none'
+        download_music(data)
         socket.emit('start_game', room)
       })
 
