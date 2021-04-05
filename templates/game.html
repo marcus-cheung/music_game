@@ -130,7 +130,9 @@
       document.getElementById('start').onclick = () => {
         socket.emit('start_game', room)
         document.getElementById('start').style.display = "none"
-        for ()
+        for (let i = 0; i < audios.length; i ++) {
+          console.log(audios[i].currentSrc)
+        }
       }
 
       socket.on('host', () => {
