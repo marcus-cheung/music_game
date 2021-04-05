@@ -58,7 +58,7 @@
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
       volume.addEventListener("change", function (e) {
-        audio.volume = e.currentTarget.value / 100;
+        audios[round - 1].volume = e.currentTarget.value / 100;
         volume_saver = e.currentTarget.value / 100;
       })
 
@@ -123,6 +123,7 @@
       socket.on('start_round', (data) => {
         file = data.music_file
         round++
+        audios[round - 1].volume = volume_saver
         audios[round - 1].play()
       })
 
@@ -146,7 +147,7 @@
 
       //#3
       socket.on('end_game', (data) => {
-        audio.pause();
+        audios[round - 1].pause();
         document.getElementById('end_modal').style.display = 'block';
       })
 
@@ -160,14 +161,13 @@
       }
 
       document.getElementById('new_game').onclick = () => {
-        console.log('New game starting')
-        socket.emit('new_game_clicked', room)
         document.getElementById('end_modal').style.display = 'none'
+        console.log('New game starting')
+        socket.emit('new_game_clicked', room) 
       }
 
       socket.on('start_new', () => {
         console.log('starting')
-        document.getElementById('end_modal').style.display = 'none'
         socket.emit('start_game', room)
       })
 
