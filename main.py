@@ -324,8 +324,12 @@ def start_round(room):
     current_round = gamestate.current_round
     song_name = gamestate.song_infos[gamestate.current_round-1]['name']
     new_music_file = url_for('static', filename=f'music/{room}/{song_name}.m4a')
-    socketio.emit('start_round', {'music_file': new_music_file}, room=room)
-    # TODO
+    socketio.emit('start_round', {'music_file': new_music_file, 'round_length':gamestate.roundlength}, room=room)
+    # Starts a timer for the room
+    time.sleep(gamestate.roundlength)
+    # Calls end_round provided that the round has not incremented from everyone answering correctly
+    if gamestate.current_round == current_round:
+        end_round(room)
 
 @socketio.on('start_game')
 def start_game(room):
