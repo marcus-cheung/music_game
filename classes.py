@@ -27,7 +27,7 @@ class GameState:
         self.current_round = 1
         self.round_start = False
         #Mutated when making/joining room
-        self.users = []
+        self.users = users
         self.allowed = []
         self.answers = []
         self.sockets = []
