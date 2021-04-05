@@ -152,6 +152,7 @@
       socket.on('end_game', (data) => {
         audios[round - 1].pause();
         document.getElementById('end_modal').style.display = 'block';
+        document.getElementById('players').innerHTML = ''
       })
 
       socket.on('host_end', () => {
