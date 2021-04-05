@@ -31,7 +31,7 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-myurl = "http://127.0.0.1:5000/"
+myurl = "https://epic-game.herokuapp.com/"
 
 
 # auth stuff
@@ -248,7 +248,7 @@ def gameConnect(room):
         getGame(room).host_reqID = request.sid
         socketio.emit('host', room=request.sid)
     # Send all the song file names
-    socketio.emit('send_song_paths', ['static/music/'+song['name'] for song in gamestate.song_info], room=request.sid)
+    socketio.emit('send_song_paths', ['static/music/' + str(room) + '/' + song['name'] for song in gamestate.song_info], room=request.sid)
 
 #gets userobject bassed of unique
 def getUser(gamestate):
