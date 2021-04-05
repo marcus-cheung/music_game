@@ -29,7 +29,7 @@
             <button type="button" id="back_to_lobby">Back to home</button>
           </div>
         </div>
-        <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="100">
+        <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="50">
       </div>
       <div class='players' id='players'></div>
     </div>
@@ -52,7 +52,7 @@
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 1;
       var bgcolor = 1;
-      volume_saver = 1;
+      volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
       volume.addEventListener("change", function (e)
       {audio.volume = e.currentTarget.value / 100;
