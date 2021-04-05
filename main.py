@@ -241,6 +241,8 @@ def gameConnect(room):
     join_room(room)
     #Print user
     gamestate = getGame(room)
+    print(room)
+    print(gamestate)
     user = getUser(gamestate)
     socketio.emit('user_joined', user.username, room=room)
     #if is host add start button
