@@ -397,7 +397,6 @@ def new_game(room):
     #Preload on everyone's client
     song_paths = [myurl+'static/music/'+ str(room) + '/' + song['name']+'.m4a' for song in song_infos]
     print(song_paths)
-    socketio.emit('send_song_paths', song_paths, room=request.sid)
     # Now everything ready, start round client side
     socketio.emit('start_new', song_paths, room = room)
     socketio.emit('host',room = request.sid)

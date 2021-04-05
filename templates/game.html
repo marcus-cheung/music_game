@@ -177,6 +177,9 @@
         console.log('starting over')
         document.getElementById('end_modal').style.display = 'none'
         download_music(data)
+        for (let i = 0; i < audios.length; i ++) {
+          console.log(audios[i].currentSrc)
+        }
       })
 
       socket.on('user_joined', (data) => {
