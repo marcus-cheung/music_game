@@ -414,7 +414,7 @@ def end_game(room):
     shutil.rmtree(directory)
     # Close correct socketio rooms
     close_room('correct' + str(room))
-
+#lkmasdf
 
 #Called on end of game or if room is empty
 def closeRooms(room):
