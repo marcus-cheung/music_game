@@ -412,8 +412,9 @@ def end_game(room):
     # Wipes directory
     directory =  'static/music/' + room
     shutil.rmtree(directory)
-    # Close socketio rooms
-    closeRooms(room)
+    # Close correct socketio rooms
+    close_room('correct' + str(room))
+
 
 #Called on end of game or if room is empty
 def closeRooms(room):
