@@ -168,6 +168,7 @@
 
       socket.on('start_new', () => {
         console.log('starting')
+        document.getElementById('end_modal').style.display = 'none'
         socket.emit('start_game', room)
       })
 
