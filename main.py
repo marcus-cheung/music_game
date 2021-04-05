@@ -431,6 +431,7 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
         query += ' lyric'
     top_result = VideosSearch(query, limit=1).result()['result'][0]
     url = top_result['link']
+    print(url)
     video = pafy.new(url)
     audiostreams = video.audiostreams
     filetype_audiostreams = []
