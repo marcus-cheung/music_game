@@ -42,6 +42,7 @@
   <script type="text/javascript" charset="utf-8">
     function play_audio(file) {
       audio = new Audio(file);
+      audio.volume = volume_saver
       audio.play();
     }
 
@@ -51,8 +52,12 @@
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 1;
       var bgcolor = 1;
+      volume_saver = 1;
       let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e) {audio.volume = e.currentTarget.value / 100;})
+      volume.addEventListener("change", function (e)
+      {audio.volume = e.currentTarget.value / 100;
+      volume_saver = e.currentTarget.value / 100;
+      })
 
       socket.on('connect', () => {
         console.log(room)
