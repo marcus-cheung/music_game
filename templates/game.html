@@ -153,6 +153,7 @@
       document.getElementById('new_game').onclick = () => {
         console.log('New game starting')
         socket.emit('new_game_clicked', room)
+        document.getElementById('end_modal').style.display = 'none'
       }
 
       socket.on('start_new', () => {
