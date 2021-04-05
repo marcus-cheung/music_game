@@ -124,6 +124,9 @@
         round++
         audios[round - 1].volume = volume_saver
         audios[round - 1].play()
+        for (let i = 0; i < audios.length; i ++) {
+          console.log(audios[i].currentSrc)
+        }
       })
 
       document.getElementById('start').onclick = () => {
