@@ -117,7 +117,7 @@
 
       socket.on('end_round', (data) => {
         //score page
-        audio.pause();
+        audios[round - 1].pause();
       })
 
       socket.on('start_round', (data) => {
