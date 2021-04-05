@@ -31,7 +31,7 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-myurl = "https://epic-game.herokuapp.com/"
+myurl = "http://127.0.0.1:5000/"
 
 
 # auth stuff
