@@ -29,7 +29,7 @@
             <button type="button" id="back_to_lobby">Back to home</button>
           </div>
         </div>
-        <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="10">
+        <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="100">
       </div>
       <div class='players' id='players'></div>
     </div>
@@ -43,10 +43,6 @@
     function play_audio(file) {
       audio = new Audio(file);
       audio.play();
-      let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e) {
-        audio.volume = e.currentTarget.value / 100;
-      })
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -55,6 +51,8 @@
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 1;
       var bgcolor = 1;
+      let volume = document.querySelector("#volume_control");
+      volume.addEventListener("change", function (e) {audio.volume = e.currentTarget.value / 100;})
 
       socket.on('connect', () => {
         console.log(room)

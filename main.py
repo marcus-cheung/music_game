@@ -450,7 +450,7 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
     # Overwrite existing file if it exists
     if os.path.isfile(path):
         os.remove(path)
-    final_file.download(path)
+    final_file.download(path, quiet=True)
 
 
 # Checks valid token, if not valid refreshes and returns new token

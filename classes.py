@@ -57,8 +57,11 @@ class GameState:
 
     def getScoreDATA(self):
         lst = []
-        for user in self.correct:
-            gain = 100-self.correct.index(user)*5
+        for user in self.users:
+            if user in self.correct:
+                gain = 100-self.correct.index(user)*5
+            else:
+                gain = 0
             user.score += gain
             lst.append({'username': user.username, 'score': user.score, 'gain': gain})
         return lst
