@@ -289,7 +289,7 @@ def onMSG(data):
                     print('round end')
                     # check if game will end
                     if gamestate.current_round == len(gamestate.song_infos):
-                        print('gameend')
+                        print('game end')
                         end_game(str(room))
                     else:
                         end_round(str(room))          
