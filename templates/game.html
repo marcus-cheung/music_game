@@ -135,7 +135,6 @@
         for (let i = 0; i < audios.length; i ++) {
           console.log(audios[i].currentSrc)
         }
-        round = 0
       }
 
       socket.on('host', () => {
@@ -176,6 +175,7 @@
       socket.on('start_new', (data) => {
         console.log('starting over')
         document.getElementById('end_modal').style.display = 'none'
+        round = 0
         download_music(data)
         for (let i = 0; i < audios.length; i ++) {
           console.log(audios[i].currentSrc)
