@@ -40,28 +40,35 @@
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
-    function play_audio(file) {
-      audio = new Audio(file);
-      audio.volume = volume_saver
-      audio.play();
+    function download_music(files) {
+      audios = []
+      for (let i = 0; i < files.length; i++) {
+        audios[i] = new Audio();
+        audios[i].src = files[i]
+        audios[i].preload = 'auto'
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
       var socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
-      var round = 1;
+      var round = 0;
       var bgcolor = 1;
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e)
-      {audio.volume = e.currentTarget.value / 100;
-      volume_saver = e.currentTarget.value / 100;
+      volume.addEventListener("change", function (e) {
+        audio.volume = e.currentTarget.value / 100;
+        volume_saver = e.currentTarget.value / 100;
       })
 
       socket.on('connect', () => {
         console.log(room)
         socket.emit('connected_to_room', room)
+      })
+
+      socket.on('send_song_paths', (data) => {
+        download_music(data)
       })
 
       var input = document.getElementById("user_input");
@@ -114,9 +121,9 @@
       })
 
       socket.on('start_round', (data) => {
-        round++
         file = data.music_file
-        play_audio(file)
+        round++
+        audios[round - 1].play()
       })
 
       document.getElementById('start').onclick = () => {
@@ -160,7 +167,6 @@
 
       socket.on('start_new', () => {
         console.log('starting')
-        round = 1
         document.getElementById('end_modal').style.display = 'none'
         socket.emit('start_game', room)
       })

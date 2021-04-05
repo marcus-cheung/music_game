@@ -247,6 +247,8 @@ def gameConnect(room):
     if getGame(room) and getGame(room).host and session['unique']==getGame(room).host:
         getGame(room).host_reqID = request.sid
         socketio.emit('host', room=request.sid)
+    # Send all the song file names
+    socketio.emit('send_song_paths', ['static/music/'+song['name'] for song in gamestate.song_info], room=request.sid)
 
 #gets userobject bassed of unique
 def getUser(gamestate):
@@ -390,6 +392,8 @@ def new_game(room):
         print(song_artist)
         download_music_file(song_name + ' ' + song_artist, room, song_name)
         song_counter += 1
+    #Preload on everyone's client
+    socketio.emit('send_song_paths', ['static/music/'+song['name'] for song in gamestate.song_info], room=request.sid)
     # Now everything ready, start round client side
     socketio.emit('start_new', room = room)
 
