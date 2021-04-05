@@ -170,7 +170,6 @@
         console.log('starting')
         document.getElementById('end_modal').style.display = 'none'
         download_music(data)
-        socket.emit('start_game', room)
       })
 
       socket.on('user_joined', (data) => {

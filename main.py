@@ -399,6 +399,7 @@ def new_game(room):
     socketio.emit('send_song_paths', song_paths, room=request.sid)
     # Now everything ready, start round client side
     socketio.emit('start_new', song_paths, room = room)
+    socketio.emit('host',room = request.id)
 
 #2
 def end_game(room):
