@@ -142,20 +142,7 @@ def makeRoom(data):
         socketio.emit('invalid_rounds', room=request.sid)
     else:
         # choose random from allsongs
-        for i in range(int(data['rounds'])):
-            x = random.randint(0,len(allsongs) - 1)
-            #Check if song already in list of songs
-            while allsongs[x]['track'] in song_infos:
-                #remove duplicate song
-                allsongs.pop(x)
-                # Breaks loop if allsongs empty
-                if len(allsongs)==0:
-                    socketio.emit('invalid_rounds', room=request.sid)
-                    break 
-                #generates new index to check
-                x = random.randint(0,len(allsongs) - 1)
-            #Appends valid song to song_infos
-            song_infos.append(allsongs.pop(x)['track'])
+        song_selector(allsongs, getGame(room).rounds)
         #Gets free room number
         room = random.randint(1000, 9999)
         while room in active_rooms:
@@ -502,10 +489,12 @@ def artists_songs(artist_name, number):
         album_tracks = sp.album_tracks(album_info['id'])['items']
         print(album_tracks)
         song_infos += album_tracks
+    return song_selector(song_infos, rounds)
     
 
-# Selects rounds # of songs from allsongs
+# Selects rounds # of songs from allsongs; returns an array of song_infos
 def song_selector(allsongs, rounds):
+    song_infos = []
     for i in range(rounds):
             x = random.randint(0,len(allsongs) - 1)
             #Check if song already in list of songs
