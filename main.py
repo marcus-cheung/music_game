@@ -13,6 +13,7 @@ import pafy
 from youtubesearchpython import VideosSearch
 import os
 import shutil
+import requests
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -35,11 +36,12 @@ gamestates = [None] * 9000
 myurl = "https://epic-game.herokuapp.com/"
 
 # auth stuff
-SPOTIPY_CLIENT_ID = "f50f20e747fb4bda8d9352696004cda4"
-SPOTIPY_CLIENT_SECRET = "8adcb482dbf04ddbb261b7740309325e"
-SPOTIPY_REDIRECT_URI = myurl + "spotify-login/callback"
-SCOPE = "user-library-read"
-API_BASE = "https://accounts.spotify.com"
+client_id = "f50f20e747fb4bda8d9352696004cda4"
+client_secret = "8adcb482dbf04ddbb261b7740309325e"
+redirect_uri = myurl+'spotify-login/callback/'
+query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':redirect_uri}
+query = urllib.parse.urlencode(query_data)
+auth_redirect = 'https://accounts.spotify.com/authorize?'+query
 
 
 # main page
@@ -48,8 +50,6 @@ def main():
     print('approute connect')
     if not session.get('unique'):
         session["unique"] = datetime.now().time()
-    print(session['unique'])
-    print(session.get('token_info'))
     return render_template("mainmenu.html")
 
 
@@ -58,62 +58,48 @@ def main():
 @socketio.on("connected_to_main")
 def setupMain():
     # If no access to spotify adds spotify log in button
-    if not session.get("token_info"):
+    if not session.get("spotify_data"):
         # adds spotify log in button
         socketio.emit("add_spotify_button",room=request.sid)
     # if has access shows playlists
     else:
-        # refreshes token:
-        session["token_info"], authorized = get_token(session)
-        # show personal playlists
-        session.modified = True
-        data = request.form
-        sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
-        playlists_info = sp.current_user_playlists()
-        for playlist in playlists_info["items"]:
-            dct = {}
-            playlist_id = "spotify:playlist:" + playlist["id"]
-            name = playlist["name"]
-            dct["label"] = f'<label for="{name}">{name}</label><br>'
-            dct[
-                "checkbox"
-            ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
-            socketio.emit("add_playlist", dct, room=request.sid)
-        print(artists_songs('Kanye West', 2))
+        pass
+        # # refreshes token:
+        # token = session['spotify_data']['access_token']
+        # # show personal playlists
+        # session.modified = True
+        # data = request.form
+        # sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
+        # playlists_info = sp.current_user_playlists()
+        # for playlist in playlists_info["items"]:
+        #     dct = {}
+        #     playlist_id = "spotify:playlist:" + playlist["id"]
+        #     name = playlist["name"]
+        #     dct["label"] = f'<label for="{name}">{name}</label><br>'
+        #     dct[
+        #         "checkbox"
+        #     ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
+        #     socketio.emit("add_playlist", dct, room=request.sid)
 
 # spotify login
 @app.route("/spotify-login/")
 def spotify_login():
     # if already logged in redirect to main menu, checks if token info exists
-    if session.get("token_info"):
-        print("Access token available! Trying to get user information...")
-        return redirect(myurl)
-    # if not logged in redirect to spotify api authorisation
-    else:
-        sp_oauth = spotipy.oauth2.SpotifyOAuth(
-            client_id=SPOTIPY_CLIENT_ID,
-            client_secret=SPOTIPY_CLIENT_SECRET,
-            redirect_uri=SPOTIPY_REDIRECT_URI,
-            scope=SCOPE,
-        )
-        return redirect(sp_oauth.get_authorize_url())
+    return redirect(auth_redirect)
 
 
 # After authorization saves token_info to cookies and redirects to main
 @app.route("/spotify-login/callback/")
 def authentication():
-    code = request.args.get("code")
-    sp_oauth = oauth2.SpotifyOAuth(
-        client_id=SPOTIPY_CLIENT_ID,
-        client_secret=SPOTIPY_CLIENT_SECRET,
-        redirect_uri=SPOTIPY_REDIRECT_URI,
-        scope=SCOPE,
-    )
-    token_info = sp_oauth.get_access_token(code)
-    # Saving the access token along with all other token related info
-    session["token_info"] = token_info
+    auth_code = request.args.get("code")
+    encodedData = base64.b64encode(bytes(f"{client_id}:{client_secret}", "ISO-8859-1")).decode("ascii")
+    authorization_header_string = f"Authorization: Basic {encodedData}"
+    user_data = requests.post('https://accounts.spotify.com/api/token', 
+    data = {'grant_type': 'authorization_code', 'code': auth_code, 'redirect_uri': redirect_uri}, 
+    auth = (client_id, client_secret)).json()
+    session['spotify_data'] = user_data
+    print(session['spotify_data'])
     return redirect(myurl)
-
 
 
 
@@ -129,7 +115,6 @@ def makeRoom(data):
     session['token_info'], authorize = get_token(session)
     sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
     allsongs = []
-    song_infos = []
     #make list of allsongs
     for playlist in data['playlists']:
         results = sp.user_playlist_tracks(sp.current_user()['display_name'],playlist)
