@@ -79,7 +79,8 @@
         crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         document.addEventListener('DOMContentLoaded', () => {
-            const url = 'https://epic-game.herokuapp.com/';
+            const url = "https://epic-game.herokuapp.com/";
+            console.log(url)
             var socket = io();
             document.querySelector('#create_game').onclick = () => {
                 var arr = [];
