@@ -89,7 +89,6 @@ body {
 
 .chat .new_msg {
     width: 26.7%;
-    opacity: 90%;
     position: absolute;
     background: red;
     display: none;

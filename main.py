@@ -1,5 +1,4 @@
 import json
-
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 import spotipy.oauth2 as oauth2
@@ -1012,6 +1011,23 @@ def artists_songs(artist_name, number):
     return song_infos
 
 artists_songs('kanye west', 2)
+
+def song_selector(songs):
+    for i in range(int(data['rounds'])):
+            x = random.randint(0,len(allsongs) - 1)
+            #Check if song already in list of songs
+            while allsongs[x]['track'] in song_infos:
+                #remove duplicate song
+                allsongs.pop(x)
+                # Breaks loop if allsongs empty
+                if len(allsongs)==0:
+                    socketio.emit('invalid_rounds', room=request.sid)
+                    break
+                #generates new index to check
+                x = random.randint(0,len(allsongs) - 1)
+            #Appends valid song to song_infos
+            song_infos.append(allsongs.pop(x)['track'])
+            
 
 # run server
 if __name__ == "__main__":
