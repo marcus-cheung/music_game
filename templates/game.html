@@ -40,35 +40,28 @@
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
-    function download_music(files) {
-      audios = []
-      for (let i = 0; i < files.length; i++) {
-        audios[i] = new Audio();
-        audios[i].src = files[i]
-        audios[i].preload = 'auto'
-      }
+    function play_audio(file) {
+      audio = new Audio(file);
+      audio.volume = volume_saver
+      audio.play();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const url = "https://epic-game.herokuapp.com/";
+      const url = 'https://epic-game.herokuapp.com/';
       var socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
-      var round = 0;
+      var round = 1;
       var bgcolor = 1;
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e) {
-        audios[round - 1].volume = e.currentTarget.value / 100;
-        volume_saver = e.currentTarget.value / 100;
+      volume.addEventListener("change", function (e)
+      {audio.volume = e.currentTarget.value / 100;
+      volume_saver = e.currentTarget.value / 100;
       })
 
       socket.on('connect', () => {
         console.log(room)
         socket.emit('connected_to_room', room)
-      })
-
-      socket.on('send_song_paths', (data) => {
-        download_music(data)
       })
 
       var input = document.getElementById("user_input");
@@ -107,7 +100,7 @@
         div.innerHTML += element
 
 
-        if (div.scrollTop + 534 == old_height) { // 433 = height of message_holder
+        if (div.scrollTop + 525 == old_height) { // 525 = height of message_holder
           div.scrollTop = div.scrollHeight;
         }
         else {
@@ -117,24 +110,18 @@
 
       socket.on('end_round', (data) => {
         //score page
-        audios[round - 1].pause();
+        audio.pause();
       })
 
       socket.on('start_round', (data) => {
         round++
-        audios[round - 1].volume = volume_saver
-        audios[round - 1].play()
-        for (let i = 0; i < audios.length; i ++) {
-          console.log(audios[i].currentSrc)
-        }
+        file = data.music_file
+        play_audio(file)
       })
 
       document.getElementById('start').onclick = () => {
         socket.emit('start_game', room)
         document.getElementById('start').style.display = "none"
-        for (let i = 0; i < audios.length; i ++) {
-          console.log(audios[i].currentSrc)
-        }
       }
 
       socket.on('host', () => {
@@ -152,9 +139,8 @@
 
       //#3
       socket.on('end_game', (data) => {
-        audios[round - 1].pause();
+        audio.pause();
         document.getElementById('end_modal').style.display = 'block';
-        document.getElementById('players').innerHTML = ''
       })
 
       socket.on('host_end', () => {
@@ -167,20 +153,18 @@
       }
 
       document.getElementById('new_game').onclick = () => {
-        document.getElementById('end_modal').style.display = 'none'
         console.log('New game starting')
-        socket.emit('new_game_clicked', room) 
+        socket.emit('new_game_clicked', room)
+        document.getElementById('end_modal').style.display = 'none'
       }
 
-      socket.on('start_new', (data) => {
-        console.log('starting over')
+      socket.on('start_new', () => {
+        console.log('starting')
+        round = 1
         document.getElementById('end_modal').style.display = 'none'
-        round = 0
-        download_music(data)
-        for (let i = 0; i < audios.length; i ++) {
-          console.log(audios[i].currentSrc)
-        }
+        socket.emit('start_game', room)
       })
+
 
       socket.on('user_joined', (data) => {
         let div = document.getElementById('message_holder');
@@ -194,11 +178,11 @@
         bgcolor *= -1
 
         div.innerHTML += element
-        if (div.scrollTop + 534 == old_height) { // 534 = height of message_holder
+        if (div.scrollTop + 534 == old_height) { // 433 = height of message_holder
           div.scrollTop = div.scrollHeight;
         }
         else {
-          document.getElementById('new_msg').style.display = 'block'
+          document.getElementById('new_msg').style.display = 'none'
         }
       })
 
