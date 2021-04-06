@@ -1027,7 +1027,7 @@ def song_selector(songs):
                 x = random.randint(0,len(allsongs) - 1)
             #Appends valid song to song_infos
             song_infos.append(allsongs.pop(x)['track'])
-            
+    return song_infos
 
 # run server
 if __name__ == "__main__":
