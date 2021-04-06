@@ -501,10 +501,12 @@ def artists_songs(artist_name, number):
         print(album_info['id'])
         album_tracks = sp.album_tracks(album_info['id'])['items']
         print(album_tracks)
-        song_infos += album_tracksimport json
+        song_infos += album_tracks
+    
 
-def song_selector(songs):
-    for i in range(int(data['rounds'])):
+# Selects rounds # of songs from allsongs
+def song_selector(allsongs, rounds):
+    for i in range(rounds):
             x = random.randint(0,len(allsongs) - 1)
             #Check if song already in list of songs
             while allsongs[x]['track'] in song_infos:
@@ -519,13 +521,6 @@ def song_selector(songs):
             #Appends valid song to song_infos
             song_infos.append(allsongs.pop(x)['track'])
     return song_infos
-
-# run server
-if __name__ == "__main__":
-    socketio.run(app)
-    print(json.dumps(song_infos, indent=4))
-
-artists_songs('kanye west', 2)
 
 # run server
 if __name__ == "__main__":
