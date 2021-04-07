@@ -13,6 +13,7 @@ from string import ascii_letters, digits
 import re
 import os
 import time
+import spotify_handler
 
 
 # making a flask socket object
@@ -59,7 +60,7 @@ def setupMain():
         # adds spotify log in button
         socketio.emit("add_spotify_button",room=request.sid)
     else:
-        pass
+        spotify_handler.getPlaylists(getToken(session))
 
 
 # spotify login
@@ -95,19 +96,19 @@ def authentication():
             session['spotify_data'] = user_data.json()
             session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
         else:
-            print('Error: ' + str(user_data.status_code))
+            print('Callback error: ' + str(user_data.status_code))
         return redirect(myurl)
 
 # checks if token needs to be refreshed and does so, if not just returns access token
 def getToken(session):
     # If expired, fetch refreshed token
-    if session[['spotify_data']['expires_at'] > int(time.time()):
+    if session['spotify_data']['expires_at'] < int(time.time()):
         user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': session['spotify_data']['refresh_token'], 'client_id': client_id})
         if user_data.status_code == 200:
             session['spotify_data'] = user_data.json()
             session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
         else:
-            print('Error: ' + str(user_data.status_code))
+            print('get token error: ' + str(user_data.status_code))
     return session['spotify_data']['access_token']
 
 if __name__ == "__main__":

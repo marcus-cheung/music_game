@@ -17,6 +17,8 @@ import urllib
 import base64
 import re
 from hashlib import sha256
+from string import ascii_letters, digits
+from spotify_handler import *
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -53,29 +55,22 @@ def main():
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
+    def setupMain():
     # If no access to spotify adds spotify log in button
     if not session.get("spotify_data"):
         # adds spotify log in button
         socketio.emit("add_spotify_button",room=request.sid)
-    # if has access shows playlists
     else:
-        pass
-        # # refreshes token:
-        # token = session['spotify_data']['access_token']
-        # # show personal playlists
-        # session.modified = True
-        # data = request.form
-        # sp = spotipy.Spotify(auth=session.get("token_info").get("access_token"))
-        # playlists_info = sp.current_user_playlists()
-        # for playlist in playlists_info["items"]:
-        #     dct = {}
-        #     playlist_id = "spotify:playlist:" + playlist["id"]
-        #     name = playlist["name"]
-        #     dct["label"] = f'<label for="{name}">{name}</label><br>'
-        #     dct[
-        #         "checkbox"
-        #     ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
-        #     socketio.emit("add_playlist", dct, room=request.sid)
+        playlist_info = getPlaylists(getToken(session))
+        for playlist in playlists_info:
+            data = {}
+            playlist_id = "spotify:playlist:" + playlist["id"]
+            name = playlist["name"]
+            data["label"] = f'<label for="{name}">{name}</label><br>'
+            data[
+                "checkbox"
+            ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
+            socketio.emit("add_playlist", data, room=request.sid)
 
 # auth stuff
 client_id = "f50f20e747fb4bda8d9352696004cda4"
@@ -96,7 +91,7 @@ def spotify_login():
     code_challenge = code_challenge.replace('=', '')    
     #Constructing body
     scopes = 'playlist-read-private playlist-read-collaborative user-read-private'
-    query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':redirect_uri, 'code_challenge_method':'S256', 'code_challenge':code_challenge,'scope':scopes'state':state}
+    query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':redirect_uri, 'code_challenge_method':'S256', 'code_challenge':code_challenge,'scope':scopes,'state':state}
     query = urllib.parse.urlencode(query_data)
     auth_redirect = 'https://accounts.spotify.com/authorize?'+query
     return redirect(auth_redirect)
@@ -118,7 +113,7 @@ def authentication():
             session['spotify_data'] = user_data.json()
             session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
         else:
-            print('Error: ' + str(user_data.status_code))
+            print('Callback error: ' + str(user_data.status_code))
         return redirect(myurl)
 
 
@@ -456,13 +451,13 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
 # checks if token needs to be refreshed and does so, if not just returns access token
 def getToken(session):
     # If expired, fetch refreshed token
-    if session[['spotify_data']['expires_at'] > int(time.time()):
+    if session['spotify_data']['expires_at'] < int(time.time()):
         user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': session['spotify_data']['refresh_token'], 'client_id': client_id})
         if user_data.status_code == 200:
             session['spotify_data'] = user_data.json()
             session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
         else:
-            print('Error: ' + str(user_data.status_code))
+            print('get token error: ' + str(user_data.status_code))
     return session['spotify_data']['access_token']
 
 
