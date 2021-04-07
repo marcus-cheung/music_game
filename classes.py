@@ -1,5 +1,4 @@
 from random import randint
-import spotipy
 import string
 
 class GameState:
