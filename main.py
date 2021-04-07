@@ -15,6 +15,8 @@ import os
 import shutil
 import urllib
 import base64
+import re
+from hashlib import sha256
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -36,13 +38,6 @@ gamestates = [None] * 9000
 
 myurl = "https://epic-game.herokuapp.com/"
 
-# auth stuff
-client_id = "f50f20e747fb4bda8d9352696004cda4"
-client_secret = "8adcb482dbf04ddbb261b7740309325e"
-redirect_uri = myurl+'spotify-login/callback/'
-query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':redirect_uri}
-query = urllib.parse.urlencode(query_data)
-auth_redirect = 'https://accounts.spotify.com/authorize?'+query
 
 
 # main page
@@ -82,25 +77,49 @@ def setupMain():
         #     ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
         #     socketio.emit("add_playlist", dct, room=request.sid)
 
-# spotify login
+# auth stuff
+client_id = "f50f20e747fb4bda8d9352696004cda4"
+client_secret = "8adcb482dbf04ddbb261b7740309325e"
+redirect_uri = myurl+'spotify-login/callback/'
+state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
+state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
+
+## spotify login
 @app.route("/spotify-login/")
 def spotify_login():
-    # if already logged in redirect to main menu, checks if token info exists
+    #Code challenge/verifier generation
+    code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
+    code_verifier = re.sub('[^a-zA-Z0-9]+', '', code_verifier)
+    session['code_verifier'] = code_verifier
+    code_challenge = sha256(code_verifier.encode('utf-8')).digest()
+    code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8')
+    code_challenge = code_challenge.replace('=', '')    
+    #Constructing body
+    scopes = 'playlist-read-private playlist-read-collaborative user-read-private'
+    query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':redirect_uri, 'code_challenge_method':'S256', 'code_challenge':code_challenge,'scope':scopes'state':state}
+    query = urllib.parse.urlencode(query_data)
+    auth_redirect = 'https://accounts.spotify.com/authorize?'+query
     return redirect(auth_redirect)
 
 
 # After authorization saves token_info to cookies and redirects to main
 @app.route("/spotify-login/callback/")
 def authentication():
-    auth_code = request.args.get("code")
-    encodedData = base64.b64encode(bytes(f"{client_id}:{client_secret}", "ISO-8859-1")).decode("ascii")
-    authorization_header_string = f"Authorization: Basic {encodedData}"
-    user_data = requests.post('https://accounts.spotify.com/api/token', 
-    data = {'grant_type': 'authorization_code', 'code': auth_code, 'redirect_uri': redirect_uri}, 
-    auth = (client_id, client_secret)).json()
-    session['spotify_data'] = user_data
-    print(session['spotify_data'])
-    return redirect(myurl)
+    callback_state = request.args.get('state')
+    if state != callback_state:
+        # abort
+        print('Callback state does not match')
+        return redirect(myurl)
+    else:
+        auth_code = request.args.get("code")
+        #post request
+        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'client_id': client_id, 'grant_type': 'authorization_code', 'code': auth_code, 'redirect_uri': redirect_uri, 'code_verifier':session['code_verifier']})
+        if user_data.status_code == 200:
+            session['spotify_data'] = user_data.json()
+            session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+        else:
+            print('Error: ' + str(user_data.status_code))
+        return redirect(myurl)
 
 
 
@@ -434,49 +453,21 @@ def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48
     final_file.download(path, quiet=True)
 
 
-# Checks valid token, if not valid refreshes and returns new token
-def get_token(session):
-    token_valid = False
-    token_info = session.get("token_info", {})
-    # Checking if the session already has a token stored
-    if not (session.get("token_info", False)):
-        token_valid = False
-        return token_info, token_valid
+# checks if token needs to be refreshed and does so, if not just returns access token
+def getToken(session):
+    # If expired, fetch refreshed token
+    if session[['spotify_data']['expires_at'] > int(time.time()):
+        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': session['spotify_data']['refresh_token'], 'client_id': client_id})
+        if user_data.status_code == 200:
+            session['spotify_data'] = user_data.json()
+            session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+        else:
+            print('Error: ' + str(user_data.status_code))
+    return session['spotify_data']['access_token']
 
-    # Checking if token has expired
-    now = int(time.time())
-    is_token_expired = session.get("token_info").get("expires_at") - now < 60
-
-    # Refreshing token if it has expired
-    if is_token_expired:
-        # Don't reuse a SpotifyOAuth object because they store token info
-        sp_oauth = spotipy.oauth2.SpotifyOAuth(
-            client_id=SPOTIPY_CLIENT_ID,
-            client_secret=SPOTIPY_CLIENT_SECRET,
-            redirect_uri=SPOTIPY_REDIRECT_URI,
-            scope=SCOPE,
-        )
-        token_info = sp_oauth.refresh_access_token(
-            session.get("token_info").get("refresh_token")
-        )
-
-    token_valid = True
-    return token_info, token_valid
 
 # Gets a number of songs from a specific artist on spotify
-def artists_songs(artist_name, number):
-    sp = spotipy.Spotify('BQAPMMQyspUy_qKzNTVCg3SAMnKRsPtRnTFkRjC29v_OCPbsPnvFYkpj8JguSzEH5a1v0IErw5DW6XrIC7oygltpPKk7Oay9tv6eQMLse5yj_rZm9B8M2vbYZxu9RKPjD_1wxPYCJ2Bwa53IRu8yLh7mc9Lth5Q')
-    artist_id = sp.search(artist_name, type = 'artist')['artists']['items'][0]['id']
-    album_infos = sp.artist_albums(artist_id, limit = 2)['items']
-    song_infos = []
-    for album_info in album_infos:
-        print(album_info['name'])
-        print(album_info['id'])
-        album_tracks = sp.album_tracks(album_info['id'])['items']
-        print(album_tracks)
-        song_infos += album_tracks
-    return song_selector(song_infos, rounds)
-    
+
 
 # Selects rounds # of songs from allsongs; returns an array of song_infos
 def song_selector(allsongs, rounds):
