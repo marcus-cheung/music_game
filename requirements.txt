@@ -2,7 +2,6 @@ Flask
 flask_socketio
 Flask-SocketIO
 flask_session
-spotipy
 datetime
 requests
 pafy

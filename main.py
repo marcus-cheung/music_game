@@ -271,6 +271,10 @@ def end_round(room):
     # Get list of user/scoretotal/gain from that round ordered
     scores = gamestate.getScoreDATA()
     socketio.emit('update_scores', scores, room=room)
+
+    # Emit correct answer
+    socket.emit('correct_answer', gamestate.getAnswer())
+    
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
     # Ends the round on server-side, also returns answer
@@ -322,7 +326,7 @@ def new_game(room):
     socketio.emit('start_new', song_paths, room = room)
     socketio.emit('host',room = request.sid)
 
-#2
+
 def end_game(room):
     gamestate = getGame(room)
     scores = gamestate.getScoreDATA()
