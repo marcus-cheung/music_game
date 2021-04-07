@@ -1,20 +1,24 @@
 import json
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_socketio import SocketIO, join_room, leave_room, close_room
+import spotipy.oauth2 as oauth2
 from flask_session import Session
+import spotipy
 import classes
+import random
 from datetime import datetime
 import requests
+import time
+import pafy
+from youtubesearchpython import VideosSearch
+import os
+import shutil
 import urllib
 import base64
-from hashlib import sha256
-from random import choice, randint
-from string import ascii_letters, digits
 import re
-import os
-import time
+from hashlib import sha256
+from string import ascii_letters, digits
 from spotify_handler import *
-
 
 # making a flask socket object
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -40,7 +44,7 @@ myurl = "http://127.0.0.1:5000/"
 client_id = "f50f20e747fb4bda8d9352696004cda4"
 client_secret = "8adcb482dbf04ddbb261b7740309325e"
 redirect_uri = myurl+'spotify-login/callback/'
-state = ''.join(choice(ascii_letters + digits + '_.-~') for i in range(128))
+state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
 state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
 
 # main page
@@ -63,7 +67,7 @@ def setupMain():
         playlist_infos = getPlaylists(getToken(session))
         for playlist in playlist_infos:
             data = {}
-            playlist_id = "spotify:playlist:" + playlist["id"]
+            playlist_id = playlist["id"]
             name = playlist["name"]
             data["label"] = f'<label for="{name}">{name}</label><br>'
             data[
@@ -108,6 +112,48 @@ def authentication():
             print('Callback error: ' + str(user_data.status_code))
         return redirect(myurl)
 
+# when make_room_button is pressed on main page create a room and add this user to the room
+@socketio.on("make_room")
+def makeRoom(data):
+    #making user to later add to gamestate
+    user = classes.User(username = data['username'],
+        unique=session.get("unique"),
+    )
+    allsongs = getPlaylistSongs(data['playlists'], getToken(session))
+    # choose random from allsongs
+    song_infos = song_selector(allsongs, int(data['rounds']))
+    if song_infos == []:
+        socketio.emit('invalid_rounds', room=request.sid)
+    else:
+        #Gets free room number
+        room = random.randint(1000, 9999)
+        while room in active_rooms:
+            room = random.randint(1000, 9999)
+        active_rooms.append(room)
+        # create a gamestate in list of gamestates at index = room number
+        gamestates[room - 1000] = classes.GameState(
+            song_infos = song_infos, host = session['unique'], gamemode = data['gamemode'], rounds = int(data['rounds']), users = [], room_number=room, password=data.get("password"), playlists = data['playlists']
+        )
+        makeDir(room)
+        # Add songs to directory
+        song_counter = 1
+        for song in song_infos:
+            song_name = song['name']
+            song_artist = song['artists'][0]['name']
+            print('Test:'+song_name)
+            print(song_artist)
+            download_music_file(song_name + ' ' + song_artist, room, song_name)
+            song_counter += 1
+        #Whitelisting user
+        gamestates[room - 1000].allow(session["unique"])
+        gamestates[room - 1000].addUser(user)
+        # redirect to the game room
+        socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
+
+
+
+
+
 # checks if token needs to be refreshed and does so, if not just returns access token
 def getToken(session):
     # If expired, fetch refreshed token
@@ -119,6 +165,67 @@ def getToken(session):
         else:
             print('get token error: ' + str(user_data.status_code))
     return session['spotify_data']['access_token']
+
+
+def song_selector(allsongs, rounds):
+    song_infos = []
+    if len(allsongs) == 0:
+        return []
+    for i in range(rounds):
+        x = random.randint(0,len(allsongs) - 1)
+        #Check if song already in list of songs
+        while allsongs[x]['track'] in song_infos:
+            #remove duplicate song
+            allsongs.pop(x)
+            # Breaks loop if allsongs empty
+            if len(allsongs) == 0:
+                return []
+            #generates new index to check
+            x = random.randint(0,len(allsongs) - 1)
+        #Appends valid song to song_infos
+        song_infos.append(allsongs.pop(x)['track'])
+    return song_infos
+
+
+
+
+def getGame(room):
+    return gamestates[int(room) - 1000]
+
+def makeDir(room):
+    directory =  'static/music' + '/' + str(room)
+    #checks if directory exists
+    if os.path.isdir(directory):
+        shutil.rmtree(directory)
+    os.mkdir(directory)
+
+def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
+    destination = 'static/music/' + str(roomnumber)
+    path = destination + '/' + filename + '.' + filetype
+    if lyric:
+        query += ' lyric'
+    top_result = VideosSearch(query, limit=1).result()['result'][0]
+    url = top_result['link']
+    print(url)
+    video = pafy.new(url)
+    audiostreams = video.audiostreams
+    filetype_audiostreams = []
+    final_file = None
+    for audiostream in audiostreams:
+        # print(audiostream)
+        # print(audiostream.bitrate)
+        if audiostream.extension == filetype:
+            filetype_audiostreams.append(audiostream)
+    for audiostream in filetype_audiostreams:
+        # print(audiostream)
+        if audiostream.bitrate==bitrate:
+            final_file = audiostream
+        else:
+            final_file = filetype_audiostreams[len(filetype_audiostreams) - 1]
+    # Overwrite existing file if it exists
+    if os.path.isfile(path):
+        os.remove(path)
+    final_file.download(path, quiet=True)
 
 if __name__ == "__main__":
     socketio.run(app)
