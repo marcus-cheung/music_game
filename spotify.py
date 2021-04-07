@@ -13,7 +13,7 @@ from string import ascii_letters, digits
 import re
 import os
 import time
-import spotify_handler
+from spotify_handler import *
 
 
 # making a flask socket object
@@ -60,7 +60,16 @@ def setupMain():
         # adds spotify log in button
         socketio.emit("add_spotify_button",room=request.sid)
     else:
-        spotify_handler.getPlaylists(getToken(session))
+        playlist_infos = getPlaylists(getToken(session))
+        for playlist in playlist_infos:
+            data = {}
+            playlist_id = "spotify:playlist:" + playlist["id"]
+            name = playlist["name"]
+            data["label"] = f'<label for="{name}">{name}</label><br>'
+            data[
+                "checkbox"
+            ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
+            socketio.emit("add_playlist", data, room=request.sid)
 
 
 # spotify login

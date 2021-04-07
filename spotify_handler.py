@@ -14,6 +14,7 @@ def getPlaylists(access_token):
         while playlist_json['next'] != None:
             # request
             playlist_data = requests.get(base_url + 'playlists', {'limit':20, 'offset': 20 * index}, headers = header)
+            print(playlist_data)
             # change playlist_json
             playlist_json = playlist_data.json()
             # add playlist 
