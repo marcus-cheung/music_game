@@ -36,7 +36,6 @@ def getPlaylistSongs(playlist_ids, access_token):
         playlist_data = None
         for market in markets:
             playlist_data = requests.get(base_url + f'playlists/{playlist_id}/tracks', {'limit': 100, 'market':market}, headers=header)
-            print(playlist_data)
             if validStatus(playlist_data):
                 break
         playlist_json = playlist_data.json()
