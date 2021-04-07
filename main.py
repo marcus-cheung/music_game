@@ -300,10 +300,10 @@ def new_game(room):
     old_gamemode = old_gamestate.gamemode
     old_playlists = old_gamestate.playlists
     old_rounds = old_gamestate.rounds
-    
-    allsongs = getPlaylistSongs(data['playlists'], getToken(session))
+
+    allsongs = getPlaylistSongs(old_playlists, getToken(session))
     # choose random from allsongs
-    song_infos = song_selector(allsongs, int(data['rounds']))
+    song_infos = song_selector(allsongs, old_rounds)
     #Gets free room number
     room = random.randint(1000, 9999)
     while room in active_rooms:
