@@ -224,24 +224,22 @@ def onMSG(data):
         socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
     #If haven't answered
     else:
-        # If round started
-        if gamestate.round_start:
-            # if answer correct
-            if gamestate.checkAnswer(data['msg']):   
-                join_room('correct' + str(room))
-                socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': True}, room=room)
-                user.already_answered = True
-                #Add them to the list of correctly answered users
-                gamestate.correct.append(user)
-                #check if round should be ended
-                if len(gamestate.users) == len(gamestate.correct):
-                    print('round end')
-                    # check if game will end
-                    if gamestate.current_round == len(gamestate.song_infos):
-                        print('game end')
-                        end_game(str(room))
-                    else:
-                        end_round(str(room))          
+        #if round started and correct answer
+        if gamestate.round_start and gamestate.checkAnswer(data['msg']):   
+            join_room('correct' + str(room))
+            socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': True}, room=room)
+            user.already_answered = True
+            #Add them to the list of correctly answered users
+            gamestate.correct.append(user)
+            #check if round should be ended
+            if len(gamestate.users) == len(gamestate.correct):
+                print('round end')
+                # check if game will end
+                if gamestate.current_round == len(gamestate.song_infos):
+                    print('game end')
+                    end_game(str(room))
+                else:
+                    end_round(str(room))          
         # If round hasn't started or wrong answer
         else:
             socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])

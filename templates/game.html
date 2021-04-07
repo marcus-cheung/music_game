@@ -81,6 +81,7 @@
       }
 
       socket.on('chat', (data) => {
+        console.log('msg received')
         let div = document.getElementById('message_holder');
         let old_height = div.scrollHeight
         let username = data.username
