@@ -18,7 +18,7 @@ def getPlaylists(access_token):
             playlist_json = playlist_data.json()
             # add playlist 
             playlist_infos += playlist_json['items']
-            
+    return playlist_infos
 
     
     
