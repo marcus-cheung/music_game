@@ -304,26 +304,23 @@ def new_game(room):
     allsongs = getPlaylistSongs(data['playlists'], getToken(session))
     # choose random from allsongs
     song_infos = song_selector(allsongs, int(data['rounds']))
-    if song_infos == []:
-        socketio.emit('invalid_rounds', room=request.sid)
-    else:
-        #Gets free room number
+    #Gets free room number
+    room = random.randint(1000, 9999)
+    while room in active_rooms:
         room = random.randint(1000, 9999)
-        while room in active_rooms:
-            room = random.randint(1000, 9999)
-        active_rooms.append(room)
-        # create a gamestate in list of gamestates at index = room number
-        gamestates[int(room) - 1000] = classes.GameState(
-            song_infos = song_infos, host = old_host, gamemode = old_gamemode, users = old_users, room_number=room, password=old_pass, rounds = old_rounds, playlists = old_playlists
-        )
-        makeDir(room)
-        # Add songs to directory
-        download_songs(room,song_infos)
-        #Preload on everyone's client
-        song_paths = [myurl+'static/music/'+ str(room) + '/' + song['name']+'.m4a' for song in song_infos]
-        # Now everything ready, start round client side
-        socketio.emit('start_new', song_paths, room = room)
-        socketio.emit('host',room = request.sid)
+    active_rooms.append(room)
+    # create a gamestate in list of gamestates at index = room number
+    gamestates[int(room) - 1000] = classes.GameState(
+        song_infos = song_infos, host = old_host, gamemode = old_gamemode, users = old_users, room_number=room, password=old_pass, rounds = old_rounds, playlists = old_playlists
+    )
+    makeDir(room)
+    # Add songs to directory
+    download_songs(room,song_infos)
+    #Preload on everyone's client
+    song_paths = [myurl+'static/music/'+ str(room) + '/' + song['name']+'.m4a' for song in song_infos]
+    # Now everything ready, start round client side
+    socketio.emit('start_new', song_paths, room = room)
+    socketio.emit('host',room = request.sid)
 
 #2
 def end_game(room):
