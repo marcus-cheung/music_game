@@ -55,7 +55,6 @@ def main():
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_main")
 def setupMain():
-    def setupMain():
     # If no access to spotify adds spotify log in button
     if not session.get("spotify_data"):
         # adds spotify log in button
@@ -72,7 +71,7 @@ def setupMain():
             ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
             socketio.emit("add_playlist", data, room=request.sid)
 
-# auth stuff
+# auth stuff chr
 client_id = "f50f20e747fb4bda8d9352696004cda4"
 client_secret = "8adcb482dbf04ddbb261b7740309325e"
 redirect_uri = myurl+'spotify-login/callback/'
