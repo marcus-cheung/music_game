@@ -75,6 +75,7 @@ class GameState:
 
     #must be called before endRound, returns dictionary of song info parsed
     def getAnswer(self):
+        song_info = self.song_infos[self.currentround-1]
         return {'album_cover': song_info['album']['images'][0]['url'], 'song':song_info['name'], 'artist':song_info['artists'][0]['name'], 'year': song_info['album']['release_date'][0:4]}
 
     def checkAnswer(self, user_input):
