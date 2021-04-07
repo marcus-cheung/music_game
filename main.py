@@ -126,6 +126,7 @@ def makeRoom(data):
     if song_infos == []:
         socketio.emit('invalid_rounds', room=request.sid)
     else:
+        socketio.emit('loading', room=request.sid)
         #Gets free room number
         room = random.randint(1000, 9999)
         while room in active_rooms:

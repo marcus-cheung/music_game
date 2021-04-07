@@ -90,8 +90,6 @@
                         arr.push(checkbox.value);
                     }
                 }
-                document.getElementById('wrapper').style.display = 'none'
-                document.getElementById('loading').style.display = 'block'
                 console.log(
                     'making game'
                 )
@@ -103,6 +101,10 @@
                     'playlists': arr
                 })
             }
+            socket.on('loading', () => {
+                document.getElementById('wrapper').style.display = 'none'
+                document.getElementById('loading').style.display = 'block'
+            })
 
 
             document.querySelector('#join_game').onclick = () => {
