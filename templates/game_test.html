@@ -46,6 +46,7 @@
       audio.play();
     }
 
+
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'http://127.0.0.1:5000/';
       var socket = io();
@@ -54,10 +55,11 @@
       var bgcolor = 1;
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e)
-      {audio.volume = e.currentTarget.value / 100;
-      volume_saver = e.currentTarget.value / 100;
+      volume.addEventListener("change", function (e) {
+        audio.volume = e.currentTarget.value / 100;
+        volume_saver = e.currentTarget.value / 100;
       })
+
 
       socket.on('connect', () => {
         console.log(room)
@@ -83,6 +85,7 @@
       socket.on('chat', (data) => {
         let div = document.getElementById('message_holder');
         let old_height = div.scrollHeight
+
         let username = data.username
         let msg = data.msg
         let correct = data.correct
@@ -123,6 +126,11 @@
         socket.emit('start_game', room)
         document.getElementById('start').style.display = "none"
       }
+      document.getElementById('new_msg').onclick = () => {
+        //send back to bottom
+      }
+
+
 
       socket.on('host', () => {
         document.getElementById('start').style.display = "block"
