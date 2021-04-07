@@ -192,7 +192,7 @@ def runGame(room):
     ):
         return redirect(myurl)
     else:
-        return render_template("game.html", myurl=myurl)
+        return render_template("game_test.html", myurl=myurl)
 
 
 #What happens on game connect: Prints user joined, if host add start button
