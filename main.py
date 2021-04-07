@@ -243,9 +243,6 @@ def onMSG(data):
                         end_game(str(room))
                     else:
                         end_round(str(room))          
-            #if wrong, just send the message
-            else:
-                socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])
         # If round hasn't started
         else:
             socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])
@@ -273,7 +270,7 @@ def end_round(room):
     socketio.emit('update_scores', scores, room=room)
 
     # Emit correct answer
-    socket.emit('correct_answer', gamestate.getAnswer())
+    socketio.emit('correct_answer', gamestate.getAnswer())
     
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
