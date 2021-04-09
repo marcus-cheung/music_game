@@ -154,7 +154,7 @@
 
       //#3
       socket.on('end_game', (data) => {
-        audio.pause();
+        audios[round-1].pause();
         document.getElementById('end_modal').style.display = 'block';
       })
 
