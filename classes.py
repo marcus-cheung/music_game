@@ -35,6 +35,7 @@ class GameState:
         for song_info in self.song_infos:
             if self.gamemode == 'song':
                 self.answers.append(answer_variations(song_info['name']))
+                print(self.answers)
             if self.gamemode == 'year':
                 release_date = song_info['album']['release_date']
                 year = release_date[0:4]

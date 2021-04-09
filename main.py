@@ -279,7 +279,7 @@ def end_round(room):
     # Closes the room of correct answerers
     close_room('correct' + str(room))
     # Wait five seconds and then start round, if game not ended
-    if len(gamestate.users) == len(gamestate.correct):
+    if not gamestate.current_round == len(gamestate.song_infos):
         time.sleep(5)
         start_round(room)
     
