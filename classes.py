@@ -35,7 +35,6 @@ class GameState:
         for song_info in self.song_infos:
             if self.gamemode == 'song':
                 self.answers.append(answer_variations(song_info['name']))
-                print(self.answers)
             if self.gamemode == 'year':
                 release_date = song_info['album']['release_date']
                 year = release_date[0:4]
@@ -82,6 +81,7 @@ class GameState:
     def checkAnswer(self, user_input):
         print('user_input')
         print(sanitize(user_input))
+        print(self.answers[self.current_round-1])
         if sanitize(user_input) in self.answers[self.current_round-1]:
             print('Correct')
             return True
