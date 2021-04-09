@@ -84,6 +84,12 @@
         document.getElementById('user_input').value = ''
       }
 
+      socket.on('send_song_paths'm (data) =>{
+        download_music(data)
+      }
+      
+      )
+
       socket.on('chat', (data) => {
         console.log('msg received')
         let div = document.getElementById('message_holder');
