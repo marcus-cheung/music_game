@@ -131,6 +131,7 @@
 
       socket.on('start_round', (data) => {
         round++
+        audios[round - 1].volume = volume_saver
         audios[round - 1].play()
       })
 

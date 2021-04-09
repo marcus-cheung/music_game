@@ -75,7 +75,6 @@ def sanitize(answer):
     table = s.maketrans(special_char,translation)
     #Special chars fixed, spaces removed, lowercase
     s = s.translate(table).replace(" ", "")
-    s = s.translate(str.maketrans('', '', string.punctuation))
     return s
 
 def answer_variations(answer):
@@ -91,6 +90,10 @@ def answer_variations(answer):
     answers.append(no_paren)
     answers.append(no_sqrBracket)
     answers.append(no_hyphen)
+    no_punc = []
+    for answer in answers:
+        no_punc.append(remove_punc(answer))
+    answers += no_punc
     return answers
 
 def remove_paren(string):
@@ -108,3 +111,6 @@ def remove_hyphen(string):
         return string[0:string.index('-')]
     else:
         return string
+
+def remove_punc(s):
+    return s.translate(str.maketrans('', '', string.punctuation))

@@ -208,7 +208,7 @@ def gameConnect(room):
         getGame(room).host_reqID = request.sid
         socketio.emit('host', room=request.sid)
     # Send all the song file names
-    socketio.emit('send_song_paths', [myurl + '/static/music/' + str(room) + '/' + sanitize(song['name']) + '.m4a' for song in gamestate.song_infos], room=request.sid)
+    socketio.emit('send_song_paths', [myurl + '/static/music/' + str(room) + '/' + super_sanitize(song['name']) + '.m4a' for song in gamestate.song_infos], room=request.sid)
 
 # Sends chat messages to everyone in room
 @socketio.on('message_send')
@@ -319,7 +319,7 @@ def new_game(room):
     # Add songs to directory
     download_songs(room,song_infos)
     #Preload on everyone's client
-    song_paths = [myurl+'static/music/'+ str(room) + '/' + sanitize(song['name'])+'.m4a' for song in song_infos]
+    song_paths = [myurl+'static/music/'+ str(room) + '/' + super_sanitize(song['name'])+'.m4a' for song in song_infos]
     # Now everything ready, start round client side
     socketio.emit('start_new', song_paths, room = room)
     socketio.emit('host', room = request.sid)
