@@ -156,6 +156,7 @@
       //#3
       socket.on('end_game', (data) => {
         audios[round-1].pause();
+        round = 0
         document.getElementById('end_modal').style.display = 'block';
       })
 
@@ -176,7 +177,6 @@
 
       socket.on('start_new', (data) => {
         console.log('starting')
-        round = 0
         download_music(data)
         document.getElementById('end_modal').style.display = 'none'
         socket.emit('start_game', room)
