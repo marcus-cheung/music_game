@@ -3,6 +3,7 @@ from youtubesearchpython import VideosSearch
 import os
 import shutil
 import pafy
+import string
 
 def song_selector(allsongs, rounds):
     song_infos = []
@@ -25,7 +26,7 @@ def song_selector(allsongs, rounds):
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
     destination = 'static/music/' + str(roomnumber)
-    path = destination + '/' + filename + '.' + filetype
+    path = destination + '/' + sanitize(filename) + '.' + filetype
     if lyric:
         query += ' lyric'
     top_result = VideosSearch(query, limit=1).result()['result'][0]
@@ -65,3 +66,45 @@ def makeDir(room):
     if os.path.isdir(directory):
         shutil.rmtree(directory)
     os.mkdir(directory)
+
+# Sanitizes a string
+def sanitize(answer):
+    s = answer.lower()
+    special_char = 'ñńçčćàáâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
+    translation = 'nncccaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
+    table = s.maketrans(special_char,translation)
+    #Special chars fixed, spaces removed, lowercase
+    s = s.translate(table).replace(" ", "")
+    s = s.translate(str.maketrans('', '', string.punctuation))
+    return s
+
+def answer_variations(answer):
+    answers = [answer]
+    sanitized = sanitize(answer)
+    answers.append(sanitized)
+    # Remove stuff
+    no_paren = remove_paren(sanitized)
+    no_sqrBracket = remove_sqrBracket(sanitized)
+    no_hyphen = remove_hyphen(sanitized)
+    no_paren_hyphen = remove_paren(no_hyphen)
+    answers.append(no_paren_hyphen)
+    answers.append(no_paren)
+    answers.append(no_sqrBracket)
+    answers.append(no_hyphen)
+    return answers
+
+def remove_paren(string):
+    while '(' in string and ')' in string:
+        string = string[0:string.index('(')] + string[string.index(')')+1:]
+    return string
+
+def remove_sqrBracket(string):
+    while '[' in string and ']' in string:
+        string =  string[0:string.index('[')] + string[string.index(']')+1:]
+    return string
+
+def remove_hyphen(string):
+    if '-' in string:
+        return string[0:string.index('-')]
+    else:
+        return string

@@ -1,5 +1,5 @@
 from random import randint
-import string
+from methods import *
 
 class GameState:
     max_users = 8
@@ -103,51 +103,11 @@ class User:
         self.score = 0
 
 
-# Sanitizes a string
-def sanitize(answer):
-    string = answer.lower()
-    special_char = 'ñńçčćàáâäæãåāèéêëēėęôöòóœøōõîïíīįìûüùúūžźżÿłßśš'
-    translation = 'nncccaaaaaaaaeeeeeeeooooooooiiiiiiuuuuuzzzylsss'
-    table = string.maketrans(special_char,translation)
-    #Special chars fixed, spaces removed, lowercase
-    string = string.translate(table).replace(" ", "")
-    return string
 
-
-def answer_variations(answer):
-    answers = [answer]
-    sanitized = sanitize(answer)
-    answers.append(sanitized)
-    # Remove stuff
-    no_paren = remove_paren(sanitized)
-    no_sqrBracket = remove_sqrBracket(sanitized)
-    no_hyphen = remove_hyphen(sanitized)
-    no_paren_hyphen = remove_paren(no_hyphen)
-    answers.append(no_paren_hyphen)
-    answers.append(no_paren)
-    answers.append(no_sqrBracket)
-    answers.append(no_hyphen)
-    # for x in answers:
-    #     answers.append(remove_punc(x))
-    return answers
-
-def remove_paren(string):
-    if '(' and ')' in string:
-        return string[0:string.index('(')] + string[string.index(')')+1:]
-    else:
-        return string
-
-def remove_sqrBracket(string):
-    if '[' and ']' in string:
-        return string[0:string.index('[')] + string[string.index(']')+1:]
-    else:
-        return string
-
-def remove_hyphen(string):
-    if '-' in string:
-        return string[0:string.index('-')]
-    else:
-        return string
         
 def remove_punc(s):
-    return s.translate(str.maketrans('', '', string.punctuation))
+    new_string = ''
+    for character in s:
+        if character.isalnum():
+            new_string += character
+    return new_string
