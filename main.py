@@ -227,7 +227,7 @@ def onMSG(data):
         #if round started and correct answer
         if gamestate.round_start and gamestate.checkAnswer(data['msg']):   
             join_room('correct' + str(room))
-            socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': True}, room=str(room))
+            socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
             #socketio.emit('answered',)
             user.already_answered = True
             #Add them to the list of correctly answered users
@@ -279,6 +279,7 @@ def end_round(room):
     # Closes the room of correct answerers
     close_room('correct' + str(room))
     # Wait five seconds and then start round
+    time.sleep(5)
     start_round(room)
     
 

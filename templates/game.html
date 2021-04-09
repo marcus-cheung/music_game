@@ -40,11 +40,15 @@
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
-    function play_audio(file) {
-      audio = new Audio(file);
-      audio.volume = volume_saver
-      audio.play();
+    function download_music(files) {
+      audios = []
+      for (let i = 0; i < files.length; i++) {
+        audios[i] = new Audio();
+        audios[i].src = files[i]
+        audios[i].preload = 'auto'
+      }
     }
+
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
@@ -54,9 +58,9 @@
       var bgcolor = 1;
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
-      volume.addEventListener("change", function (e)
-      {audio.volume = e.currentTarget.value / 100;
-      volume_saver = e.currentTarget.value / 100;
+      volume.addEventListener("change", function (e) {
+        audios[round - 1].volume = e.currentTarget.value / 100;
+        volume_saver = e.currentTarget.value / 100;
       })
 
       socket.on('connect', () => {
@@ -90,8 +94,12 @@
         console.log(correct)
         console.log(msg)
         let element = ''
+        if (correct=='first') {
+          element = `<div class='correct_${bgcolor}'>${msg}</div>`
+          bgcolor *= -1
+        }
         //If correct answer
-        if (correct) {
+        else if (correct) {
           element = `<div class='correct_${bgcolor}'><b>${username}:</b> ${msg}</div>`
           bgcolor *= -1
           //audio.pause()
@@ -103,7 +111,7 @@
         div.innerHTML += element
 
 
-        if (div.scrollTop + 525 == old_height) { // 525 = height of message_holder
+        if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) { // 525 = height of message_holder
           div.scrollTop = div.scrollHeight;
         }
         else {
@@ -113,13 +121,12 @@
 
       socket.on('end_round', (data) => {
         //score page
-        audio.pause();
+        audios[round - 1].pause();
       })
 
       socket.on('start_round', (data) => {
         round++
-        file = data.music_file
-        play_audio(file)
+        audios[round - 1].play()
       })
 
       document.getElementById('start').onclick = () => {
