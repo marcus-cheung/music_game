@@ -278,9 +278,10 @@ def end_round(room):
     socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
     # Closes the room of correct answerers
     close_room('correct' + str(room))
-    # Wait five seconds and then start round
-    time.sleep(5)
-    start_round(room)
+    # Wait five seconds and then start round, if game not ended
+    if len(gamestate.users) == len(gamestate.correct):
+        time.sleep(5)
+        start_round(room)
     
 
 @socketio.on('start_game')
