@@ -26,7 +26,7 @@ def song_selector(allsongs, rounds):
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
     destination = 'static/music/' + str(roomnumber)
-    path = destination + '/' + sanitize(filename) + '.' + filetype
+    path = destination + '/' + super_sanitize(filename) + '.' + filetype
     if lyric:
         query += ' lyric'
     top_result = VideosSearch(query, limit=1).result()['result'][0]
