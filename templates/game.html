@@ -84,10 +84,9 @@
         document.getElementById('user_input').value = ''
       }
 
-      socket.on('send_song_paths'm (data) =>{
+      socket.on('send_song_paths', (data) =>{
         download_music(data)
       }
-      
       )
 
       socket.on('chat', (data) => {
