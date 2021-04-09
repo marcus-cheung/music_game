@@ -130,8 +130,8 @@
       })
 
       socket.on('start_round', (data) => {
-        round++
         audios[round - 1].play()
+        round++
       })
 
       document.getElementById('start').onclick = () => {
