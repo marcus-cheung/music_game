@@ -273,6 +273,8 @@ def end_round(room):
     
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
+    #save the current round before it changes in endRound()
+    checker = not gamestate.current_round == len(gamestate.song_infos)
     # Ends the round on server-side, also returns answer
     gamestate.endRound()
     # Emits event to clients to end round
@@ -280,7 +282,7 @@ def end_round(room):
     # Closes the room of correct answerers
     close_room('correct' + str(room))
     # Wait five seconds and then start round, if game not ended
-    if not gamestate.current_round == len(gamestate.song_infos):
+    if checker:
         time.sleep(5)
         start_round(room)
     
