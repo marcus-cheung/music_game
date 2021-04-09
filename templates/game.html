@@ -54,7 +54,7 @@
       const url = 'https://epic-game.herokuapp.com/';
       var socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
-      var round = 1;
+      var round = 0;
       var bgcolor = 1;
       volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
@@ -130,8 +130,8 @@
       })
 
       socket.on('start_round', (data) => {
-        audios[round - 1].play()
         round++
+        audios[round - 1].play()
       })
 
       document.getElementById('start').onclick = () => {
