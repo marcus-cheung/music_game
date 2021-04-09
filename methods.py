@@ -114,3 +114,6 @@ def remove_hyphen(string):
 
 def remove_punc(s):
     return s.translate(str.maketrans('', '', string.punctuation))
+
+def super_sanitize(string):
+    return remove_punc(sanitize(string))
