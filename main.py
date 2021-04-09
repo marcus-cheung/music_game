@@ -277,12 +277,12 @@ def end_round(room):
     checker = not gamestate.current_round == len(gamestate.song_infos)
     # Ends the round on server-side, also returns answer
     gamestate.endRound()
-    # Emits event to clients to end round
-    socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
     # Closes the room of correct answerers
     close_room('correct' + str(room))
-    # Wait five seconds and then start round, if game not ended
+    # if game not ended, Wait five seconds and then start round, 
     if checker:
+        # Emits event to clients to end round
+        socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
         time.sleep(5)
         start_round(room)
     
@@ -331,9 +331,9 @@ def end_game(room):
     gamestate = getGame(room)
     scores = gamestate.getScoreDATA()
     song_info = gamestate.getAnswer()
-    gamestate.endRound()
     #Opens end modal for all users
     socketio.emit('end_game', {'scores':scores,'song_info':song_info}, room=room)
+    gamestate.endRound()
     #Adds start new button for host
     socketio.emit('host_end', room = gamestate.host_reqID)
     # Wipes directory
