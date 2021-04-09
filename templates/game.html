@@ -176,7 +176,7 @@
 
       socket.on('start_new', (data) => {
         console.log('starting')
-        round = 1
+        round = 0
         download_music(data)
         document.getElementById('end_modal').style.display = 'none'
         socket.emit('start_game', room)
