@@ -236,6 +236,7 @@ def onMSG(data):
             if len(gamestate.users) == len(gamestate.correct):
                 print('round end')
                 # check if game will end
+                print(gamestate.current_round,len(gamestate.song_infos))
                 if gamestate.current_round == len(gamestate.song_infos):
                     print('game end')
                     end_game(str(room))
