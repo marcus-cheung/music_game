@@ -196,17 +196,21 @@ def runGame(room):
 #What happens on game connect: Prints user joined, if host add start button
 @socketio.on("connected_to_room")
 def gameConnect(room):
+    gamestate = getGame(room)
+    if getUser(gamestate) in gamestate.inactive_users:
+        gamestate.reconnect(getUser(gamestate))
     join_room(room)
     #Print user
-    gamestate = getGame(room)
     print(room)
     print(gamestate)
     user = getUser(gamestate)
     socketio.emit('user_joined', user.username, room=room)
+
     #if is host add start button
-    if getGame(room) and getGame(room).host and session['unique']==getGame(room).host:
-        getGame(room).host_reqID = request.sid
+    if gamestate and gamestate.host and session['unique'] == gamestate.host and gamestate.game_started:
+        gamestate.host_reqID = request.sid
         socketio.emit('host', room=request.sid)
+        
     # Send all the song file names
     socketio.emit('send_song_paths', [myurl + 'static/music/' + str(room) + '/' + super_sanitize(song['name']) + '.m4a' for song in gamestate.song_infos], room=request.sid)
 
@@ -218,21 +222,21 @@ def onMSG(data):
     user = getUser(gamestate)
     username = user.username
     print(username)
-    #if already answered
+    # If already answered
     if user.already_answered:
         print('already answered')
         socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
-    #If haven't answered
+    # If haven't answered
     else:
-        #if round started and correct answer
+        # if round started and correct answer
         if gamestate.round_start and gamestate.checkAnswer(data['msg']):   
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
-            #socketio.emit('answered',)
+            # socketio.emit('answered',)
             user.already_answered = True
-            #Add them to the list of correctly answered users
+            # Add them to the list of correctly answered users
             gamestate.correct.append(user)
-            #check if round should be ended
+            # check if round should be ended
             if len(gamestate.users) == len(gamestate.correct):
                 print('round end')
                 # check if game will end
@@ -254,7 +258,7 @@ def start_round(room):
     song_name = gamestate.song_infos[gamestate.current_round-1]['name']
     new_music_file = url_for('static', filename=f'music/{room}/{song_name}.m4a')
     socketio.emit('start_round', {'music_file': new_music_file, 'round_length':gamestate.roundlength}, room=room)
-    #if its not the last round
+    # if its not the last round
     if not(gamestate.current_round==gamestate.rounds):
         # Starts a timer for the room
         time.sleep(gamestate.roundlength)
@@ -264,7 +268,7 @@ def start_round(room):
 
 def end_round(room):
     gamestate = getGame(room)
-    #Disable getting correct answer
+    # Disable getting correct answer
     gamestate.round_start=False
     # Get list of user/scoretotal/gain from that round ordered
     scores = gamestate.getScoreDATA()
@@ -275,7 +279,7 @@ def end_round(room):
     
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
-    #save the current round before it changes in endRound()
+    # save the current round before it changes in endRound()
     checker = not gamestate.current_round == len(gamestate.song_infos)
     # Ends the round on server-side, also returns answer
     gamestate.endRound()
@@ -294,6 +298,7 @@ def start_game(room):
     # TODO: Error-checking: make sure that answers and songs all have enough elements
     # TODO: Some front-end start-up messages
     start_round(room)
+    getGame(room).game_started = True
 
 
 @socketio.on('new_game_clicked')
@@ -334,7 +339,7 @@ def disconnect():
         print('disconnected')
         session['room'] = None
         gamestate = getGame(room)
-        gamestate.inactive(getUser(session['unique']))
+        gamestate.inactive(getUser(gamestate))
         print(gamestate.users, gamestate.inactive_users)
 
 def end_game(room):
