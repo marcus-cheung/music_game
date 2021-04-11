@@ -325,12 +325,14 @@ def new_game(room):
     socketio.emit('host', room = request.sid)
 
 
-@socketio.on('disconnect', namespace = '/game')
+@socketio.on('disconnect')
 def disconnect():
-    room = session['room']
-    print(room)
-    print('disconnected')
-    #getGame(room)
+    if session['room']:
+        room = session['room']
+        print(room)
+        print('disconnected')
+        session['room'] = None
+        #getGame(room)
 
 
 
