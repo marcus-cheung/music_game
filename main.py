@@ -318,7 +318,7 @@ def new_game(room):
     makeDir(room)
     # Add songs to directory
     download_songs(room,song_infos)
-    #Preload on everyone's client
+    # Preload on everyone's client
     song_paths = [myurl+'static/music/'+ str(room) + '/' + super_sanitize(song['name'])+'.m4a' for song in song_infos]
     # Now everything ready, start round client side
     socketio.emit('start_new', song_paths, room = room)
@@ -327,23 +327,24 @@ def new_game(room):
 
 @socketio.on('disconnect')
 def disconnect():
-    if session['room']:
+    # On disconnection from a gameroom
+    if session.get('room'):
         room = session['room']
         print(room)
         print('disconnected')
         session['room'] = None
-        #getGame(room)
-
-
+        gamestate = getGame(room)
+        gamestate.inactive(getUser(session['unique']))
+        print(gamestate.users, gamestate.inactive_users)
 
 def end_game(room):
     gamestate = getGame(room)
     scores = gamestate.getScoreDATA()
     song_info = gamestate.getAnswer()
-    #Opens end modal for all users
+    # Opens end modal for all users
     socketio.emit('end_game', {'scores':scores,'song_info':song_info}, room=room)
     gamestate.endRound()
-    #Adds start new button for host
+    # Adds start new button for host
     socketio.emit('host_end', room = gamestate.host_reqID)
     # Wipes directory
     directory =  'static/music/' + room
@@ -351,7 +352,7 @@ def end_game(room):
     # Close correct socketio rooms
     close_room('correct' + str(room))
 
-#gets userobject based of unique
+# gets userobject based of unique
 def getUser(gamestate):
     gamestate_users = gamestate.users
     list_unique = [user.unique for user in gamestate_users]
@@ -359,7 +360,7 @@ def getUser(gamestate):
     user = gamestate_users[index]
     return user
 
-#Called on end of game or if room is empty
+# Called on end of game or if room is empty
 def closeRooms(room):
     close_room(room)
     close_room('correct' + str(room))

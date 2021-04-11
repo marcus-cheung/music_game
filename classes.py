@@ -27,7 +27,7 @@ class GameState:
         self.round_start = False
         # Mutated when making/joining room
         self.users = users
-        self.inactive = []
+        self.inactive_users = []
         self.allowed = []
         self.answers = []
         self.sockets = []
@@ -89,7 +89,15 @@ class GameState:
             return True
         else:
             return False
+            
+    def inactive(self, user):
+        self.users.remove(user)
+        self.inactive_users.append(user)
 
+    def reconnect(self, user):
+        self.inactive_users.remove(user)
+        self.users.append(user)
+        
         
 
 
