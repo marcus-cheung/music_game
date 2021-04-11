@@ -154,7 +154,7 @@ def joinRoom(data):
     password = data["password"]
     if data["roomcode"] != "":
         room = int(data["roomcode"])
-
+        session['room'] = room
         # if room is active
         if room not in active_rooms:
             socketio.emit("Room_noexist",room=request.sid)
@@ -325,11 +325,13 @@ def new_game(room):
     socketio.emit('host', room = request.sid)
 
 
-@socketio.on('disconnected')
-def disconnected(room):
+@socketio.on('disconnect')
+def disconnect():
+    room = session['room']
     print(room)
     print('disconnected')
     #getGame(room)
+    session['room'] = None
 
 
 def end_game(room):
