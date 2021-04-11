@@ -98,7 +98,7 @@ class GameState:
         print(self.users, self.inactive_users)
         if self.users == []:
             pass
-            # Implement ending of the game
+            # TODO: Implement ending of the game
 
     def reconnect(self, user):
         print('reconnecting user')

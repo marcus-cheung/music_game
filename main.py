@@ -361,8 +361,8 @@ def end_game(room):
 
 # gets userobject based of unique
 def getUser(gamestate):
-    gamestate_users = gamestate.users
-    list_unique = [user.unique for user in gamestate_users]
+    users = gamestate.users + gamestate.inactive_users
+    list_unique = [user.unique for user in users]
     index = list_unique.index(session['unique'])
     user = gamestate_users[index]
     return user
