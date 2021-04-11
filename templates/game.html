@@ -204,6 +204,7 @@
       })
 
       socket.on("disconnect", () => {
+        console.log('disonnect check')
         socket.emit('disconnected', room)
       })
 
