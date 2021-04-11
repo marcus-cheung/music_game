@@ -96,7 +96,7 @@ class GameState:
         self.users.remove(user)
         self.inactive_users.append(user)
         print(self.users, self.inactive_users)
-        if self.users = []:
+        if self.users == []:
             pass
             # Implement ending of the game
 
