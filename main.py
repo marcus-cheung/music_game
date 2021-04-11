@@ -364,7 +364,7 @@ def getUser(gamestate):
     users = gamestate.users + gamestate.inactive_users
     list_unique = [user.unique for user in users]
     index = list_unique.index(session['unique'])
-    user = gamestate_users[index]
+    user = users[index]
     return user
 
 # Called on end of game or if room is empty
