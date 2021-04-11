@@ -154,7 +154,6 @@ def joinRoom(data):
     password = data["password"]
     if data["roomcode"] != "":
         room = int(data["roomcode"])
-        session['room'] = room
         # if room is active
         if room not in active_rooms:
             socketio.emit("Room_noexist",room=request.sid)
@@ -185,11 +184,12 @@ def logout():
 def runGame(room):
     # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
     if (
-        not gamestates[room - 1000]
-        or session.get("unique") not in gamestates[room - 1000].allowed
+        not getGame(room)
+        or session.get("unique") not in getGame(room).allowed
     ):
         return redirect(myurl)
     else:
+        session['room'] = room
         return render_template("game.html", myurl=myurl)
 
 
@@ -325,8 +325,9 @@ def new_game(room):
     socketio.emit('host', room = request.sid)
 
 
-@socketio.on('disconnect', namespace = '/game/<int:room>')
-def disconnect(room):
+@socketio.on('disconnect', namespace = '/game')
+def disconnect():
+    room = session['room']
     print(room)
     print('disconnected')
     #getGame(room)
