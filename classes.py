@@ -95,11 +95,13 @@ class GameState:
         print('inactive called')
         self.users.remove(user)
         self.inactive_users.append(user)
+        print(self.users, self.inactive_users)
 
     def reconnect(self, user):
         print('reconnecting user')
         self.inactive_users.remove(user)
         self.users.append(user)
+        print(self.users, self.inactive_users)
         
         
 
