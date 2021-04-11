@@ -203,6 +203,10 @@
         }
       })
 
+      socket.on("disconnect", () => {
+        socket.emit('disconnected', room)
+      })
+
 
 
     })

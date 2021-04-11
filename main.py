@@ -325,6 +325,13 @@ def new_game(room):
     socketio.emit('host', room = request.sid)
 
 
+@socketio.on('disconnected')
+def disconnected(room):
+    print(room)
+    print('disconnected')
+    #getGame(room)
+
+
 def end_game(room):
     gamestate = getGame(room)
     scores = gamestate.getScoreDATA()
@@ -368,6 +375,7 @@ def getToken(session):
         else:
             print('getToken error: ' + str(user_data.status_code))
     return session['spotify_data']['access_token']
+
 
 
 

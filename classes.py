@@ -21,17 +21,18 @@ class GameState:
         # List of song_infos passed from spotipy when 'make room'
         self.song_infos = song_infos
         self.playlists = playlists
-        #Used each round
+        # Used each round
         self.correct = []
         self.current_round = 1
         self.round_start = False
-        #Mutated when making/joining room
+        # Mutated when making/joining room
         self.users = users
+        self.inactive = []
         self.allowed = []
         self.answers = []
         self.sockets = []
         self.game_ended = False
-        #get the answers
+        # Get the answers
         for song_info in self.song_infos:
             if self.gamemode == 'song':
                 self.answers.append(answer_variations(song_info['name']))
