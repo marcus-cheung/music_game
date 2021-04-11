@@ -96,11 +96,15 @@ class GameState:
         self.users.remove(user)
         self.inactive_users.append(user)
         print(self.users, self.inactive_users)
+        if self.users = []:
+            pass
+            # Implement ending of the game
 
     def reconnect(self, user):
         print('reconnecting user')
         self.inactive_users.remove(user)
         self.users.append(user)
+        user.already_answered = True
         print(self.users, self.inactive_users)
         
         

@@ -197,8 +197,10 @@ def runGame(room):
 @socketio.on("connected_to_room")
 def gameConnect(room):
     gamestate = getGame(room)
-    if getUser(gamestate) in gamestate.inactive_users:
+    if gamestate and (gamestate) in gamestate.inactive_users:
         gamestate.reconnect(getUser(gamestate))
+        join_room('correct' + str(room))
+        # Add a message to client that tells to wait for one round
     join_room(room)
     #Print user
     print(room)
@@ -207,7 +209,7 @@ def gameConnect(room):
     socketio.emit('user_joined', user.username, room=room)
 
     #if is host add start button
-    if gamestate and gamestate.host and session['unique'] == gamestate.host and gamestate.game_started:
+    if gamestate and gamestate.host and session['unique'] == gamestate.host and not gamestate.game_started:
         gamestate.host_reqID = request.sid
         socketio.emit('host', room=request.sid)
         
