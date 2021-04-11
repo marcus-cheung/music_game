@@ -197,14 +197,12 @@ def runGame(room):
 @socketio.on("connected_to_room")
 def gameConnect(room):
     gamestate = getGame(room)
-    if gamestate and (gamestate) in gamestate.inactive_users:
+    if gamestate and getUser(gamestate) in gamestate.inactive_users:
         gamestate.reconnect(getUser(gamestate))
         join_room('correct' + str(room))
         # Add a message to client that tells to wait for one round
     join_room(room)
     #Print user
-    print(room)
-    print(gamestate)
     user = getUser(gamestate)
     socketio.emit('user_joined', user.username, room=room)
 
