@@ -59,11 +59,12 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
-      var socket = io();
+      socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 0;
       audios = []
       var bgcolor = 1;
+      var readyState = false
       var volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
       volume.addEventListener("change", function (e) {
