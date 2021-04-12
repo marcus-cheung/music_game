@@ -65,13 +65,13 @@
         volume_saver = e.currentTarget.value / 100;
       })
 
-      audios[0].addEventListener('loadeddata', () => {
-        console.log('audiosEventListener activated')
+      audios[0].oncanplaythrough = () => {
+        console.log('on can playthrough')
         if (audios[0].readyState >= 4 && audios[0].preload == 'auto') {
           socket.emit('downloaded', room)
           console.log('First song downloaded')
         }
-      })
+      }
 
       socket.on('connect', () => {
         console.log(room)
