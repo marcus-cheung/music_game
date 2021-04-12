@@ -200,13 +200,14 @@ def gameConnect(room):
     if gamestate and getUser(gamestate) in gamestate.inactive_users:
         gamestate.reconnect(getUser(gamestate))
         join_room('correct' + str(room))
+        socketio.emit('uptodate',gamestate.current_round-1, room = request.sid)
         # Add a message to client that tells to wait for one round
     join_room(room)
     #Print user
     user = getUser(gamestate)
     socketio.emit('user_joined', user.username, room=room)
 
-    #if is host add start button
+    #if is host set as host
     if gamestate and gamestate.host and session['unique'] == gamestate.host and not gamestate.game_started:
         gamestate.host_reqID = request.sid
         socketio.emit('host', room=request.sid)
@@ -299,6 +300,7 @@ def start_game(room):
     # TODO: Some front-end start-up messages
     start_round(room)
     getGame(room).game_started = True
+    
 
 
 @socketio.on('new_game_clicked')
@@ -339,8 +341,16 @@ def disconnect():
         print('disconnected')
         session['room'] = None
         gamestate = getGame(room)
+        gamestate.downloaded -= 1
         gamestate.inactive(getUser(gamestate))
         print(gamestate.users, gamestate.inactive_users)
+
+@socketio.on('downloaded')
+def downloaded(room):
+    gamestate = getGame(room)
+    gamestate.downloaded += 1
+    if gamestate.downloaded == len(gamestate.users):
+        socketio.emit('all_downloaded', room = gamestate.host_reqID)
 
 def end_game(room):
     gamestate = getGame(room)

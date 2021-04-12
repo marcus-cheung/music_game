@@ -9,6 +9,8 @@ class GameState:
     ):
         #On call
         self.room_number = room_number
+        self.downloaded = 0
+        self.ready_start = False
         self.rounds = rounds
         # Either song, artist, or year
         self.gamemode = gamemode

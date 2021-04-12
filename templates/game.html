@@ -47,10 +47,12 @@
         audios[i] = new Audio();
         audios[i].src = files[i]
         audios[i].preload = 'auto'
+        audios[i].loop = true; 
+        while (audios[i].readyState < 4){}
       }
+      socket.emit('downloaded', room)
       console.log(audios)
     }
-
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
@@ -88,8 +90,12 @@
 
       socket.on('send_song_paths', (data) =>{
         download_music(data)
-      }
-      )
+      })
+
+      socket.on('uptodate', (data) =>{
+        round=data
+      })
+      
 
       socket.on('chat', (data) => {
         console.log('msg received')
@@ -137,12 +143,21 @@
       })
 
       document.getElementById('start').onclick = () => {
-        socket.emit('start_game', room)
-        document.getElementById('start').style.display = "none"
+        if (readyState) {
+          socket.emit('start_game', room)
+          document.getElementById('start').style.display = "none"
+        }
+        else {
+          alert('Start game will be available when all players finish downloading audio')
+        }
       }
 
       socket.on('host', () => {
         document.getElementById('start').style.display = "block"
+      })
+
+      socket.on('all_downloaded', () => {
+        readyState = true
       })
 
       socket.on('update_scores', (data) => {
@@ -204,7 +219,7 @@
       })
 
       socket.on("disconnect", () => {
-        console.log('disonnect check')
+        console.log('disconnect check')
         socket.emit('disconnected', room)
       })
 
