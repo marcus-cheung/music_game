@@ -46,8 +46,8 @@
         audios[i] = new Audio();
         audios[i].src = files[i]
         audios[i].preload = 'auto'
-        audios[i].loop = true;
       }
+      console.log(audios)
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -65,9 +65,9 @@
         volume_saver = e.currentTarget.value / 100;
       })
 
-      audios[0].oncanplaythrough = () => {
+      audios[0].oncanplaythrough = function(e) {
         console.log('on can playthrough')
-        if (audios[0].readyState >= 4 && audios[0].preload == 'auto') {
+        if (audios[0].readyState >= 4 && audios[0].src != null) {
           socket.emit('downloaded', room)
           console.log('First song downloaded')
         }
