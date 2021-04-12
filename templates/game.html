@@ -42,16 +42,11 @@
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
     function download_music(files) {
-      audios = []
       for (let i = 0; i < files.length; i++) {
         audios[i] = new Audio();
         audios[i].src = files[i]
         audios[i].preload = 'auto'
-        audios[i].loop = true; 
-        while (audios[i].readyState < 4){}
-      }
-      socket.emit('downloaded', room)
-      console.log(audios)
+        audios[i].loop = true;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -59,12 +54,21 @@
       var socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 0;
+      audios = []
       var bgcolor = 1;
-      volume_saver = 0.50;
+      var volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
       volume.addEventListener("change", function (e) {
         audios[round - 1].volume = e.currentTarget.value / 100;
         volume_saver = e.currentTarget.value / 100;
+      })
+
+      audios[0].addEventListener('loadeddata', () => {
+      if (audios[0].readyState >= 4){
+        socket.emit('downloaded')
+        console.log('First song downloaded')
+      }
+      // The duration variable now holds the duration (in seconds) of the audio clip
       })
 
       socket.on('connect', () => {
