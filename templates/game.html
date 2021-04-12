@@ -51,7 +51,7 @@
     audios[0].addEventListener('loadeddata', () => {
       if (audios[0] != 0){
         if (audios[0].readyState >= 4){
-        socket.emit('downloaded')
+        socket.emit('downloaded', room)
         console.log('First song downloaded')
       }}
       })
@@ -60,7 +60,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
       socket = io();
-      const room = window.location.href.substring(url.length + 5, url.length + 9)
+      room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 0;
       audios = []
       var bgcolor = 1;
