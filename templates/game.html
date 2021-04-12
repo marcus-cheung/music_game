@@ -47,14 +47,14 @@
         audios[i].src = files[i]
         audios[i].preload = 'auto'
         audios[i].loop = true;
-    }
+    }}
 
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
       var socket = io();
       const room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 0;
-      audios = []
+      audios = [0]
       var bgcolor = 1;
       var volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
@@ -64,11 +64,11 @@
       })
 
       audios[0].addEventListener('loadeddata', () => {
-      if (audios[0].readyState >= 4){
+      if (audios[0] != 0){
+        if (audios[0].readyState >= 4){
         socket.emit('downloaded')
         console.log('First song downloaded')
-      }
-      // The duration variable now holds the duration (in seconds) of the audio clip
+      }}
       })
 
       socket.on('connect', () => {
