@@ -80,7 +80,7 @@ def getAlbumSongs(album_ids, access_token):
             # Adds the album info to each song info
             for song_info in album_song_infos:
                 song_info['album'] = album_info_json
-            all_song_infos += album_song_info
+            all_song_infos += album_song_infos
         else:
             print('getAlbumSongs Error: Code ' + str(album_data.status_code))
     return all_song_infos
