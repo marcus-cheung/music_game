@@ -257,7 +257,7 @@ def start_round(room):
     gamestate = getGame(room)
     gamestate.round_start=True
     current_round = gamestate.current_round
-    gamestate.clearWaiting()
+
     socketio.emit('start_round', room=room)
     # if its not the last round
     if not(gamestate.current_round==gamestate.rounds):
