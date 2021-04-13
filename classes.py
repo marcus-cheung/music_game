@@ -71,6 +71,7 @@ class GameState:
         return lst
 
     def endRound(self):
+        self.clearWaiting()
         for user in self.users:
             user.already_answered = False
         # Check if all rounds are up
