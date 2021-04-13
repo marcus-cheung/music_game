@@ -120,7 +120,8 @@ def makeRoom(data):
         unique=session.get("unique"),
     )
     # allsongs = getPlaylistSongs(data['playlists'], getToken(session))
-    allsongs = getArtistsSongs(['5K4W6rqBFWDnAN6FQUkS6x'], getToken(session))
+    allsongs = getArtistsSongs(['5K4W6rqBFWDnAN6FQUkS6x'], getToken(session)
+    print(json.dumps(allsongs, indent = 4))
     # choose random from allsongs
     song_infos = song_selector(allsongs, int(data['rounds']))
     if song_infos == []:
