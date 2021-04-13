@@ -73,24 +73,40 @@ def getAlbumSongs(album_ids, access_token):
                 album_json = album_data.json()
                 all_song_infos += album_json['items']
                 index += 1
-            else:
-                print('getAlbumSongs Error: Code ' + str(album_data.status_code))
+        else:
+            print('getAlbumSongs Error: Code ' + str(album_data.status_code))
     return all_song_infos
+
+def getArtistsSongs(artist_ids, access_token):
+    header = {'Authorization': 'Bearer ' + access_token}
+    all_album_infos = []
+    album_groups = 'album, single, appears_on'
+    # TODO: Look through that come from appears_on albums to make sure that the artist actually appears on it.
+    for artist_id in artist_ids:
+        artist_data = None
+        market = None
+        for test_market in markets:
+            artist_data = requests.get(base_url + f'artists/{artist_id}/albums', {'limit': 50, 'market': test_market, 'include_groups': album_groups}, headers= header)
+            if validStatus(artist_data):
+                market = test_market
+                break
+        if validStatus(artist_data):
+            artist_json = artist_data.json()
+            all_album_infos += artist_data.json()
+            index = 1
+            while artist_json['next'] != None:
+                artist_data = requests.get(base_url + f'artists/{artist_id}/albums', {'limit': 50, 'offset': 50 * index, 'market': market, 'include_groups': album_groups}, headers= header)
+                artist_json = artist_data.json()
+                all_album_infos += artist_json['items']
+                index += 1
+        else:
+            print('getArtistsSongs Error: Code ' + str(artist_data.status_code))
+    album_ids = []
+    for album_info in all_album_infos:
+        album_ids.append(album_info['id'])
+    return getAlbumSongs(album_ids, access_token)
+
 
 def validStatus(request):
     return request.status_code==200
-
-def getArtistSongs(artist_id, number):
-    pass
-    # sp = spotipy.Spotify('BQAPMMQyspUy_qKzNTVCg3SAMnKRsPtRnTFkRjC29v_OCPbsPnvFYkpj8JguSzEH5a1v0IErw5DW6XrIC7oygltpPKk7Oay9tv6eQMLse5yj_rZm9B8M2vbYZxu9RKPjD_1wxPYCJ2Bwa53IRu8yLh7mc9Lth5Q')
-    # artist_id = sp.search(artist_name, type = 'artist')['artists']['items'][0]['id']
-    # album_infos = sp.artist_albums(artist_id, limit = 2)['items']
-    # song_infos = []
-    # for album_info in album_infos:
-    #     print(album_info['name'])
-    #     print(album_info['id'])
-    #     album_tracks = sp.album_tracks(album_info['id'])['items']
-    #     print(album_tracks)
-    #     song_infos += album_tracks
-    # return song_selector(song_infos, rounds)
 
