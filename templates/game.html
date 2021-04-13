@@ -50,6 +50,11 @@
       console.log(audios)
     }
 
+    function start_game() {
+        socket.emit('start_game', room)
+        document.getElementById('start').style.display = "none"
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const url = 'https://epic-game.herokuapp.com/';
       socket = io();
@@ -150,11 +155,13 @@
 
       document.getElementById('start').onclick = () => {
         if (readyState) {
-          socket.emit('start_game', room)
-          document.getElementById('start').style.display = "none"
+          start_game()
         }
         else {
-          alert('Start game will be available when all players finish downloading audio')
+          let confirm = confirm('Not all players have finished downloading music. Are you sure you like to begin?')
+            if (confirm) {
+                start_game()
+            }
         }
       }
 

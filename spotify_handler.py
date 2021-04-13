@@ -56,7 +56,7 @@ def getPlaylistSongs(playlist_ids, access_token):
 def validStatus(request):
     return request.status_code==200
 
-def artists_songs(artist_name, number):
+def getArtistSong6(artist_id, number):
     pass
     # sp = spotipy.Spotify('BQAPMMQyspUy_qKzNTVCg3SAMnKRsPtRnTFkRjC29v_OCPbsPnvFYkpj8JguSzEH5a1v0IErw5DW6XrIC7oygltpPKk7Oay9tv6eQMLse5yj_rZm9B8M2vbYZxu9RKPjD_1wxPYCJ2Bwa53IRu8yLh7mc9Lth5Q')
     # artist_id = sp.search(artist_name, type = 'artist')['artists']['items'][0]['id']

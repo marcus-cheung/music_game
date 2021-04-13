@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d07afe85-d4ac-45af-ae0c-6a96bc285692" name="Default Changelist" comment="">
+    <list default="true" id="d07afe85-d4ac-45af-ae0c-6a96bc285692" name="Default Changelist" comment="Implemented function to get song_infos from an artist query">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flask_session/2029240f6d1128be89ddc32729463129" beforeDir="false" afterPath="$PROJECT_DIR$/flask_session/2029240f6d1128be89ddc32729463129" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spotify_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/spotify_handler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/game.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/game.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/mainmenu.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/mainmenu.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +24,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -86,12 +85,39 @@
       <updated>1616772273956</updated>
       <workItem from="1616772278478" duration="136000" />
       <workItem from="1617614454615" duration="176000" />
-      <workItem from="1617701208333" duration="4171000" />
+      <workItem from="1617701208333" duration="4443000" />
+      <workItem from="1617721517163" duration="92000" />
+      <workItem from="1617868004519" duration="791000" />
+      <workItem from="1618318195463" duration="402000" />
     </task>
+    <task id="LOCAL-00001" summary="Implemented function to get song_infos from an artist query">
+      <created>1617705542996</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1617705542996</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Implemented function to get song_infos from an artist query" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented function to get song_infos from an artist query" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/music_game$main.coverage" NAME="main Coverage Results" MODIFIED="1617705016739" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
