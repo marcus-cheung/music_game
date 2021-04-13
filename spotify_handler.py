@@ -57,6 +57,7 @@ def getAlbumSongs(album_ids, access_token):
     header = {'Authorization': 'Bearer ' + access_token}
     all_song_infos = []
     for album_id in album_ids:
+        print(album_id)
         album_data = None
         market = None
         for test_market in markets:
@@ -106,13 +107,13 @@ def getArtistsSongs(artist_ids, access_token, include_feature = True):
         for album_info in all_album_infos:
             if album_info['album_group'] == 'appears_on':
                 print(album_info)
-                song_infos = getAlbumSongs(album_info['id'], access_token)
+                song_infos = getAlbumSongs([album_info['id']], access_token)
                 for song_info in song_infos:
                     artist_ids = [artist_info['id'] for artist_info in song_info['artists']]
                     if artist_id in artist_ids:
                         all_song_infos.append(song_info)
             else:
-                all_song_infos += getAlbumSongs(album_info['id'], access_token)
+                all_song_infos += getAlbumSongs([album_info['id']], access_token)
     return all_song_infos
 
 
