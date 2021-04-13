@@ -114,7 +114,6 @@ def getArtistsSongs(artist_ids, access_token, include_feature = False):
             print('getArtistsSongs Error: Code ' + str(artist_data.status_code))
         for album_info in all_album_infos:
             all_song_infos += getAlbumSongs([album_info['id']], access_token)
-    print(json.dumps(all_song_infos[0:10], indent = 4))
     return all_song_infos
 
 # Returns artist id based off top result of a search query

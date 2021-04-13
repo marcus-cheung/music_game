@@ -301,6 +301,7 @@ def start_game(room):
     # TODO: Some front-end start-up messages
     start_round(room)
     getGame(room).game_started = True
+    print(getGame(room).game_started)
     
 
 
