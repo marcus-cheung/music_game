@@ -37,7 +37,7 @@ active_rooms = []
 gamestates = [None] * 9000
 
 
-myurl = "https://epic-game.herokuapp.com/"
+myurl = "https://knewsic.herokuapp.com/"
 
 
 # main page
