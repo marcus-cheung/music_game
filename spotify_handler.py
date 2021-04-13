@@ -61,7 +61,6 @@ def getAlbumSongs(album_ids, access_token):
         album_song_infos
         album_data = None
         market = None
-
         for test_market in markets:
             album_data = requests.get(base_url + f'albums/{album_id}/tracks', {'limit': 50, 'market': test_market}, headers=header)
             if validStatus(album_data):
@@ -77,7 +76,7 @@ def getAlbumSongs(album_ids, access_token):
                 album_song_infos += album_json['items']
                 index += 1
             # Get the album info
-            album_info_json = requests.get(base_url + f'albums/{album_id}', 'market': market}).json()
+            album_info_json = requests.get(base_url + f'albums/{album_id}', {'market': market}, headers = header).json()
             # Adds the album info to each song info
             for song_info in album_song_infos:
                 song_info['album'] = album_info_json
