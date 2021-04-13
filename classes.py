@@ -70,7 +70,6 @@ class GameState:
         return lst
 
     def endRound(self):
-        print('yeyeuheuh')
         for user in self.users:
             user.already_answered = False
         # Check if all rounds are up

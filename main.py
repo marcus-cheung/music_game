@@ -299,9 +299,8 @@ def end_round(room):
 def start_game(room):
     # TODO: Error-checking: make sure that answers and songs all have enough elements
     # TODO: Some front-end start-up messages
-    start_round(room)
     getGame(room).game_started = True
-    print(getGame(room).game_started)
+    start_round(room)
     
 
 
