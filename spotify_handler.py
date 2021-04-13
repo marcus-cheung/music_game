@@ -120,7 +120,7 @@ def getArtistsSongs(artist_ids, access_token, include_feature = False):
 # Returns artist id based off top result of a search query
 def getArtistID(artist_name, access_token):
     header = {'Authorization': 'Bearer ' + access_token}
-    artist_data = requests.get(base_url + 'search' {'q': artist_name, 'type':artist, 'limit': 1}, headers = header)
+    artist_data = requests.get(base_url + 'search', {'q': artist_name, 'type':artist, 'limit': 1}, headers = header)
     if validStatus(artist_data):
         return artist_data.json()['items'][0]['id']
     else:
