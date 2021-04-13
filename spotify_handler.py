@@ -58,8 +58,10 @@ def getAlbumSongs(album_ids, access_token):
     all_song_infos = []
     for album_id in album_ids:
         print(album_id)
+        album_song_infos
         album_data = None
         market = None
+
         for test_market in markets:
             album_data = requests.get(base_url + f'albums/{album_id}/tracks', {'limit': 50, 'market': test_market}, headers=header)
             if validStatus(album_data):
@@ -67,16 +69,23 @@ def getAlbumSongs(album_ids, access_token):
                 break
         if validStatus(album_data):
             album_json = album_data.json()
-            all_song_infos += album_json['items']
+            album_song_infos += album_json['items']
             index = 1
             while album_json['next'] != None:
                 album_data = requests.get(base_url + f'albums/{album_id}/tracks', {'limit': 50, 'market': market, 'offset': 50 * index}, headers = header)
                 album_json = album_data.json()
-                all_song_infos += album_json['items']
+                album_song_infos += album_json['items']
                 index += 1
+            # Get the album info
+            album_info_json = requests.get(base_url + f'albums/{album_id}', 'market': market}).json()
+            # Adds the album info to each song info
+            for song_info in album_song_infos:
+                song_info['album'] = album_info_json
+            all_song_infos += album_song_info
         else:
             print('getAlbumSongs Error: Code ' + str(album_data.status_code))
     return all_song_infos
+
 
 def getArtistsSongs(artist_ids, access_token, include_feature = False):
     header = {'Authorization': 'Bearer ' + access_token}
@@ -105,14 +114,7 @@ def getArtistsSongs(artist_ids, access_token, include_feature = False):
         else:
             print('getArtistsSongs Error: Code ' + str(artist_data.status_code))
         for album_info in all_album_infos:
-            if album_info['album_group'] == 'appears_on':
-                song_infos = getAlbumSongs([album_info['id']], access_token)
-                for song_info in song_infos:
-                    artist_ids = [artist_info['id'] for artist_info in song_info['artists']]
-                    if artist_id in artist_ids:
-                        all_song_infos.append(song_info)
-            else:
-                all_song_infos += getAlbumSongs([album_info['id']], access_token)
+            all_song_infos += getAlbumSongs([album_info['id']], access_token)
     print(json.dumps(all_song_infos[0:10], indent = 4))
     return all_song_infos
 
