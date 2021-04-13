@@ -122,7 +122,7 @@ def getArtistID(artist_name, access_token):
     header = {'Authorization': 'Bearer ' + access_token}
     artist_data = requests.get(base_url + 'search', {'q': artist_name, 'type': 'artist', 'limit': 1}, headers = header)
     if validStatus(artist_data):
-        return artist_data.json()['items'][0]['id']
+        return artist_data.json()['artists']['items'][0]['id']
     else:
         print('getArtistID Error: Code ' + str(artist_data.status_code))
 
