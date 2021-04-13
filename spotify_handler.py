@@ -78,7 +78,7 @@ def getAlbumSongs(album_ids, access_token):
             print('getAlbumSongs Error: Code ' + str(album_data.status_code))
     return all_song_infos
 
-def getArtistsSongs(artist_ids, access_token, include_feature = True):
+def getArtistsSongs(artist_ids, access_token, include_feature = False):
     header = {'Authorization': 'Bearer ' + access_token}
     all_song_infos = []
     album_groups = 'album,single'
@@ -106,7 +106,6 @@ def getArtistsSongs(artist_ids, access_token, include_feature = True):
             print('getArtistsSongs Error: Code ' + str(artist_data.status_code))
         for album_info in all_album_infos:
             if album_info['album_group'] == 'appears_on':
-                print(album_info)
                 song_infos = getAlbumSongs([album_info['id']], access_token)
                 for song_info in song_infos:
                     artist_ids = [artist_info['id'] for artist_info in song_info['artists']]
