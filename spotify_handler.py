@@ -80,9 +80,9 @@ def getAlbumSongs(album_ids, access_token):
 def getArtistsSongs(artist_ids, access_token, include_feature = True):
     header = {'Authorization': 'Bearer ' + access_token}
     all_song_infos = []
-    album_groups = 'album, single'
+    album_groups = 'album,single'
     if include_feature:
-        album_groups += ', appears_on'
+        album_groups += ',appears_on'
     for artist_id in artist_ids:
         all_album_infos = []
         artist_data = None
