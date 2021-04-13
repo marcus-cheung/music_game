@@ -31,6 +31,7 @@ class GameState:
         self.game_started = False
         self.users = users
         self.inactive_users = []
+        self.waiting_room = []
         self.allowed = []
         self.answers = []
         self.sockets = []
@@ -104,9 +105,14 @@ class GameState:
     def reconnect(self, user):
         print('reconnecting user')
         self.inactive_users.remove(user)
-        self.users.append(user)
+        self.waiting_room.append(user)
         user.already_answered = True
         print(self.users, self.inactive_users)
+    
+    def clearWaiting(self)
+        for user in self.waiting_room:
+            self.waiting_room.remove(user)
+            self.users.append(user)
         
         
 

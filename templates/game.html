@@ -51,8 +51,8 @@
     }
 
     function start_game() {
-        socket.emit('start_game', room)
-        document.getElementById('start').style.display = "none"
+      socket.emit('start_game', room)
+      document.getElementById('start').style.display = "none"
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -70,7 +70,7 @@
         volume_saver = e.currentTarget.value / 100;
       })
 
-      audios[0].oncanplaythrough = function(e) {
+      audios[0].oncanplaythrough = function (e) {
         console.log('on can playthrough')
         if (audios[0].readyState >= 4 && audios[0].src != null) {
           socket.emit('downloaded', room)
@@ -147,7 +147,7 @@
         audios[round - 1].pause();
       })
 
-      socket.on('start_round', (data) => {
+      socket.on('start_round', () => {
         round++
         audios[round - 1].volume = volume_saver
         audios[round - 1].play()
@@ -160,9 +160,9 @@
         else {
           console.log('readyState false')
           let boolean = confirm('Not all players have finished downloading music. Are you sure you like to begin?')
-            if (boolean) {
-                start_game()
-            }
+          if (boolean) {
+            start_game()
+          }
         }
       }
 

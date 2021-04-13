@@ -201,7 +201,7 @@ def gameConnect(room):
     if gamestate and getUser(gamestate) in gamestate.inactive_users:
         gamestate.reconnect(getUser(gamestate))
         join_room('correct' + str(room))
-        socketio.emit('uptodate',gamestate.current_round-1, room = request.sid)
+        socketio.emit('uptodate',gamestate.current_round, room = request.sid)
         # Add a message to client that tells to wait for one round
     join_room(room)
     #Print user
@@ -257,9 +257,8 @@ def start_round(room):
     gamestate = getGame(room)
     gamestate.round_start=True
     current_round = gamestate.current_round
-    song_name = gamestate.song_infos[gamestate.current_round-1]['name']
-    new_music_file = url_for('static', filename=f'music/{room}/{song_name}.m4a')
-    socketio.emit('start_round', {'music_file': new_music_file, 'round_length':gamestate.roundlength}, room=room)
+    gamestate.clearWaiting()
+    socketio.emit('start_round', room=room)
     # if its not the last round
     if not(gamestate.current_round==gamestate.rounds):
         # Starts a timer for the room
