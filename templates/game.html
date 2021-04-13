@@ -158,8 +158,9 @@
           start_game()
         }
         else {
-          let confirm = confirm('Not all players have finished downloading music. Are you sure you like to begin?')
-            if (confirm) {
+          console.log('readyState false')
+          let boolean = confirm('Not all players have finished downloading music. Are you sure you like to begin?')
+            if (boolean) {
                 start_game()
             }
         }
