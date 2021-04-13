@@ -77,12 +77,14 @@ def getAlbumSongs(album_ids, access_token):
             print('getAlbumSongs Error: Code ' + str(album_data.status_code))
     return all_song_infos
 
-def getArtistsSongs(artist_ids, access_token):
+def getArtistsSongs(artist_ids, access_token, include_feature = True):
     header = {'Authorization': 'Bearer ' + access_token}
-    all_album_infos = []
-    album_groups = 'album, single, appears_on'
-    # TODO: Look through that come from appears_on albums to make sure that the artist actually appears on it.
+    all_song_infos = []
+    album_groups = 'album, single'
+    if include_feature:
+        album_groups += ', appears_on'
     for artist_id in artist_ids:
+        all_album_infos = []
         artist_data = None
         market = None
         for test_market in markets:
@@ -101,10 +103,17 @@ def getArtistsSongs(artist_ids, access_token):
                 index += 1
         else:
             print('getArtistsSongs Error: Code ' + str(artist_data.status_code))
-    album_ids = []
-    for album_info in all_album_infos:
-        album_ids.append(album_info['id'])
-    return getAlbumSongs(album_ids, access_token)
+        for album_info in all_album_infos:
+            if album_info['album_group' == 'appears_on']:
+                song_infos = getAlbumSongs(album_info['id'])
+                for song_info in song_infos:
+                    artist_ids = [artist_info['id'] for artist_info in song_info['artists']]
+                    if artist_id in artist_ids:
+                        all_song_infos.append(song_info)
+            else:
+                all_song_infos += getAlbumSongs(album_info['id'])
+    return all_song_infos
+
 
 
 def validStatus(request):
