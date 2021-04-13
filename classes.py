@@ -109,7 +109,7 @@ class GameState:
         user.already_answered = True
         print(self.users, self.inactive_users)
     
-    def clearWaiting(self)
+    def clearWaiting(self):
         for user in self.waiting_room:
             self.waiting_room.remove(user)
             self.users.append(user)
