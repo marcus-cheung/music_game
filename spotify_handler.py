@@ -94,7 +94,7 @@ def getArtistsSongs(artist_ids, access_token, include_feature = True):
                 break
         if validStatus(artist_data):
             artist_json = artist_data.json()
-            all_album_infos += artist_data.json()
+            all_album_infos += artist_data.json()['items']
             index = 1
             while artist_json['next'] != None:
                 artist_data = requests.get(base_url + f'artists/{artist_id}/albums', {'limit': 50, 'offset': 50 * index, 'market': market, 'include_groups': album_groups}, headers= header)
