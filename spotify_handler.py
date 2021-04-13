@@ -58,7 +58,7 @@ def getAlbumSongs(album_ids, access_token):
     all_song_infos = []
     for album_id in album_ids:
         print(album_id)
-        album_song_infos
+        album_song_infos = []
         album_data = None
         market = None
         for test_market in markets:
