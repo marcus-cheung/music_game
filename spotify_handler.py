@@ -113,6 +113,7 @@ def getArtistsSongs(artist_ids, access_token, include_feature = False):
                         all_song_infos.append(song_info)
             else:
                 all_song_infos += getAlbumSongs([album_info['id']], access_token)
+    print(json.dumps(all_song_infos[0:10], indent = 4))
     return all_song_infos
 
 
