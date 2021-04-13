@@ -12,7 +12,7 @@ def song_selector(allsongs, rounds):
     for i in range(rounds):
         x = random.randint(0,len(allsongs) - 1)
         #Check if song already in list of songs
-        while allsongs[x]['track'] in song_infos:
+        while allsongs[x] in song_infos:
             #remove duplicate song
             allsongs.pop(x)
             # Breaks loop if allsongs empty
@@ -21,7 +21,7 @@ def song_selector(allsongs, rounds):
             #generates new index to check
             x = random.randint(0,len(allsongs) - 1)
         #Appends valid song to song_infos
-        song_infos.append(allsongs.pop(x)['track'])
+        song_infos.append(allsongs.pop(x))
     return song_infos
 
 def download_music_file(query, roomnumber, filename, filetype='m4a', bitrate='48k', lyric=True):
