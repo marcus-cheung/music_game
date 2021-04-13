@@ -34,9 +34,11 @@ def getPlaylistSongs(playlist_ids, access_token):
     for playlist_id in playlist_ids:
         print(playlist_id)
         playlist_data = None
-        for market in markets:
-            playlist_data = requests.get(base_url + f'playlists/{playlist_id}/tracks', {'limit': 100, 'market':market}, headers=header)
+        market = None
+        for test_market in markets:
+            playlist_data = requests.get(base_url + f'playlists/{playlist_id}/tracks', {'limit': 100, 'market':test_market}, headers=header)
             if validStatus(playlist_data):
+                market = test_market
                 break
         playlist_json = playlist_data.json()
         if validStatus(playlist_data):
@@ -51,12 +53,34 @@ def getPlaylistSongs(playlist_ids, access_token):
             print('getPlaylistSongs Error: Code ' + str(playlist_data.status_code))
     return all_song_infos
 
-
+def getAlbumSongs(album_ids, access_token):
+    header = {'Authorization': 'Bearer ' + access_token}
+    all_song_infos = []
+    for album_id in album_ids:
+        album_data = None
+        market = None
+        for test_market in markets:
+            album_data = requests.get(base_url + f'albums/{album_id}/tracks', {'limit': 50, 'market': test_market}, headers=header)
+            if validStatus(album_data):
+                market = test_market
+                break
+        if validStatus(album_data):
+            album_json = album_data.json()
+            all_song_infos += album_json['items']
+            index = 1
+            while album_json['next'] != None:
+                album_data = requests.get(base_url + f'albums/{album_id}/tracks', {'limit': 50, 'market': market, 'offset': 50 * index}, headers = header)
+                album_json = album_data.json()
+                all_song_infos += album_json['items']
+                index += 1
+            else:
+                print('getAlbumSongs Error: Code ' + str(album_data.status_code))
+    return all_song_infos
 
 def validStatus(request):
     return request.status_code==200
 
-def getArtistSong6(artist_id, number):
+def getArtistSongs(artist_id, number):
     pass
     # sp = spotipy.Spotify('BQAPMMQyspUy_qKzNTVCg3SAMnKRsPtRnTFkRjC29v_OCPbsPnvFYkpj8JguSzEH5a1v0IErw5DW6XrIC7oygltpPKk7Oay9tv6eQMLse5yj_rZm9B8M2vbYZxu9RKPjD_1wxPYCJ2Bwa53IRu8yLh7mc9Lth5Q')
     # artist_id = sp.search(artist_name, type = 'artist')['artists']['items'][0]['id']
@@ -69,3 +93,4 @@ def getArtistSong6(artist_id, number):
     #     print(album_tracks)
     #     song_infos += album_tracks
     # return song_selector(song_infos, rounds)
+
