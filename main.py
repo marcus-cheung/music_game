@@ -45,7 +45,6 @@ client_secret = "8adcb482dbf04ddbb261b7740309325e"
 redirect_uri = myurl + 'spotify-login/callback/'
 default_redirect_uri = myurl + 'super-secret-default-spotify/callback/'
 state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
-state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
 
 
 
