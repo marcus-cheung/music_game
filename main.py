@@ -448,29 +448,8 @@ def getToken(session):
                 print('getToken error: ' + str(user_data.status_code))
     return access_token
 
-def getDefaultToken():
-    #Open file
-    f = open('static/default_spotify.json')
-    #load it as a dictionary
-    spotify_data = json.load(f)
-    #save first instance of access token
-    access_token = spotify_data['access_token']
-    # If expired, fetch refreshed token
-    if spotify_data['expires_at'] < int(time.time()):
-        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': spotify_data['refresh_token'], 'client_id': client_id})
-        #if everything good reupdate session data
-        if user_data.status_code == 200:
-            spotify_data = user_data.json()
-            spotify_data['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
-            #save new data into json file
-            with open('static/default_spotify.json', 'w') as f:
-                json.dump(spotify_data, f)
-            access_token = spotify_data['access_token']
-        else:
-            print('getToken error: ' + str(user_data.status_code))
-    #Close file
-    f.close()
-    return access_token
+
+
 
 # run server
 if __name__ == "__main__":
