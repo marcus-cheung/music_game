@@ -147,6 +147,7 @@ def makeRoom(data):
 
 @socketio.on('search')
 def sendResults(data):
+    print(data)
     if data!='':
         socketio.emit('artist_results', getArtistSearch(data), room = request.sid)
 
