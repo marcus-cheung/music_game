@@ -44,7 +44,7 @@ client_id = "f50f20e747fb4bda8d9352696004cda4"
 client_secret = "8adcb482dbf04ddbb261b7740309325e"
 redirect_uri = myurl + 'spotify-login/callback/'
 default_redirect_uri = myurl + 'super-secret-default-spotify/callback/'
-state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
+state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(47, 128))
 
 
 

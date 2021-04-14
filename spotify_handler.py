@@ -29,10 +29,12 @@ def getDefaultToken():
             #if everything good reupdate session data
             if user_data.status_code == 200:
                 spotify_data = user_data.json()
-                spotify_data['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+                spotify_data['expires_at'] = int(time.time()) + spotify_data['expires_in']
                 access_token = spotify_data['access_token']
                 #save new data into json file
-                json.dump(spotify_data, f)
+                f.seek(0)
+                f.truncate(0)
+                json.dump(spotify_data, f, indent = 4)
             else:
                 print('getToken error: ' + str(user_data.status_code))
         return access_token
@@ -172,3 +174,5 @@ def getArtistSearch(artist_name):
             # TODO: Add default image
         payload.append(artist_info)
     return payload
+
+print(getDefaultToken())
