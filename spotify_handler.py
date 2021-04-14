@@ -9,6 +9,31 @@ markets = [ "AD", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "CA", "CH", "CL", "C
       "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "SE", "SG", "SK", "SV", "TH", "TR", "TW",
       "US", "UY", "VN" ]
 
+def getDefaultToken():
+    #Open file
+    f = open('static/default_spotify.json')
+    #load it as a dictionary
+    spotify_data = json.load(f)
+    #save first instance of access token
+    access_token = spotify_data['access_token']
+    # If expired, fetch refreshed token
+    if spotify_data['expires_at'] < int(time.time()):
+        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': spotify_data['refresh_token'], 'client_id': client_id})
+        #if everything good reupdate session data
+        if user_data.status_code == 200:
+            spotify_data = user_data.json()
+            spotify_data['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+            #save new data into json file
+            with open('static/default_spotify.json', 'w') as f:
+                json.dump(spotify_data, f)
+            access_token = spotify_data['access_token']
+        else:
+            print('getToken error: ' + str(user_data.status_code))
+    #Close file
+    f.close()
+    return access_token
+
+
 def getPlaylists(access_token):
     header = {'Authorization': 'Bearer '+ access_token}
     playlists_data = requests.get(base_url + 'me/playlists', {'limit':20}, headers = header)
@@ -116,21 +141,24 @@ def getArtistsSongs(artist_ids, access_token, include_feature = False):
             all_song_infos += getAlbumSongs([album_info['id']], access_token)
     return all_song_infos
 
-# Returns artist id based off top result of a search query
-def getArtistID(artist_name, access_token):
-    return getArtistINFO(artist_name, access_token)['artists']['items'][0]['id']
 
 
-def getArtistINFO(artist_name, access_token):
-    header = {'Authorization': 'Bearer ' + access_token}    
-    artist_data = requests.get(base_url + 'search', {'q': artist_name, 'type': 'artist', 'limit': 1}, headers = header)
+def getArtistInfos(artist_name, limit = 1):
+    header = {'Authorization': 'Bearer ' + getDefaultToken()}    
+    artist_data = requests.get(base_url + 'search', {'q': artist_name, 'type': 'artist', 'limit': limit}, headers = header)
     if validStatus(artist_data):
-        return artist_data.json()
+        return artist_data.json()['artists']['items']
     else:
         print('getArtistINFO Error: Code ' + str(artist_data.status_code))
 
 def validStatus(request):
     return request.status_code==200
 
-def getArtistIMG(artist_name, access_token):
-    return getArtistINFO(artist_name, access_token)['artists']['items'][0]['images'][0]['url']
+# Called on search
+def getArtistSearch(artist_name):
+    artist_info = getArtistInfos(artist_name, limit = 5)
+    payload = [{'image': artist_info[i]['images'][i]['url'],
+                'name': artist_info[i]['name'],
+                'id': artist_info[i]['id']
+                } for i in range(5)]
+    return payload

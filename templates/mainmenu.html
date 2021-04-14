@@ -24,6 +24,7 @@
             </a>
         </div>
         <div class="console">
+            <div id = 'artist_results'></div>
             <div class="make_game">
                 <div class='buttons'>
                     <select name="gamemode" id="gamemode">
@@ -55,6 +56,7 @@
                         <option value="20">20</option>
                     </select>
                     <input type="text" id="pin" placeholder="Make Pin">
+                    <input type="text" id="artist_search" placeholder="Search artist">
                 </div>
                 <div text-align='center'>Select Playlists</div>
                 <div class='playlist_div' id='playlist_div'>
@@ -80,6 +82,25 @@
             const url = "https://knewsic.herokuapp.com/";
             console.log(url)
             var socket = io();
+
+
+
+
+            let input = document.getElementById("artist_search");
+            input.addEventListener("keyup", (e) => {
+                console.log(e.currentTarget.value)
+                socket.emit('search', e.currentTarget.value)
+            });
+
+            socket.on('artist_results', (data) => {
+                document.getElementById('artist_results').innerHTML = ''
+                innerHTML = ''
+                for (i = 0; i < data.length; i++){
+                    innerHTML.concat(`<img src='${data.image} width= '30px'>`)
+                }
+                document.getElementById('artist_results').innerHTML = innerHTML
+            })
+
             document.querySelector('#create_game').onclick = () => {
                 var arr = [];
                 var checkboxes = document.getElementsByName('checkbox');

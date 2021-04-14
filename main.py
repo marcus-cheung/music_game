@@ -149,7 +149,7 @@ def makeRoom(data):
 @socketio.on('search')
 def sendResults(data):
     if data!='':
-        socketio.emit('artist_img', getArtistIMG(data, getToken(session)))
+        socketio.emit('artist_results', getArtistSearch(data), room = request.sid)
 
 # when join room pressed
 @socketio.on("join_room")
@@ -421,7 +421,7 @@ def super_secret_default_spotify_callback():
             spotify_data = user_data.json()
             spotify_data['expires_at'] = int(time.time()) + spotify_data['expires_in']
             #save new data into json file
-            with open('default_spotify.json', 'w') as f:
+            with open('static/default_spotify.json', 'w') as f:
                 json.dump(spotify_data, f)
         else:
             print('Callback error: ' + str(user_data.status_code))
@@ -432,28 +432,7 @@ def getToken(session):
     access_token = ''
     # If not logged in
     if not session.get('spotify_data'):
-        #Open file
-        f = open('default_spotify.json')
-        #load it as a dictionary
-        spotify_data = json.load(f)
-        #save first instance of access token
-        access_token = spotify_data['access_token']
-        # If expired, fetch refreshed token
-        if spotify_data['expires_at'] < int(time.time()):
-            user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': spotify_data['refresh_token'], 'client_id': client_id})
-            #if everything good reupdate session data
-            if user_data.status_code == 200:
-                spotify_data = user_data.json()
-                spotify_data['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
-                #save new data into json file
-                with open('default_spotify.json', 'w') as f:
-                    json.dump(spotify_data, f)
-                access_token = spotify_data['access_token']
-            else:
-                print('getToken error: ' + str(user_data.status_code))
-        #Close file
-        f.close()
-        
+        access_token = spotify_handler.getDefaultToken()
     # If logged in
     else:
         access_token = session['spotify_data']['access_token']
@@ -468,6 +447,7 @@ def getToken(session):
             else:
                 print('getToken error: ' + str(user_data.status_code))
     return access_token
+
 
 # run server
 if __name__ == "__main__":

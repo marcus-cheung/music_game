@@ -118,16 +118,7 @@
             }
 
 
-            let input = document.getElementById("artist_search");
-            input.addEventListener("keyup", (e) => {
-                console.log(e.currentTarget.value)
-                socket.emit('search', e.currentTarget.value)
-            });
-
-            socket.on('artist_img', (data) => {
-                document.getElementById('artist_img').innerHTML = `<img src='${data}'>`
-                console.log
-            })
+            
 
             document.querySelector('#join_game').onclick = () => {
                 socket.emit('join_room', {
