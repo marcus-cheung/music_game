@@ -163,7 +163,8 @@ def validStatus(request):
 
 # Called on search
 def getArtistSearch(artist_name):
-    artist_info = getArtistInfos(artist_name, limit = 5)
+    limit = 5
+    artist_info = getArtistInfos(artist_name, limit = limit)
     print(artist_info)
-    payload = [{'image': artist_info[i]['images'][0]['url'], 'name': artist_info[i]['name'], 'id': artist_info[i]['id']} for i in range(5)]
+    payload = [{'image': artist_info[i]['images'][0]['url'], 'name': artist_info[i]['name'], 'id': artist_info[i]['id']} for i in range(limit)]
     return payload
