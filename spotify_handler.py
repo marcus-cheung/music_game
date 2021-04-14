@@ -10,7 +10,7 @@ markets = [ "AD", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "CA", "CH", "CL", "C
       "US", "UY", "VN" ]
 
 def getDefaultToken():
-    #Open file
+    # Open file
     f = open('static/default_spotify.json')
     #load it as a dictionary
     spotify_data = json.load(f)
