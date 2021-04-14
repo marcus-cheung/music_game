@@ -93,12 +93,13 @@
             });
 
             socket.on('artist_results', (data) => {
+                console.log('Search results received')
                 document.getElementById('artist_results').innerHTML = ''
-                innerHTML = ''
+                images = ''
                 for (i = 0; i < data.length; i++){
-                    innerHTML.concat(`<img src='${data.image} width= '30px'>`)
+                    images.concat(`<img src='${data.image} width= '30px'>`)
                 }
-                document.getElementById('artist_results').innerHTML = innerHTML
+                document.getElementById('artist_results').innerHTML = images
             })
 
             document.querySelector('#create_game').onclick = () => {
