@@ -144,6 +144,10 @@ def makeRoom(data):
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 
+@socketio.on('search')
+def sendResults(data):
+    if data!='':
+        socketio.emit('artist_img', getArtistIMG(data, getToken(session)))
 
 # when join room pressed
 @socketio.on("join_room")
@@ -386,18 +390,45 @@ def getGame(room):
 
 # checks if token needs to be refreshed and does so, if not just returns access token
 def getToken(session):
-    # If expired, fetch refreshed token
-    if session['spotify_data']['expires_at'] < int(time.time()):
-        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': session['spotify_data']['refresh_token'], 'client_id': client_id})
-        if user_data.status_code == 200:
-            session['spotify_data'] = user_data.json()
-            session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
-        else:
-            print('getToken error: ' + str(user_data.status_code))
-    return session['spotify_data']['access_token']
-
-
-
+    access_token = ''
+    # If not logged in
+    if not session.get('spotify_data'):
+        #Open file
+        f = open('default_spotify.json')
+        #load it as a dictionary
+        spotify_data = json.load()
+        #save first instance of access token
+        access_token = spotify_data['access_token']
+        # If expired, fetch refreshed token
+        if spotify_data['expires_at'] < int(time.time()):
+            user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': spotify_data['refresh_token'], 'client_id': client_id})
+            #if everything good reupdate session data
+            if user_data.status_code == 200:
+                spotify_data = user_data.json()
+                spotify_data['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+                #save new data into json file
+                with open('default_spotify.json', 'w') as f:
+                    json.dump(spotify_data, f)
+                access_token = spotify_data['access_token']
+            else:
+                print('getToken error: ' + str(user_data.status_code))
+        #Close file
+        f.close()
+        
+    # If logged in
+    else:
+        access_token = session['spotify_data']['access_token']
+        # If expired, fetch refreshed token
+        if session['spotify_data']['expires_at'] < int(time.time()):
+            user_data = requests.post('https://accounts.spotify.com/api/token', data = {'grant_type': 'refresh_token', 'refresh_token': session['spotify_data']['refresh_token'], 'client_id': client_id})
+            #if everything good reupdate session data
+            if user_data.status_code == 200:
+                session['spotify_data'] = user_data.json()
+                session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
+                access_token = session['spotify_data']['access_token']
+            else:
+                print('getToken error: ' + str(user_data.status_code))
+    return access_token
 
 # run server
 if __name__ == "__main__":
