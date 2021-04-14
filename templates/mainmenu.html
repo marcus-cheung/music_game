@@ -97,7 +97,7 @@
                 document.getElementById('artist_results').innerHTML = ''
                 images = ''
                 for (i = 0; i < data.length; i++){
-                    images.concat(`<img src='${data.image} width= '30px'>`)
+                    images.concat(`<img src='${data[i].image} width= '30px'> `)
                 }
                 document.getElementById('artist_results').innerHTML = images
             })
