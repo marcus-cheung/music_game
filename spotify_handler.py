@@ -1,7 +1,6 @@
 import json
 import requests
 import time
-from main import getDefaultToken
 
 base_url = 'https://api.spotify.com/v1/'
 
