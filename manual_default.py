@@ -108,9 +108,6 @@ def getToken(session):
                 print('getToken error: ' + str(user_data.status_code))
     return access_token
 
-
-
-
 # run server
 if __name__ == "__main__":
     socketio.run(app)
