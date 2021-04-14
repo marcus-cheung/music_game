@@ -432,7 +432,7 @@ def getToken(session):
     access_token = ''
     # If not logged in
     if not session.get('spotify_data'):
-        access_token = spotify_handler.getDefaultToken()
+        access_token = getDefaultToken()
     # If logged in
     else:
         access_token = session['spotify_data']['access_token']
