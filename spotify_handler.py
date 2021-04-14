@@ -168,6 +168,6 @@ def getArtistSearch(artist_name):
     print(len(artist_info))
     for i in range(len(artist_info)):
         print(artist_info[i]['images'])
-    return [{'image': artist_info[i]['images'][0]['url'], 'name': artist_info[i]['name'], 'id': artist_info[i]['id']} for i in range(len(artist_info))]
+    return [{'image': artist_info[i]['images'][0]['url'], 'name': artist_info[i]['name'], 'id': artist_info[i]['id']} for i in range(len(artist_info)) if artist_info[i]['images'][0]['url'] != [] ]
 
-print(getArtistSearch('asdfasdfasdfasdfasdfasdf'))
+print(getArtistSearch('asdfasdfasdfasdfasdfasdf')) []
