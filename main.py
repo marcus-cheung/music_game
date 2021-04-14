@@ -321,8 +321,10 @@ def new_game(room):
     old_rounds = old_gamestate.rounds
 
     allsongs = getPlaylistSongs(old_playlists, getToken(session))
+    print(allsongs)
     # choose random from allsongs
     song_infos = song_selector(allsongs, old_rounds)
+    print(song_infos)
 
     # create a gamestate in list of gamestates at index = room number
     gamestates[int(room) - 1000] = classes.GameState(
