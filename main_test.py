@@ -53,7 +53,6 @@ state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
 # main page
 @app.route("/")
 def main():
-    print('approute connect')
     if not session.get('unique'):
         session["unique"] = (''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128)), time.time())
     return render_template("mainmenu.html")
