@@ -39,6 +39,16 @@ gamestates = [None] * 9000
 
 myurl = "https://knewsic.herokuapp.com/"
 
+# auth stuff chr
+client_id = "f50f20e747fb4bda8d9352696004cda4"
+client_secret = "8adcb482dbf04ddbb261b7740309325e"
+redirect_uri = myurl + 'spotify-login/callback/'
+default_redirect_uri = myurl + 'super-secret-default-spotify/callback/'
+state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
+state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
+
+
+
 
 # main page
 @app.route("/")
@@ -67,12 +77,7 @@ def setupMain():
             ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
             socketio.emit("add_playlist", data, room=request.sid)
 
-# auth stuff chr
-client_id = "f50f20e747fb4bda8d9352696004cda4"
-client_secret = "8adcb482dbf04ddbb261b7740309325e"
-redirect_uri = myurl+'spotify-login/callback/'
-state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128))
-state_encoded = base64.b64encode(bytes(state,encoding='utf8'))
+
 
 ## spotify login
 @app.route("/spotify-login/")
@@ -388,6 +393,43 @@ def getGame(room):
     return gamestates[int(room) - 1000]
 
 
+@app.route('/super-secret-default-spotify/')
+def super_secret_default_spotify():
+    #Code challenge/verifier generation
+    code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode('utf-8')
+    code_verifier = re.sub('[^a-zA-Z0-9]+', '', code_verifier)
+    session['code_verifier'] = code_verifier
+    code_challenge = sha256(code_verifier.encode('utf-8')).digest()
+    code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8')
+    code_challenge = code_challenge.replace('=', '')    
+    #Constructing body
+    scopes = 'playlist-read-private playlist-read-collaborative user-read-private'
+    query_data = {'client_id':client_id, 'response_type':'code', 'redirect_uri':default_redirect_uri, 'code_challenge_method':'S256', 'code_challenge':code_challenge,'scope':scopes,'state':state}
+    query = urllib.parse.urlencode(query_data)
+    auth_redirect = 'https://accounts.spotify.com/authorize?'+query
+    return redirect(auth_redirect)
+
+@app.route("/super-secret-default-spotify/callback/")
+def super_secret_default_spotify_callback():
+    callback_state = request.args.get('state')
+    if state != callback_state:
+        # abort
+        print('Callback state does not match')
+        return redirect(myurl)
+    else:
+        auth_code = request.args.get("code")
+        #post request
+        user_data = requests.post('https://accounts.spotify.com/api/token', data = {'client_id': client_id, 'grant_type': 'authorization_code', 'code': auth_code, 'redirect_uri': default_redirect_uri, 'code_verifier':session['code_verifier']})
+        if user_data.status_code == 200:
+            spotify_data = user_data.json()
+            spotify_data['expires_at'] = int(time.time()) + spotify_data['expires_in']
+            #save new data into json file
+            with open('default_spotify.json', 'w') as f:
+                json.dump(spotify_data, f)
+        else:
+            print('Callback error: ' + str(user_data.status_code))
+        return redirect(myurl)
+
 # checks if token needs to be refreshed and does so, if not just returns access token
 def getToken(session):
     access_token = ''
@@ -396,7 +438,7 @@ def getToken(session):
         #Open file
         f = open('default_spotify.json')
         #load it as a dictionary
-        spotify_data = json.load()
+        spotify_data = json.load(f)
         #save first instance of access token
         access_token = spotify_data['access_token']
         # If expired, fetch refreshed token
