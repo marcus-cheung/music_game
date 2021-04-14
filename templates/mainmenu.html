@@ -56,7 +56,7 @@
                     </select>
                     <input type="text" id="pin" placeholder="Make Pin">
                 </div>
-                <div text-align='center'>What Playlist</div>
+                <div text-align='center'>Select Playlists</div>
                 <div class='playlist_div' id='playlist_div'>
                 </div>
                 <div><input class="magnify" type="submit" id="create_game" value="Make a game" /></div>
@@ -141,7 +141,7 @@
                 alert('Wrong password!')
             })
 
-            socket.on('Room_noexist', () => {
+            socket.on('Room_no_exist', () => {
                 alert('Room doesn\'t exist!')
             })
 

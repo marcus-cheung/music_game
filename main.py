@@ -64,21 +64,20 @@ def setupMain():
     if not session.get("spotify_data"):
         # adds spotify log in button
         socketio.emit("add_spotify_button",room=request.sid)
-    else:
-        playlist_infos = getPlaylists(getToken(session))
-        for playlist in playlist_infos:
-            data = {}
-            playlist_id = playlist["id"]
-            name = playlist["name"]
-            data["label"] = f'<label for="{name}">{name}</label><br>'
-            data[
-                "checkbox"
-            ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
-            socketio.emit("add_playlist", data, room=request.sid)
+    playlist_infos = getPlaylists(getToken(session))
+    for playlist in playlist_infos:
+        data = {}
+        playlist_id = playlist["id"]
+        name = playlist["name"]
+        data["label"] = f'<label for="{name}">{name}</label><br>'
+        data[
+            "checkbox"
+        ] = f'<input type="checkbox" id="{name}" name="checkbox" value="{playlist_id}">'
+        socketio.emit("add_playlist", data, room=request.sid)
 
 
 
-## spotify login
+# spotify login
 @app.route("/spotify-login/")
 def spotify_login():
     #Code challenge/verifier generation
@@ -164,7 +163,7 @@ def joinRoom(data):
         room = int(data["roomcode"])
         # if room is active
         if room not in active_rooms:
-            socketio.emit("Room_noexist",room=request.sid)
+            socketio.emit("Room_no_exist",room=request.sid)
         # check if too many people
         elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
             socketio.emit("Room_full",room=request.sid)
