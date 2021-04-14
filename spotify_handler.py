@@ -164,10 +164,11 @@ def validStatus(request):
 # Called on search
 def getArtistSearch(artist_name):
     limit = 5
-    artist_info = getArtistInfos(artist_name, limit = limit)
-    print(len(artist_info))
-    for i in range(len(artist_info)):
-        print(artist_info[i]['images'])
-    return [{'image': artist_info[i]['images'][0]['url'], 'name': artist_info[i]['name'], 'id': artist_info[i]['id']} for i in range(len(artist_info)) if artist_info[i]['images'][0]['url'] != [] ]
-
-print(getArtistSearch('asdfasdfasdfasdfasdfasdf')) []
+    artist_json = getArtistInfos(artist_name, limit = limit)
+    payload = []
+    for entry in artist_json:
+        artist_info = {'name': entry['name'], 'id': entry['id']}
+        if entry['images'] != []:
+            artist_info['image'] = entry['images'][0]['url']
+        payload.append(artist_info)
+    return payload
