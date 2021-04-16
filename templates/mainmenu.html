@@ -179,6 +179,7 @@
 
             socket.on('add_playlist', (data) => {
                 const div = document.getElementById('playlist_div');
+                div.innerHTML = ''
                 if ("checkbox" in data && "label" in data) {
                     div.innerHTML += data.checkbox;
                     div.innerHTML += data.label
