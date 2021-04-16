@@ -78,7 +78,7 @@ def getPlaylistSongs(playlist_ids, access_token):
             while playlist_json['next'] != None:
                 playlist_data = requests.get(base_url + f'playlists/{playlist_id}/tracks', {'limit': 100, 'offset': index * 100, 'market':market}, headers = header)
                 playlist_json = playlist_data.json()
-                all_song_infos += [item['tracks'] for item in playlist_json['items']]
+                all_song_infos += [item['track'] for item in playlist_json['items']]
                 index += 1
         else:
             print('getPlaylistSongs Error: Code ' + str(playlist_data.status_code))
@@ -177,4 +177,4 @@ def getArtistSearch(artist_name):
         payload.append(artist_info)
     return payload
 
-print(getPlaylistSongs(['37i9dQZEVXbMDoHDwVN2tF'],getDefaultToken())[49])
+# print(getPlaylistSongs(['37i9dQZEVXbMDoHDwVN2tF'],getDefaultToken())[0])

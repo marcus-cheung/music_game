@@ -110,4 +110,5 @@ def getToken(session):
 
 # run server
 if __name__ == "__main__":
+    print('run')
     socketio.run(app)
