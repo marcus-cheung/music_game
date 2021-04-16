@@ -73,7 +73,7 @@ def getPlaylistSongs(playlist_ids, access_token):
                 break
         playlist_json = playlist_data.json()
         if validStatus(playlist_data):
-            all_song_infos += playlist_json['items']
+            all_song_infos += [item['track'] for item in playlist_json['items']]
             index = 1
             while playlist_json['next'] != None:
                 playlist_data = requests.get(base_url + f'playlists/{playlist_id}/tracks', {'limit': 100, 'offset': index * 100, 'market':market}, headers = header)
