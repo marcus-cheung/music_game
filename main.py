@@ -354,7 +354,7 @@ def disconnect():
         gamestate = getGame(room)
         user = getUser(gamestate)
         gamestate.inactive(user)
-        socket.emit('user_disconnect', user.username)
+        socketio.emit('user_disconnect', user.username)
         session['room'] = None
 
 @socketio.on('downloaded')
