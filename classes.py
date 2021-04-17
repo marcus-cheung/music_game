@@ -81,7 +81,7 @@ class GameState:
                 user.streak = 0
         # Check if all rounds are up
         if self.current_round != len(self.song_infos):
-            self.current_round+=1
+            self.current_round += 1
             self.correct = {}
 
     # Must be called before endRound, returns dictionary of song info parsed
@@ -123,7 +123,7 @@ class GameState:
 
     def score(self, user):
         time = self.correct[user] - self.round_start_time
-        return int((1 - (time / (2 * self.roundlength))) * 1000) + max(user.streak * 100, 500)
+        return int((1 - (time / self.roundlength)) * 500) + min(user.streak * 100, 500)
         
         
 
