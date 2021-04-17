@@ -220,23 +220,10 @@
 
 
       socket.on('user_joined', (data) => {
-        let div = document.getElementById('message_holder');
-        let old_height = div.scrollHeight
-        let username = data.username
-        let msg = data.msg
-        let correct = data.correct
-        let element = ''
-
-        element = `<div class='user_join_${bgcolor}'><b>${data}</b> Joined!</div>`
+        let element = `<div class='user_join_${bgcolor}'><b>${data}</b> Joined!</div>`
         bgcolor *= -1
 
-        div.innerHTML += element
-        if (div.scrollTop + 534 == old_height) { // 433 = height of message_holder
-          div.scrollTop = div.scrollHeight;
-        }
-        else {
-          document.getElementById('new_msg').style.display = 'none'
-        }
+        new_message(element)
       })
 
         socket.on('correct_answer', (string) => {
@@ -244,12 +231,10 @@
             new_message(element)
         })
 
-        socket.on("disconnect", () => {
-            console.log('disconnect check')
-            socket.emit('disconnected', room)
+        socket.on('user_disconnect', (username) => {
+            let element = `<div class = 'user_join_${bgcolor}'> <b> ${username} </b> disconnected. </div> `
+            new_message(element)
         })
-
-
 
     })
 

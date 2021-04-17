@@ -103,6 +103,7 @@ class GameState:
         print('inactive called')
         self.users.remove(user)
         self.inactive_users.append(user)
+        self.downloaded -= 1
         user.streak = 0
         print(self.users, self.inactive_users)
         if not self.users:

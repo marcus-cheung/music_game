@@ -285,7 +285,7 @@ def end_round(room):
 
     # Emit correct answer
     answer_dict = gamestate.getAnswer()
-    answer = f"The song was {answer_dict['song']} by {answer_dict['artist']} ({answer_dict['year']}."
+    answer = f"The song was {answer_dict['song']} by {answer_dict['artist']} ({answer_dict['year']})."
     socketio.emit('correct_answer', answer)
 
     # Get song info to be displayed
@@ -351,11 +351,11 @@ def disconnect():
     # On disconnection from a gameroom
     if session.get('room'):
         room = session['room']
-        session['room'] = None
         gamestate = getGame(room)
-        gamestate.downloaded -= 1
-        gamestate.inactive(getUser(gamestate))
-        print(gamestate.users, gamestate.inactive_users)
+        user = getUser(gamestate)
+        gamestate.inactive(user)
+        socket.emit('user_disconnect', user.username)
+        session['room'] = None
 
 @socketio.on('downloaded')
 def downloaded(room):
