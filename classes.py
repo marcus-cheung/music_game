@@ -7,7 +7,7 @@ class GameState:
     def __init__(
         self, room_number, gamemode, song_infos, rounds, host, playlists, users, roundlength=90, password=None
     ):
-        #On call
+        # On call
         self.room_number = room_number
         self.downloaded = 0
         self.ready_start = False
@@ -24,7 +24,8 @@ class GameState:
         self.song_infos = song_infos
         self.playlists = playlists
         # Used each round
-        self.correct = []
+        self.round_start_time
+        self.correct = {}
         self.current_round = 1
         self.round_start = False
         # Mutated when making/joining room
@@ -63,7 +64,7 @@ class GameState:
         lst = []
         for user in self.users:
             if user in self.correct:
-                gain = 100-self.correct.index(user)*5
+                gain = self.score(user)
             else:
                 gain = 0
             user.score += gain
@@ -74,12 +75,16 @@ class GameState:
         self.clearWaiting()
         for user in self.users:
             user.already_answered = False
+            if user in self.correct:
+                user.streak += 1
+            else:
+                user.streak = 0
         # Check if all rounds are up
         if self.current_round != len(self.song_infos):
             self.current_round+=1
-            self.correct = []
+            self.correct = {}
 
-    #must be called before endRound, returns dictionary of song info parsed
+    # Must be called before endRound, returns dictionary of song info parsed
     def getAnswer(self):
         song_info = self.song_infos[self.current_round-1]
         return {'album_cover': song_info['album']['images'][0]['url'], 'song':song_info['name'], 'artist':song_info['artists'][0]['name'], 'year': song_info['album']['release_date'][0:4]}
@@ -98,8 +103,9 @@ class GameState:
         print('inactive called')
         self.users.remove(user)
         self.inactive_users.append(user)
+        user.streak = 0
         print(self.users, self.inactive_users)
-        if self.users == []:
+        if not self.users:
             pass
             # TODO: Implement ending of the game
 
@@ -114,6 +120,10 @@ class GameState:
         for user in self.waiting_room:
             self.waiting_room.remove(user)
             self.users.append(user)
+
+    def score(self, user):
+        time = self.correct[user] - self.round_start_time
+        return int((1 - (time / (2 * self.roundlength))) * 1000) + max(user.streak * 100, 500)
         
         
 
@@ -127,13 +137,5 @@ class User:
         self.unique = unique
         self.already_answered = False
         self.score = 0
+        self.streak = 0
 
-
-
-        
-def remove_punc(s):
-    new_string = ''
-    for character in s:
-        if character.isalnum():
-            new_string += character
-    return new_string

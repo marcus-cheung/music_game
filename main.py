@@ -238,13 +238,12 @@ def onMSG(data):
     # If haven't answered
     else:
         # if round started and correct answer
-        if gamestate.round_start and gamestate.checkAnswer(data['msg']):   
+        if gamestate.round_start and gamestate.checkAnswer(data['msg']):
+            # Add user to dictionary of correct answerers
+            gamestate.correct[user] = int(time.time())
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
-            # socketio.emit('answered',)
             user.already_answered = True
-            # Add them to the list of correctly answered users
-            gamestate.correct.append(user)
             # check if round should be ended
             if len(gamestate.users) == len(gamestate.correct):
                 print('round end')
@@ -262,12 +261,12 @@ def onMSG(data):
 def start_round(room):
     # Make it possible to get correct answer
     gamestate = getGame(room)
-    gamestate.round_start=True
+    gamestate.round_start_time = int(time.time())
+    gamestate.round_start = True
     current_round = gamestate.current_round
-
     socketio.emit('start_round', room=room)
     # if its not the last round
-    if not(gamestate.current_round==gamestate.rounds):
+    if not gamestate.current_round==gamestate.rounds:
         # Starts a timer for the room
         time.sleep(gamestate.roundlength)
         # Calls end_round provided that the round has not incremented from everyone answering correctly
@@ -345,8 +344,6 @@ def disconnect():
     # On disconnection from a gameroom
     if session.get('room'):
         room = session['room']
-        print(room)
-        print('disconnected')
         session['room'] = None
         gamestate = getGame(room)
         gamestate.downloaded -= 1
