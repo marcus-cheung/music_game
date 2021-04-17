@@ -62,11 +62,12 @@
         let div = document.getElementById('message_holder');
         let old_height = div.scrollHeight
         div += div_element
-        if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) { // 525 = height of message_holder
+        if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) {
           div.scrollTop = div.scrollHeight;
         }
         else {
-          document.getElementById('new_msg').style.display = 'block'
+            document.getElementById('new_msg').style.display = 'block'
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
