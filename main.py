@@ -284,7 +284,9 @@ def end_round(room):
     socketio.emit('update_scores', scores, room=room)
 
     # Emit correct answer
-    socketio.emit('correct_answer', gamestate.getAnswer())
+    answer_dict = gamestate.getAnswer()
+    answer = f"The song was {answer_dict['song']} by {answer_dict['artist']} ({answer_dict['year']}."
+    socketio.emit('correct_answer', answer)
 
     # Get song info to be displayed
     song_info = gamestate.getAnswer()

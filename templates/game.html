@@ -240,7 +240,8 @@
       })
 
         socket.on('correct_answer', (string) => {
-
+            let element = `<div class='correct_${bgcolor}'>${string}</div>`
+            new_message(element)
         })
 
         socket.on("disconnect", () => {
