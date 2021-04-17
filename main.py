@@ -275,24 +275,29 @@ def start_round(room):
 
 def end_round(room):
     gamestate = getGame(room)
+
     # Disable getting correct answer
     gamestate.round_start=False
+
     # Get list of user/scoretotal/gain from that round ordered
     scores = gamestate.getScoreDATA()
     socketio.emit('update_scores', scores, room=room)
 
     # Emit correct answer
     socketio.emit('correct_answer', gamestate.getAnswer())
-    
+
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
-    # save the current round before it changes in endRound()
+
+    # Save the current round before it changes in endRound()
     checker = not gamestate.current_round == len(gamestate.song_infos)
     # Ends the round on server-side, also returns answer
     gamestate.endRound()
+
     # Closes the room of correct answerers
     close_room('correct' + str(room))
-    # if game not ended, Wait five seconds and then start round, 
+
+    # if game not ended, Wait five seconds and then start round,
     if checker:
         # Emits event to clients to end round
         socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
