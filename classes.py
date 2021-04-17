@@ -24,7 +24,7 @@ class GameState:
         self.song_infos = song_infos
         self.playlists = playlists
         # Used each round
-        self.round_start_time
+        self.round_start_time = 0
         self.correct = {}
         self.current_round = 1
         self.round_start = False
