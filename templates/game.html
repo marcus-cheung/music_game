@@ -64,7 +64,7 @@
         console.log(div)
         console.log(div_element)
         let old_height = div.scrollHeight
-        div += div_element
+        div.innerHTML += div_element
         if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) {
           div.scrollTop = div.scrollHeight;
         }
