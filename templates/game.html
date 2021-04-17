@@ -41,7 +41,9 @@
     integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
     crossorigin="anonymous"></script>
   <script type="text/javascript" charset="utf-8">
-    function download_music(files) {
+      var bgcolor = 1;
+
+      function download_music(files) {
       for (let i = 0; i < files.length; i++) {
         audios[i] = new Audio();
         audios[i].src = files[i]
@@ -55,13 +57,24 @@
       document.getElementById('start').style.display = "none"
     }
 
+    // Adds a new message to the chat area
+    function new_message(div_element) {
+        let div = document.getElementById('message_holder');
+        let old_height = div.scrollHeight
+        div += div_element
+        if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) { // 525 = height of message_holder
+          div.scrollTop = div.scrollHeight;
+        }
+        else {
+          document.getElementById('new_msg').style.display = 'block'
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const url = "https://knewsic.herokuapp.com/";
       socket = io();
       room = window.location.href.substring(url.length + 5, url.length + 9)
       var round = 0;
       audios = [new Audio()]
-      var bgcolor = 1;
       var readyState = false
       var volume_saver = 0.50;
       let volume = document.querySelector("#volume_control");
@@ -110,12 +123,9 @@
 
       socket.on('chat', (data) => {
         console.log('msg received')
-        let div = document.getElementById('message_holder');
-        let old_height = div.scrollHeight
         let username = data.username
         let msg = data.msg
         let correct = data.correct
-        console.log(correct)
         console.log(msg)
         let element = ''
         if (correct == 'first') {
@@ -131,15 +141,7 @@
           element = `<div class='wrong_${bgcolor}' ><b>${username}:</b> ${msg}</div>`
           bgcolor *= -1
         }
-        div.innerHTML += element
-
-
-        if (div.scrollTop + document.getElementById('message_holder').offsetHeight == old_height) { // 525 = height of message_holder
-          div.scrollTop = div.scrollHeight;
-        }
-        else {
-          document.getElementById('new_msg').style.display = 'block'
-        }
+        new_message(element)
       })
 
       socket.on('end_round', (data) => {
@@ -232,10 +234,14 @@
         }
       })
 
-      socket.on("disconnect", () => {
-        console.log('disconnect check')
-        socket.emit('disconnected', room)
-      })
+        socket.on('correct_answer', (string) => {
+
+        })
+
+        socket.on("disconnect", () => {
+            console.log('disconnect check')
+            socket.emit('disconnected', room)
+        })
 
 
 
