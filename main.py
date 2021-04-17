@@ -286,7 +286,7 @@ def end_round(room):
     # Emit correct answer
     answer_dict = gamestate.getAnswer()
     answer = f"The song was {answer_dict['song']} by {answer_dict['artist']} ({answer_dict['year']})."
-    socketio.emit('correct_answer', answer)
+    socketio.emit('correct_answer', answer, room = room)
 
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
@@ -354,7 +354,7 @@ def disconnect():
         gamestate = getGame(room)
         user = getUser(gamestate)
         gamestate.inactive(user)
-        socketio.emit('user_disconnect', user.username)
+        socketio.emit('user_disconnect', user.username, room=room)
         session['room'] = None
 
 @socketio.on('downloaded')
