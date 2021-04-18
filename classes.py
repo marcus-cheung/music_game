@@ -41,7 +41,6 @@ class GameState:
         self.round_start = False
         # Mutated when making/joining room
         self.game_started = False
-        self.allowed = []
         self.answers = []
         self.sockets = []
         self.game_ended = False
@@ -92,7 +91,7 @@ class GameState:
         # Check if all rounds are up
         if self.current_round != len(self.song_infos):
             self.current_round += 1
-            self.correct = {}
+            self.correct = []
 
     # Must be called before endRound, returns dictionary of song info parsed
     def getAnswer(self):
@@ -142,7 +141,7 @@ class GameState:
             self.users.append(user)
 
     def score(self, user):
-        time = self.correct[user] - self.round_start_time
+        time = user.timestamp - self.round_start_time
         return int((1 - (time / self.roundlength)) * 500) + min(user.streak * 100, 500)
 
 
@@ -156,9 +155,10 @@ class User:
         self.already_answered = False
         self.score = 0
         self.streak = 0
+        self.timestamp = None
+        self.correct = False
         # User states
-        self.inactive = False
-        self.waitlist = False
+        self.status = 'inactive' # 'waitlist' 'correct'
         self.voted_skip = False
         self.downloaded = False
         

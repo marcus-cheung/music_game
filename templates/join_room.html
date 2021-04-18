@@ -20,6 +20,8 @@
         <div class="header">
             <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
         </div>
+        <input type="text" id="roomcode">
+        <input type="text" id="password">
         <button id = "join_game">Join Game</button>
     </div>
 
@@ -36,7 +38,6 @@
 
             document.querySelector('#join_game').onclick = () => {
                 socket.emit('join_room', {
-                    'username': document.querySelector('#username').value,
                     'roomcode': document.querySelector('#roomcode').value,
                     'password': document.querySelector('#password').value
                 })

@@ -183,7 +183,6 @@ def joinRoom(data):
             socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
         # checking is password correct then redirecting to the room
         elif gamestates[room - 1000].password == password:
-            gamestates[room - 1000].allow(session["unique"])
             gamestates[room - 1000].addUser(user)
             socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
         # saying wrong password
@@ -199,9 +198,10 @@ def logout():
 @app.route("/game/<int:room>/")
 def runGame(room):
     # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
+    gamestate = getGame(room)
     if (
-        not getGame(room)
-        or session.get("unique") not in getGame(room).allowed
+        not gamestate
+        or getUser(gamestate)
     ):
         return redirect(myurl)
     else:
@@ -248,7 +248,7 @@ def onMSG(data):
         # if round started and correct answer
         if gamestate.round_start and gamestate.checkAnswer(data['msg']):
             # Add user to dictionary of correct answerers
-            gamestate.correct[user] = int(time.time())
+            user.timestamp = int(time.time())
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
             user.already_answered = True
@@ -401,13 +401,13 @@ def end_game(room):
     # Close correct socketio rooms
     close_room('correct' + str(room))
 
-# gets userobject based of unique
+# gets user object based off unique
 def getUser(gamestate):
-    users = gamestate.users + gamestate.inactive_users + gamestate.waiting_room
-    list_unique = [user.unique for user in users]
-    index = list_unique.index(session['unique'])
-    user = users[index]
-    return user
+    for user in gamestate.users:
+        if user.unique==session['unique']:
+            return user
+    return None
+    
 
 # Called on end of game or if room is empty
 def closeRooms(room):
