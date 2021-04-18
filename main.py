@@ -119,7 +119,7 @@ def authentication():
             session['spotify_data']['expires_at'] = int(time.time()) + session['spotify_data']['expires_in']
         else:
             print('Callback error: ' + str(user_data.status_code))
-        return redirect(myurl)
+        return redirect(myurl+'/make-room/')
 
 
 # when make_room_button is pressed on main page create a room and add this user to the room
