@@ -345,7 +345,7 @@ def new_game(room):
     socketio.emit('start_new', song_paths, room = room)
     socketio.emit('host', room = request.sid)
 
-@socketio('skip')
+@socketio.on('skip')
 def skip(room):
     gamestate = getGame(room)
     user = getUser(gamestate)
