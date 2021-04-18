@@ -350,7 +350,7 @@ def skip(room):
     gamestate = getGame(room)
     user = getUser(gamestate)
     if user not in gamestate.voted_skip:
-        gamestate.vote_skip.append(user)
+        gamestate.voted_skip.append(user)
         votes = len(gamestate.voted_skip)
         message_string = f'{user.username} has voted to skip the round. ({votes}/{len(gamestate.users)}).'
         socketio.emit('vote_skip', message_string, room=room)
