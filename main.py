@@ -54,10 +54,18 @@ state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(47
 def main():
     if not session.get('unique'):
         session["unique"] = (''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128)), time.time())
-    return render_template("mainmenu.html")
+    return render_template("main_menu.html")
+
+@app.route("/make-room/")
+def makeRoom():
+    return render_template("make_room.html")
+
+@app.route("/join-room/")
+def joinRoom():
+    return render_template("join_room.html")
 
 # If user logged into spotify adds playlists as options
-@socketio.on("connected_to_main")
+@socketio.on("connected_to_make_room")
 def setupMain():
     # If no access to spotify adds spotify log in button
     if not session.get("spotify_data"):

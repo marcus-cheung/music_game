@@ -176,5 +176,3 @@ def getArtistSearch(artist_name):
             # TODO: Add default image
         payload.append(artist_info)
     return payload
-
-# print(getPlaylistSongs(['37i9dQZEVXbMDoHDwVN2tF'],getDefaultToken())[0])

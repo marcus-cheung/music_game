@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="/static/styles/mainmenu_styles.css">
+</head>
+<style>
+    .magnify:hover,
+    .magnify :focus {
+        transition: .2s;
+        transform: scale(1.15);
+    }
+</style>
+
+<body>
+    <div class='wrapper' id='wrapper'>
+        <div class="header">
+            <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
+        </div>
+        <div class="console">
+            <div class="user">
+                <input type="text" id="username" placeholder="Username" maxlength="12" , autocomplete="off">
+            </div>
+            <button id = 'make_room'>Make Room</button>
+            <button id = 'join_room'>Join Room</button>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
+        integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            const url = "https://knewsic.herokuapp.com/";
+            console.log(url)
+            var socket = io();
+
+            document.querySelector('#make_room').onclick = () => {
+                window.location.href = url+'make-room/'
+            }
+
+            document.querySelector('#join_room').onclick = () => {
+                window.location.href = url+'join-room/'
+            }
+
+        })
+
+
+    </script>
+</body>
+
+</html>

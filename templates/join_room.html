@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="/static/styles/mainmenu_styles.css">
+</head>
+<style>
+    .magnify:hover,
+    .magnify :focus {
+        transition: .2s;
+        transform: scale(1.15);
+    }
+</style>
+
+<body>
+    <div class='wrapper' id='wrapper'>
+        <div class="header">
+            <img class="logo" src="/static/assets/music_notes.gif" alt="music_notes" />
+        </div>
+        <button id = "join_game">Join Game</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"
+        integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        document.addEventListener('DOMContentLoaded', () => {
+            const url = "https://knewsic.herokuapp.com/";
+            console.log(url)
+            var socket = io();
+
+
+
+            document.querySelector('#join_game').onclick = () => {
+                socket.emit('join_room', {
+                    'username': document.querySelector('#username').value,
+                    'roomcode': document.querySelector('#roomcode').value,
+                    'password': document.querySelector('#password').value
+                })
+            }
+
+
+            socket.on('password_correct', (data) => {
+                window.location.href = data
+            })
+            socket.on('wrong_pass', () => {
+                alert('Wrong password!')
+            })
+
+            socket.on('Room_no_exist', () => {
+                alert('Room doesn\'t exist!')
+            })
+
+            socket.on('Room_full', () => {
+                alert('Room is full!')
+            })
+
+
+
+
+        })
+
+
+    </script>
+</body>
+
+</html>
