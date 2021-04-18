@@ -355,7 +355,7 @@ def skip(room):
         message_string = f'{user.username} has voted to skip the round. ({votes}/{len(gamestate.users)}).'
         socketio.emit('vote_skip', message_string, room=room)
         if votes == len(gamestate.users):
-            socketio('skip_round', room = room)
+            socketio.emit('skip_round', room = room)
             end_round(room)
 
 
