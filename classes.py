@@ -26,6 +26,7 @@ class GameState:
         # Used each round
         self.round_start_time = 0
         self.correct = {}
+        self.voted_skip = []
         self.current_round = 1
         self.round_start = False
         # Mutated when making/joining room
