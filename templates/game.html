@@ -29,7 +29,7 @@
             <button type="button" id='new_game' style='display:none'>Start New Game</button>
             <button type="button" id="back_to_lobby">Back to home</button>
           </div>
-        </div?
+        </div>
         <input type="range" id="volume_control" class='volume_control' min="0" max="100" value="50">
           <button type="button" id="skip">Skip Song</button>
       </div>
@@ -238,7 +238,7 @@
         })
 
         document.getElementById('skip').onclick = () => {
-          socket.emit{'skip', room}
+          socket.emit{'skip', room};
         }
 
         socket.on('vote_skip', (message_string) => {
