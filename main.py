@@ -127,6 +127,7 @@ def createUser(username):
                         unique=session.get("unique")
                         ) 
     session['user_object'] = user
+    session['test'] = 'this passed'
     print(session)
     print(session['user_object'])
     print('User created: ' + user.username)
