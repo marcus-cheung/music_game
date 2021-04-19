@@ -124,10 +124,12 @@ def authentication():
 def createUser(username): 
     print(username)
     user = classes.User(username=username,
-                        unique=session.get("unique"),
-                        )
+                        unique=session.get("unique")
+                        ) 
     session['user_object'] = user
-    print('User created:' + user.username)
+    print(session)
+    print(session['user_object'])
+    print('User created: ' + user.username)
 
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
