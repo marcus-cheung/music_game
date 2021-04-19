@@ -120,12 +120,13 @@ def authentication():
             print('Callback error: ' + str(user_data.status_code))
         return redirect(myurl+'/make-room/')
 
-@socketio.on("user_created")
+@socketio.on("create_user")
 def createUser(username):
     user = classes.User(username=username,
                         unique=session.get("unique"),
                         )
     session['user_object'] = user
+    print('User created:' + user.username)
 
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
