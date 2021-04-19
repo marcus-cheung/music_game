@@ -57,6 +57,7 @@ def main():
 
 @app.route("/make-room/")
 def makeRoom():
+    print(session)
     return render_template("make_room.html")
 
 @app.route("/join-room/")
