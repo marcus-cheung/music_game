@@ -121,7 +121,8 @@ def authentication():
         return redirect(myurl+'/make-room/')
 
 @socketio.on("create_user")
-def createUser(username):
+def createUser(username): 
+    print(username)
     user = classes.User(username=username,
                         unique=session.get("unique"),
                         )

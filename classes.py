@@ -161,4 +161,8 @@ class User:
         self.status = 'inactive' # 'waitlist' 'correct'
         self.voted_skip = False
         self.downloaded = False
-        
+    
+
+class avatar:
+    def __init__(self):
+        pass

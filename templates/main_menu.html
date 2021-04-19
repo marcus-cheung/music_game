@@ -38,7 +38,7 @@
             var socket = io();
 
             document.querySelector('#make_room').onclick = () => {
-                let username = document.querySelector('#username')
+                let username = document.querySelector('#username').value
                 socket.emit('create_user', username)
                 window.location.href = url+'make-room/'
             }
