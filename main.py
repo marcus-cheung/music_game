@@ -36,7 +36,6 @@ active_rooms = []
 # list of gamestates
 gamestates = [None] * 9000
 
-
 myurl = "https://knewsic.herokuapp.com/"
 
 # auth stuff chr
@@ -121,14 +120,16 @@ def authentication():
             print('Callback error: ' + str(user_data.status_code))
         return redirect(myurl+'/make-room/')
 
+@socketio.on("user_created")
+def createUser(username):
+    user = classes.User(username=username,
+                        unique=session.get("unique"),
+                        )
+    session['user_object'] = user
 
 # when make_room_button is pressed on main page create a room and add this user to the room
 @socketio.on("make_room")
 def makeRoom(data):
-    #making user to later add to gamestate
-    user = classes.User(username = data['username'],
-        unique=session.get("unique"),
-    )
     # Gets free room number
     room = random.randint(1000, 9999)
     while room in active_rooms:
@@ -151,7 +152,7 @@ def makeRoom(data):
         download_songs(room, song_infos)
         # Whitelisting user
         getGame(room).allow(session["unique"])
-        getGame(room).addUser(user)
+        getGame(room).addUser(session['user'])
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 

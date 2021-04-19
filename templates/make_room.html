@@ -123,6 +123,7 @@
                     'making game'
                 )
                 socket.emit('make_room', {
+                    'username': document.querySelector('#username').value,
                     'gamemode': document.querySelector('#gamemode').value,
                     'rounds': document.querySelector('#rounds').value,
                     'password': document.querySelector('#pin').value,
