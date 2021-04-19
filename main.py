@@ -155,6 +155,9 @@ def makeRoom(data):
         # Add songs to directory
         download_songs(room, song_infos)
         # Whitelisting user
+        print(session)
+        print(session['user_object'])
+        print(session['user_object'].username)
         getGame(room).addUser(session['user_object'])
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
