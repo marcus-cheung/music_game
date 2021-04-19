@@ -129,6 +129,11 @@ def makeRoom(data):
     user = classes.User(username = data['username'],
         unique=session.get("unique"),
     )
+    # Gets free room number
+    room = random.randint(1000, 9999)
+    while room in active_rooms:
+        room = random.randint(1000, 9999)
+    socketio.emit('room_loading', room)
     allsongs = getPlaylistSongs(data['playlists'], getToken(session))
     # choose random from allsongs
     song_infos = song_selector(allsongs, int(data['rounds']))
@@ -136,10 +141,6 @@ def makeRoom(data):
     if song_infos == []:
         socketio.emit('invalid_rounds', room=request.sid)
     else:
-        #Gets free room number
-        room = random.randint(1000, 9999)
-        while room in active_rooms:
-            room = random.randint(1000, 9999)
         active_rooms.append(room)
         # create a gamestate in list of gamestates at index = room number
         gamestates[room - 1000] = classes.GameState(

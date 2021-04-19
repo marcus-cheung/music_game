@@ -105,6 +105,10 @@
                 document.getElementById('artist_results').innerHTML = images
             })
 
+            document.getElementById("create_game").onclick = () => {
+
+            }
+
             document.querySelector('#create_game').onclick = () => {
                 var arr = [];
                 var checkboxes = document.getElementsByName('checkbox');
@@ -125,6 +129,10 @@
                     'playlists': arr
                 })
             }
+
+            socket.on('room_loading', (room) => {
+                document.getElementById('loading').innerText = `Your room (${room}) is currently being made. You will be redirected when it is ready.`
+            })
 
 
 
