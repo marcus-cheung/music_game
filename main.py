@@ -151,7 +151,6 @@ def makeRoom(data):
         # Add songs to directory
         download_songs(room, song_infos)
         # Whitelisting user
-        getGame(room).allow(session["unique"])
         getGame(room).addUser(session['user'])
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
@@ -180,8 +179,7 @@ def joinRoom(data):
             socketio.emit("Room_full",room=request.sid)
         # checking no password case
         elif gamestates[room - 1000].password == "":
-            gamestates[room - 1000].allow(session["unique"])
-            gamestates[room - 1000].addUser(user)
+            gamestates[room - 1000].addUser(user)   
             socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
         # checking is password correct then redirecting to the room
         elif gamestates[room - 1000].password == password:
@@ -361,10 +359,10 @@ def skip(room):
     user = getUser(gamestate)
     if user not in gamestate.voted_skip:
         gamestate.voted_skip.append(user)
-        votes = len(gamestate.voted_skip) + len(gamestate.correct)
+        votes = len(gamestate.voted_skip) 
         message_string = f'{user.username} has voted to skip the round. ({votes}/{len(gamestate.users)})'
         socketio.emit('vote_skip', message_string, room=room)
-        if votes == len(gamestate.users):
+        if votes == len(gamestate.users) - len(gamestate.correct):
             socketio.emit('skip_round', room=room)
             end_round(room)
 
