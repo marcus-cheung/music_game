@@ -151,7 +151,7 @@ def makeRoom(data):
         # Add songs to directory
         download_songs(room, song_infos)
         # Whitelisting user
-        getGame(room).addUser(session['user'])
+        getGame(room).addUser(session['user_object'])
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 
@@ -164,10 +164,7 @@ def sendResults(data):
 # when join room pressed
 @socketio.on("join_room")
 def joinRoom(data):
-    user = classes.User(
-        username=data.get("username"),
-        unique=session.get("unique"),
-    )
+    user = session['user_object']
     password = data["password"]
     if data["roomcode"] != "":
         room = int(data["roomcode"])
