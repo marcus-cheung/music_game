@@ -37,21 +37,24 @@ function audio_visualizer(audioElement) {
     function draw(data, random_array) {
         let WIDTH = canvas.width
         let HEIGHT = canvas.height
-        let CENTER = WIDTH / 2
+        // let CENTER = WIDTH / 2
         console.log(WIDTH)
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
-        let barWidth = (WIDTH * 1.0) / bufferLength / 2
+        let barWidth = (WIDTH * 1.0) / bufferLength
         console.log(barWidth)
         let barHeight;
         let x = 0;
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = data[random_array[i]]**1.5 / 60
-            canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
-            canvasCtx.roundRect(CENTER + x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
-            if (i != 0) {
-                canvasCtx.roundRect(CENTER - x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
+            barHeight = data[random_array[i]]**1.5 * (HEIGHT / (255 ** 1.5))
+            if (barHeight > 0) {
+                canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
+                canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
+                // if (i != 0) {
+                //     canvasCtx.roundRect(CENTER - x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
+                // }
+                x += barWidth + 1
             }
-            x += barWidth + 1
+            
         }
     }   
     requestAnimationFrame(loopingFunction);
