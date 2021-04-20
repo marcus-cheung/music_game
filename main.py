@@ -206,8 +206,8 @@ def runGame(room):
     # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
     gamestate = getGame(room)
     if (
-        not gamestate
-        or getUser(gamestate)
+        not (gamestate
+        or getUser(gamestate))
     ):
         return redirect(myurl)
     else:
