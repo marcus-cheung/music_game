@@ -44,8 +44,9 @@ function audio_visualizer(audioElement) {
         console.log(barWidth)
         let barHeight;
         let x = 0;
+        random = shuffle(data)
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = data[random_array[i]]**1.5 * (HEIGHT / (255 ** 1.5))
+            barHeight = random[i]**1.5 * (HEIGHT / (255 ** 1.5))
             if (barHeight > 0) {
                 canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
                 canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
