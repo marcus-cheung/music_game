@@ -158,11 +158,6 @@ class User:
         self.score = 0
         self.streak = 0
         self.timestamp = None
-        self.correct = False
-        # User states
-        self.status = 'inactive' # 'waitlist' 'correct'
-        self.voted_skip = False
-        self.downloaded = False
     
 
 class avatar:
