@@ -12,6 +12,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 }
 
 function audio_visualizer(audioElement) {
+    console.log('audio_visualizer called')
     let canvas = document.getElementById("audio_visualizer");
     let canvasCtx = canvas.getContext("2d");
     let audioCtx = new AudioContext();
@@ -19,7 +20,7 @@ function audio_visualizer(audioElement) {
     analyser.fftSize = 128
     let bufferLength = analyser.frequencyBinCount
     let source = audioCtx.createMediaElementSource(audioElement)
-    source.connect('analyser')
+    source.connect(analyser)
     source.connect(audioCtx.destination)
     let dataArray = new Uint8Array(analyser.frequencyBinCount)
     console.log(dataArray)
