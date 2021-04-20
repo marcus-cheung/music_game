@@ -365,7 +365,7 @@ def new_game(room):
 def skip(room):
     gamestate = getGame(room)
     user = getUser(gamestate)
-    if not user.states['voted_skip']:
+    if gamestate.round_started and not user.states['correct'] and not user.states['voted_skip']:
         user.states['voted_skip'] = True
         votes = gamestate.len('voted_skip')
         total = len(gamestate.users) - gamestate.len('correct')
