@@ -19,13 +19,13 @@ function audio_visualizer(audioElement) {
     analyser.fftSize = 128
     let bufferLength = analyser.frequencyBinCount
     let source = audioCtx.createMediaElementSource(audioElement)
-    source.connect(analyser)
+    source.connect('analyser')
     source.connect(audioCtx.destination)
     let dataArray = new Uint8Array(analyser.frequencyBinCount)
     console.log(dataArray)
 
     function loopingFunction() {
-        console.log(looping)
+        console.log('looping')
         requestAnimationFrame(loopingFunction)
         analyser.getByteFrequencyData(dataArray)
         draw(dataArray)
@@ -42,7 +42,7 @@ function audio_visualizer(audioElement) {
         let barHeight;
         let x = 0;
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = data[i] / 3
+            barHeight = data[i]
             canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
             canvasCtx.roundRect(CENTER + x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
             if (i != 0){
