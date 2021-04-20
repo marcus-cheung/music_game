@@ -24,15 +24,17 @@ function audio_visualizer(audioElement) {
     source.connect(audioCtx.destination)
     let dataArray = new Uint8Array(analyser.frequencyBinCount)
     console.log(dataArray)
+    randomArray = shuffle(Array.from(Array(bufferLength).keys()))
+
 
     function loopingFunction() {
         console.log('looping')
         requestAnimationFrame(loopingFunction)
         analyser.getByteFrequencyData(dataArray)
-        draw(dataArray)
+        draw(dataArray, randomArray)
     }
 
-    function draw(data) {
+    function draw(data, random_array) {
         let WIDTH = canvas.width
         let HEIGHT = canvas.height
         let CENTER = WIDTH / 2
@@ -41,10 +43,9 @@ function audio_visualizer(audioElement) {
         let barWidth = (WIDTH * 1.0) / bufferLength / 2
         console.log(barWidth)
         let barHeight;
-        let randomized_data = shuffle(data)
         let x = 0;
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = randomized_data[i]**1.5 / 60
+            barHeight = data[random_array[i]]**1.5 / 60
             canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
             canvasCtx.roundRect(CENTER + x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
             if (i != 0) {
