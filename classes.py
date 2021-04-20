@@ -113,7 +113,7 @@ class GameState:
     def inactive(self, user):
         print("inactive called")
         user.states['correct'] = False
-        user.states['inactive']: True
+        user.states['inactive'] = True
         self.downloaded -= 1
         user.streak = 0
         if not self.users:
@@ -121,7 +121,7 @@ class GameState:
             # TODO: Implement ending of the game
 
     def reconnect(self, user):
-        self.inactive_users.remove(user)
+        user.states[]
         self.waiting_room.append(user)
         user.already_answered = True
         print(self.users, self.inactive_users)
