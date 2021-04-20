@@ -255,6 +255,7 @@ def onMSG(data):
         if gamestate.round_start and gamestate.checkAnswer(data['msg']):
             # Add user to dictionary of correct answerers
             user.timestamp = int(time.time())
+            gamestate.correct.append(user)
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
             user.already_answered = True
