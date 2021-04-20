@@ -84,6 +84,7 @@ class GameState:
         self.clearWaiting()
         for user in self.users:
             user.already_answered = False
+            user.voted_skip = False
             if user in self.correct:
                 user.streak += 1
             else:
@@ -92,6 +93,7 @@ class GameState:
         if self.current_round != len(self.song_infos):
             self.current_round += 1
             self.correct = []
+            self.voted_skip = []
 
     # Must be called before endRound, returns dictionary of song info parsed
     def getAnswer(self):
