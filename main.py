@@ -262,14 +262,7 @@ def onMSG(data):
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
             # check if round should be ended
             if len(gamestate.users) == gamestate.len('correct') + gamestate.len('voted_skip'):
-                print('round end')
-                # check if game will end
-                print(gamestate.current_round,len(gamestate.song_infos))
-                if gamestate.current_round == len(gamestate.song_infos):
-                    print('game end')
-                    end_game(str(room))
-                else:
-                    end_round(str(room))    
+                end_round(str(room))    
         # If round hasn't started or wrong answer
         else:
             socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': False}, room=data['room'])
@@ -307,20 +300,25 @@ def end_round(room):
     # Get song info to be displayed
     song_info = gamestate.getAnswer()
 
-    # Save the current round before it changes in endRound()
-    checker = not gamestate.current_round == len(gamestate.song_infos)
-    # Ends the round on server-side, also returns answer
-    gamestate.endRound()
-
     # Closes the room of correct answerers
     close_room('correct' + str(room))
 
+    # Ends the round on server-side, also returns answer
+    gamestate.endRound()
+
+    # Check if the game should end
+    if gamestate.current_round - 1 == len(gamestate.song_infos):
+        print('game end')
+        end_game(str(room))
+    
     # if game not ended, Wait five seconds and then start round,
-    if checker:
+    else:
         # Emits event to clients to end round
         socketio.emit('end_round', {'scores':scores, 'song_info':song_info}, room=room)
         time.sleep(2)
         start_round(room)
+
+
     
 
 @socketio.on('start_game')
