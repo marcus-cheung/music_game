@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from flask_session import Session
+from flask_cors import CORS
 
 import classes
 from spotify_handler import *
@@ -30,11 +31,14 @@ app.config["DEBUG"] = False
 # session stuff
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+CORS(app)
 
 # list of room codes
 active_rooms = []
 # list of gamestates
 gamestates = [None] * 9000
+# dictionary mapping uniques to user objects
+#
 
 myurl = "https://knewsic.herokuapp.com/"
 
