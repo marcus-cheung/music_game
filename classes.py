@@ -129,7 +129,7 @@ class GameState:
         return int((1 - (time / self.roundlength)) * 500) + min(user.streak * 100, 500)
     
     def len(self, state):
-        return len(user for user in self.users if user.states[state])
+        return len([user for user in self.users if user.states[state]])
     
     def SuperstateWipe(self, *args):
         for arg in args:
