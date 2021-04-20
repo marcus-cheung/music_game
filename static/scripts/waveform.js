@@ -2,15 +2,15 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (w < 2 * r) r = w / 2;
     if (h < 2 * r) r = h / 2;
     this.beginPath();
-    this.moveTo(x+r, y);
-    this.arcTo(x+w, y,   x+w, y+h, r);
-    this.arcTo(x+w, y+h, x,   y+h, r);
-    this.arcTo(x,   y+h, x,   y,   r);
-    this.arcTo(x,   y,   x+w, y,   r);
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
     this.closePath();
     return this;
 }
-                
+
 function audio_visualizer(audioElement) {
     let canvas = document.getElementById("audio_visualizer");
     let canvasCtx = canvas.getContext("2d");
@@ -45,7 +45,7 @@ function audio_visualizer(audioElement) {
             barHeight = data[i]
             canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
             canvasCtx.roundRect(CENTER + x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
-            if (i != 0){
+            if (i != 0) {
                 canvasCtx.roundRect(CENTER - x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
             }
             x += barWidth + 1
