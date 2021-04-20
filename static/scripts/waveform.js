@@ -37,6 +37,7 @@ function audio_visualizer(audioElement) {
         function draw(data) {
             let WIDTH = canvas.width
             let HEIGHT = canvas.height
+            let CENTER = WIDTH/2
             canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
             let barWidth = (WIDTH * 1.0) / bufferLength / 2
             let barHeight;
@@ -44,8 +45,8 @@ function audio_visualizer(audioElement) {
             for (let i = 0; i < bufferLength; i++) {
                 barHeight = data[bufferLength - i] / 2
                 canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
-                canvasCtx.roundRect(x, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
-                canvasCtx.roundRect(WIDTH - x - barHeight, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
+                canvasCtx.roundRect(CENTER + x, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
+                canvasCtx.roundRect(CENTER - x - barHeight, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
                 x += barWidth + 1
             }
         }
