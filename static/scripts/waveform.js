@@ -43,7 +43,7 @@ function audio_visualizer(audioElement) {
             let barHeight;
             let x = 0;
             for (let i = 0; i < bufferLength; i++) {
-                barHeight = data[bufferLength - i] / 2
+                barHeight = data[bufferLength] / 2
                 canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
                 canvasCtx.roundRect(CENTER + x, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
                 canvasCtx.roundRect(CENTER - x - barHeight, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
