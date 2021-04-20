@@ -112,7 +112,7 @@ class GameState:
 
     def inactive(self, user):
         print("inactive called")
-        self.correct.remove(user)
+        user.states['correct'] = False
         user.states['inactive']: True
         self.downloaded -= 1
         user.streak = 0
@@ -139,7 +139,7 @@ class GameState:
     def len(self, state):
         return len(user for user in self.users if user.states[state])
     
-    def stateWipe(self, *args):
+    def SuperstateWipe(self, *args):
         for arg in args:
             for user in self.users:
                 user.states[arg] = False
@@ -166,6 +166,9 @@ class User:
             'waitlist': False
 
         }
+    def stateWipe(self, *args):
+        for arg in args:
+          user.states[arg] = False
     
 
 class avatar:

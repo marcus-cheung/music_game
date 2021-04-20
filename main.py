@@ -256,11 +256,14 @@ def onMSG(data):
             # Add user to dictionary of correct answerers
             user.timestamp = int(time.time())
             gamestate.correct.append(user)
+            # Removes from voted skip
+            if user in gamestate.voted_skip:
+                gamestate.voted_skip.remove(user)
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
             user.already_answered = True
             # check if round should be ended
-            if len(gamestate.users) == len(gamestate.correct):
+            if len(gamestate.users) == len(gamestate.correct) + len(voted_skip):
                 print('round end')
                 # check if game will end
                 print(gamestate.current_round,len(gamestate.song_infos))
