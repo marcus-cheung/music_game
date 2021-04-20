@@ -38,13 +38,14 @@ function audio_visualizer(audioElement) {
             let WIDTH = canvas.width
             let HEIGHT = canvas.height
             canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
-            let barWidth = (WIDTH * 1.0) / bufferLength
+            let barWidth = (WIDTH * 1.0) / bufferLength / 2
             let barHeight;
             let x = 0;
             for (let i = 0; i < bufferLength; i++) {
-                barHeight = data[i] / 2
+                barHeight = data[bufferLength - i] / 2
                 canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
                 canvasCtx.roundRect(x, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
+                canvasCtx.roundRect(WIDTH - x - barHeight, HEIGHT/2 - barHeight/2, barWidth, barHeight, barHeight/10).fill();
                 x += barWidth + 1
             }
         }
