@@ -387,6 +387,8 @@ def disconnect():
         gamestate.inactive(user)
         socketio.emit('user_disconnect', user.username, room=room)
         session['room'] = None
+        if gamestate.users == []:
+            gamestates[int(room) - 1000] = None
 
 @socketio.on('downloaded')
 def downloaded(room):
