@@ -51,6 +51,6 @@ function audio_visualizer(audioElement) {
             }
             x += barWidth + 1
         }
-    }
+    }   
     requestAnimationFrame(loopingFunction);
 }
