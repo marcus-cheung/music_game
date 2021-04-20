@@ -1,7 +1,6 @@
 from flask import Flask, render_template, session, request, redirect, url_for
 from flask_socketio import SocketIO, join_room, leave_room, close_room
 from flask_session import Session
-from flask_cors import CORS
 
 import classes
 from spotify_handler import *
@@ -25,20 +24,17 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.config[
     "SECRET_KEY"
 ] = "z\xe4\xdc\xc4)\xf1\xad\x8dF\x07EVv8k\x14\xda\xd8\xd0\x8a\xc4\xbc\xaew\x98\xf1\x0f\xfa\x01\x90"
-socketio = SocketIO(app, always_connect=True)
+socketio = SocketIO(app, always_connect=True, manage_session=False)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["DEBUG"] = False
 # session stuff
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-CORS(app)
 
 # list of room codes
 active_rooms = []
 # list of gamestates
 gamestates = [None] * 9000
-# dictionary mapping uniques to user objects
-#
 
 myurl = "https://knewsic.herokuapp.com/"
 
