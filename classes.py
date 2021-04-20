@@ -42,7 +42,6 @@ class GameState:
         # Mutated when making/joining room
         self.game_started = False
         self.answers = []
-        self.sockets = []
         self.game_ended = False
         # User lists
         self.users = users
@@ -72,7 +71,7 @@ class GameState:
     def getScoreDATA(self):
         lst = []
         for user in self.users:
-            if user in self.correct:
+            if user.states['correct']:
                 gain = self.score(user)
             else:
                 gain = 0
@@ -113,12 +112,10 @@ class GameState:
 
     def inactive(self, user):
         print("inactive called")
-        self.users.remove(user)
         self.correct.remove(user)
-        self.inactive_users.append(user)
+        user.states['inactive']: True
         self.downloaded -= 1
         user.streak = 0
-        print(self.users, self.inactive_users)
         if not self.users:
             pass
             # TODO: Implement ending of the game
@@ -129,13 +126,6 @@ class GameState:
         user.already_answered = True
         print(self.users, self.inactive_users)
 
-    def superRemove(self, user):
-        self.correct.pop(user, None)
-        self.voted_skip.remove(user)
-        self.allowed.remove(user)
-        self.users.remove(user)
-        self.waiting_room.remove(user)
-        self.inactive_users.remove(user)
 
     def clearWaiting(self):
         for user in self.waiting_room:
@@ -145,6 +135,16 @@ class GameState:
     def score(self, user):
         time = user.timestamp - self.round_start_time
         return int((1 - (time / self.roundlength)) * 500) + min(user.streak * 100, 500)
+    
+    def len(self, state):
+        return len(user for user in self.users if user.states[state])
+    
+    def stateWipe(self, *args):
+        for arg in args:
+            for user in self.users:
+                user.states[arg] = False
+
+
 
 
 class User:
@@ -158,6 +158,14 @@ class User:
         self.score = 0
         self.streak = 0
         self.timestamp = None
+        #States
+        self.states = {
+            'correct': False,
+            'inactive': False,
+            'voted_skip': False,
+            'waitlist': False
+
+        }
     
 
 class avatar:
