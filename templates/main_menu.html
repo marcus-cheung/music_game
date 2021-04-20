@@ -44,7 +44,7 @@
             }
 
             document.querySelector('#join_room').onclick = () => {
-                let username = document.querySelector('#username')
+                let username = document.querySelector('#username').value
                 socket.emit('create_user', username)
                 window.location.href = url+'join-room/'
             }
