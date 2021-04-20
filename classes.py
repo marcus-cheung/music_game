@@ -35,8 +35,6 @@ class GameState:
         self.playlists = playlists
         # Used each round
         self.round_start_time = 0
-        self.correct = []
-        self.voted_skip = []
         self.current_round = 1
         self.round_start = False
         # Mutated when making/joining room
@@ -45,8 +43,6 @@ class GameState:
         self.game_ended = False
         # User lists
         self.users = users
-        self.inactive_users = []
-        self.waiting_room = []
         # Get the answers
         for song_info in self.song_infos:
             if self.gamemode == "song":
@@ -83,16 +79,15 @@ class GameState:
         self.clearWaiting()
         for user in self.users:
             user.already_answered = False
-            user.voted_skip = False
-            if user in self.correct:
+            if user.states['correct']:
                 user.streak += 1
             else:
                 user.streak = 0
+        self.SuperstateWipe('correct', 'voted_skip')
         # Check if all rounds are up
         if self.current_round != len(self.song_infos):
             self.current_round += 1
-            self.correct = []
-            self.voted_skip = []
+            self.SuperstateWipe('correct', 'voted_skip')
 
     # Must be called before endRound, returns dictionary of song info parsed
     def getAnswer(self):
@@ -121,16 +116,13 @@ class GameState:
             # TODO: Implement ending of the game
 
     def reconnect(self, user):
-        user.states[]
-        self.waiting_room.append(user)
+        user.states['inactive'] = False
+        user.states['waitlist'] = True
         user.already_answered = True
-        print(self.users, self.inactive_users)
 
 
     def clearWaiting(self):
-        for user in self.waiting_room:
-            self.waiting_room.remove(user)
-            self.users.append(user)
+        self.SuperstateWipe('waitlist')
 
     def score(self, user):
         time = user.timestamp - self.round_start_time

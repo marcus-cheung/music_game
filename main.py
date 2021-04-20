@@ -219,7 +219,7 @@ def runGame(room):
 @socketio.on("connected_to_room")
 def gameConnect(room):
     gamestate = getGame(room)
-    if gamestate and getUser(gamestate) in gamestate.inactive_users:
+    if gamestate and getUser(gamestate).states['inactive']:
         gamestate.reconnect(getUser(gamestate))
         join_room('correct' + str(room))
         socketio.emit('uptodate',gamestate.current_round, room = request.sid)
@@ -246,7 +246,7 @@ def onMSG(data):
     username = user.username
     print(username)
     # If already answered
-    if user.already_answered:
+    if user.states['correct']:
         print('already answered')
         socketio.emit('chat', {'username': username, 'msg': data['msg'], 'correct': True}, room='correct' + str(room))
     # If haven't answered
@@ -255,15 +255,13 @@ def onMSG(data):
         if gamestate.round_start and gamestate.checkAnswer(data['msg']):
             # Add user to dictionary of correct answerers
             user.timestamp = int(time.time())
-            gamestate.correct.append(user)
+            user.states['correct'] = True
             # Removes from voted skip
-            if user in gamestate.voted_skip:
-                gamestate.voted_skip.remove(user)
+            user.states['voted_skip'] = False
             join_room('correct' + str(room))
             socketio.emit('chat', {'username': username, 'msg': f'{user.username} has answered correctly!', 'correct': 'first'}, room=str(room))
-            user.already_answered = True
             # check if round should be ended
-            if len(gamestate.users) == len(gamestate.correct) + len(voted_skip):
+            if len(gamestate.users) == gamestate.len('correct') + gamestate.len('voted_skip'):
                 print('round end')
                 # check if game will end
                 print(gamestate.current_round,len(gamestate.song_infos))
@@ -367,12 +365,13 @@ def new_game(room):
 def skip(room):
     gamestate = getGame(room)
     user = getUser(gamestate)
-    if user not in gamestate.voted_skip:
-        gamestate.voted_skip.append(user)
-        votes = len(gamestate.voted_skip) 
-        message_string = f'{user.username} has voted to skip the round. ({votes}/{len(gamestate.users) - len(gamestate.correct)})'
+    if not user.states['voted_skip']:
+        user.states['voted_skip'] = True
+        votes = gamestate.len('voted_skip')
+        total = len(gamestate.users) - gamestate.len('correct')
+        message_string = f'{user.username} has voted to skip the round. ({votes}/{total})'
         socketio.emit('vote_skip', message_string, room=room)
-        if votes == len(gamestate.users) - len(gamestate.correct):
+        if votes == total:
             socketio.emit('skip_round', room=room)
             end_round(room)
 
