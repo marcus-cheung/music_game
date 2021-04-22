@@ -15,6 +15,8 @@ function audio_visualizer(audioElement) {
     console.log('audio_visualizer called')
     let canvas = document.getElementById("audio_visualizer");
     let canvasCtx = canvas.getContext("2d");
+    let WIDTH = canvas.width
+    let HEIGHT = canvas.height
     let audioCtx = new AudioContext();
     let analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2 ** 13
@@ -26,17 +28,22 @@ function audio_visualizer(audioElement) {
     console.log(dataArray)
     randomArray = shuffle(Array.from(Array(bufferLength).keys()))
 
+    var gradient = canvasCtx.createLinearGradient(20, 0, 220, 0);
+
+    // Add three color stops
+    gradient.addColorStop(0, 'green');
+    gradient.addColorStop(.5, 'cyan');
+    gradient.addColorStop(1, 'green');
+
 
     function loopingFunction() {
         console.log('looping')
         requestAnimationFrame(loopingFunction)
         analyser.getByteFrequencyData(dataArray)
-        draw(dataArray, randomArray)
+        draw(dataArray)
     }
 
-    function draw(data, random_array) {
-        let WIDTH = canvas.width
-        let HEIGHT = canvas.height
+    function draw(data) {
         // let CENTER = WIDTH / 2
         console.log(WIDTH)
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
@@ -45,35 +52,35 @@ function audio_visualizer(audioElement) {
         let barHeight;
         let x = 0;
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = data[i]**3.2 / (40 ** 3.2)
-            if (barHeight > 0) {
-                canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
-                canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
-                // if (i != 0) {
-                //     canvasCtx.roundRect(CENTER - x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
-                // }
-                x += barWidth + 1
-            }
-            
+            barHeight = data[i] ** 3.2 / (40 ** 3.2)
+            canvasCtx.fillStyle = gradient
+            // canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
+            canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
+            // if (i != 0) {
+            //     canvasCtx.roundRect(CENTER - x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
+            // }
+            x += barWidth + 1
+
+
         }
-    }   
+    }
     requestAnimationFrame(loopingFunction);
 }
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
-  
+
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
-  
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-  
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
     }
     return array
 }
