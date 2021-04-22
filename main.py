@@ -319,7 +319,7 @@ def end_round(room):
         start_round(room)
 
 
-    
+
 
 @socketio.on('start_game')
 def start_game(room):

@@ -17,7 +17,7 @@ function audio_visualizer(audioElement) {
     let canvasCtx = canvas.getContext("2d");
     let audioCtx = new AudioContext();
     let analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64
+    analyser.fftSize = 2 ** 13
     let bufferLength = analyser.frequencyBinCount
     let source = audioCtx.createMediaElementSource(audioElement)
     source.connect(analyser)
@@ -40,13 +40,12 @@ function audio_visualizer(audioElement) {
         // let CENTER = WIDTH / 2
         console.log(WIDTH)
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
-        let barWidth = (WIDTH * 1.0) / bufferLength
+        let barWidth = (WIDTH * 4) / bufferLength
         console.log(barWidth)
         let barHeight;
         let x = 0;
-        random = shuffle(data)
         for (let i = 0; i < bufferLength; i++) {
-            barHeight = random[i]**1.5 * (HEIGHT / (150 ** 1.5))
+            barHeight = data[i]**3.2 / (40 ** 3.2)
             if (barHeight > 0) {
                 canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
                 canvasCtx.roundRect(x, HEIGHT / 2 - barHeight / 2, barWidth, barHeight, barHeight / 10).fill();
