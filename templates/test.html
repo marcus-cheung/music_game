@@ -6,19 +6,26 @@
 </head>
 
 <body>
-    <canvas id="audio_visualizer" height = '300 px' width = '600px'></canvas>
+    <canvas id="audio_visualizer" height='300 px' width='600px'></canvas>
     <button id="start">Click to start</button>
+    <!-- <img id='0' src='static/assets/notsing.png'>
+    <img id='1' src='static/assets/notsing.png'>
+    <img id='2' src='static/assets/notsing.png'> -->
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
         integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='scripts/waveform.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/waveformation.js') }}"></script>
     <script type="text/javascript" charset="utf-8">
         document.addEventListener('DOMContentLoaded', () => {
             audioElement = new Audio('static/test.mp3')
+            // for (i = 0; i < 8; i++) {
+            //     document.body.innerHTML+=`<img id='${i}' src='static/assets/notsing.png'>`
+            // }
+            
             document.getElementById('start').onclick = () => {
-                    audioElement.play()
-                    audio_visualizer(audioElement)
-                }
+                audioElement.play()
+                audio_visualizer(audioElement)
+            }
         })
     </script>
 
