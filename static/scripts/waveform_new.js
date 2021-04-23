@@ -36,12 +36,12 @@ function audio_visualizer(audioElement) {
 
         for (let j = 0; j < N; j++) {
             console.log(`Graphing step ${j}`)
-            let t = 2 * Math.PI * j / N
+            let t =  j
             let x = 0
             let y = 0
             for (let k = 0; k < frequencyData.length / 12; k++) {
-                x += frequencyData[k] * Math.cos(k * t)
-                y += frequencyData[k] * Math.sin(k * t)
+                x += frequencyData[k] * Math.cos(Math.phi**(k*t))
+                y += frequencyData[k] * Math.sin(Math.phi**(k*t))
             }
             plot(x, y)
         }
@@ -81,7 +81,7 @@ function audio_visualizer(audioElement) {
         hilbert.normalize = false
         hilbert.buffer = impulseBuffer
         return hilbert
-    }+
+    }
 
     requestAnimationFrame(loopingFunction)
 }

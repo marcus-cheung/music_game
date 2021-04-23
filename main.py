@@ -51,8 +51,6 @@ state = ''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(47
 # main page
 @app.route("/")
 def main():
-    if not session.get('unique'):
-        session["unique"] = (''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128)), time.time())
     return render_template("main_menu.html")
 
 @app.route("/make-room/")
@@ -63,6 +61,12 @@ def makeRoom():
 @app.route("/join-room/")
 def joinRoom():
     return render_template("join_room.html")
+
+
+@socketio.on('connect')
+def connect():
+    if not session.get('unique'):
+        session["unique"] = (''.join(random.choice(ascii_letters + digits + '_.-~') for i in range(128)), time.time())
 
 # If user logged into spotify adds playlists as options
 @socketio.on("connected_to_make_room")
@@ -156,11 +160,6 @@ def makeRoom(data):
         makeDir(room)
         # Add songs to directory
         download_songs(room, song_infos)
-        # Whitelisting user
-        print(session)
-        print(session['user_object'])
-        print(session['user_object'].username)
-        getGame(room).addUser(session['user_object'])
         # redirect to the game room
         socketio.emit("room_made", myurl + f"game/{room}",room=request.sid)
 
@@ -173,27 +172,26 @@ def sendResults(data):
 # when join room pressed
 @socketio.on("join_room")
 def joinRoom(data):
-    user = session['user_object']
-    password = data["password"]
-    if data["roomcode"] != "":
-        room = int(data["roomcode"])
-        # if room is active
-        if room not in active_rooms:
-            socketio.emit("Room_no_exist",room=request.sid)
-        # check if too many people
-        elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
-            socketio.emit("Room_full",room=request.sid)
-        # checking no password case
-        elif gamestates[room - 1000].password == "":
-            gamestates[room - 1000].addUser(user)   
-            socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
-        # checking is password correct then redirecting to the room
-        elif gamestates[room - 1000].password == password:
-            gamestates[room - 1000].addUser(user)
-            socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
-        # saying wrong password
-        else:
-            socketio.emit("wrong_pass",room=request.sid)
+    if session.get('user_object'):
+        user = session['user_object']
+        password = data["password"]
+        if data["roomcode"] != "":
+            room = int(data["roomcode"])
+            # if room is active
+            if room not in active_rooms:
+                socketio.emit("Room_no_exist",room=request.sid)
+            # check if too many people
+            elif len(gamestates[room - 1000].users) > gamestates[room - 1000].max_users:
+                socketio.emit("Room_full",room=request.sid)
+            # checking no password case
+            elif gamestates[room - 1000].password == "":
+                socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
+            # checking is password correct then redirecting to the room
+            elif gamestates[room - 1000].password == password:
+                socketio.emit("password_correct", myurl + f"game/{room}",room=request.sid)
+            # saying wrong password
+            else:
+                socketio.emit("wrong_pass",room=request.sid)
 
 
 @socketio.on("logout_spotify")
@@ -205,37 +203,65 @@ def logout():
 def runGame(room):
     # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
     gamestate = getGame(room)
-    if (
-        not (gamestate
-        or getUser(gamestate))
-    ):
+    if not gamestate:
         return redirect(myurl)
     else:
-        session['room'] = room
-        return render_template("game.html", myurl=myurl)
+        if session.get['user_object']:
+            session['room'] = room
+            return render_template("game.html")
+        else:
+            return render_template("user_creation.html")
 
 
-#What happens on game connect: Prints user joined, if host add start button
+#What happens on game connect: Prints user joined, if host add start button /// assumes that userobj has already been created
 @socketio.on("connected_to_room")
 def gameConnect(room):
-    gamestate = getGame(room)
-    if gamestate and getUser(gamestate).states['inactive']:
-        gamestate.reconnect(getUser(gamestate))
-        join_room('correct' + str(room))
-        socketio.emit('uptodate',gamestate.current_round, room = request.sid)
-        # Add a message to client that tells to wait for one round
-    join_room(room)
-    #Print user
     user = getUser(gamestate)
-    socketio.emit('user_joined', user.username, room=room)
-
-    #if is host set as host
-    if gamestate and gamestate.host and session['unique'] == gamestate.host and not gamestate.game_started:
-        gamestate.host_reqID = request.sid
+    gamestate = getGame(room)
+    #if in users
+    if user:
+        #inactive handler
+        if gamestate and getUser(gamestate).states['inactive']:
+            gamestate.reconnect(getUser(gamestate))
+            join_room('correct' + str(room))
+            join_room(room)
+            socketio.emit('uptodate',gamestate.current_round, room = request.sid)
+            socketio.emit('user_joined', user.username, room=room)
+            socketio.emit('send_song_paths', [myurl + 'static/music/' + str(room) + '/' + super_sanitize(song['name']) + '.m4a' for song in gamestate.song_infos], room=request.sid)
+            #TODO: Add a message to client that tells to wait for one round
+    # First time connections
+    # If host then don't prompt for pass and add them to users
+    elif session['unique'] == gamestate.host and not gamestate.game_started:
+        #wipe user score data
+        joinGame(room)
         socketio.emit('host', room=request.sid)
-        
-    # Send all the song file names
+    # if just a user and there is a password
+    elif gamestate.password:
+        #make sure to wipe user score data
+        socketio.emit('prompt_pin', room=request.sid)
+    #no password and just a user
+    else:
+        joinGame(room)
+
+#first time only
+def joinGame(room):
+    # Wipe extra user data
+    user = session['user_object']
+    user.reset()
+    gamestate = getGame(room)
+    gamestate.addUser(user)
+    join_room(room)
+    socketio.emit('user_joined', user.username, room=room)
     socketio.emit('send_song_paths', [myurl + 'static/music/' + str(room) + '/' + super_sanitize(song['name']) + '.m4a' for song in gamestate.song_infos], room=request.sid)
+
+@socketio.on('enter_pin')
+def enterPin(data):
+    gamestate = getGame(data['room'])
+    if data['pin']== gamestate.password:
+        joinGame()
+        socketio.emit('correct_pin', room=request.sid) #remove modal
+    else:
+        socketio.emit('incorrect_pin', room=request.sid)
 
 # Sends chat messages to everyone in room
 @socketio.on('message_send')

@@ -33,7 +33,7 @@ function audio_visualizer(audioElement) {
 
         for (let j = 0; j < N; j++) {
             console.log(`Graphing step ${j}`)
-            let t = 2 * Math.PI * j / N
+            let t = 2 * Math.PI * j
             let x1 = 0
             let y1 = 0
             for (let k = 0; k < frequencyData.length / 12; k++) {
@@ -47,7 +47,7 @@ function audio_visualizer(audioElement) {
                 y2 += frequencyData[k] * Math.cos(k * t)
             }
             let y = y1
-            let x = x2
+            let x = x2  
             plot(x, y)
         }
     }

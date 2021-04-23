@@ -132,15 +132,14 @@ class GameState:
         return len([user for user in self.users if user.states[state]])
     
     def SuperstateWipe(self, *args):
-        for arg in args:
-            for user in self.users:
-                user.states[arg] = False
+        for user in self.users:
+            user.stateWipe(args)
 
 
 
 
 class User:
-    def __init__(self, unique, username):
+    def __init__(self, unique, username, avatar):
         if username == "":
             self.username = "Guest" + str(randint(10000, 99999))
         else:
@@ -160,7 +159,16 @@ class User:
         }
     def stateWipe(self, *args):
         for arg in args:
-          user.states[arg] = False
+          self.states[arg] = False
+    
+    def reset(self):
+        self.score = 0
+        self.streak = 0
+        self.timestamp = None
+        self.already_answered = False
+        for key in self.states.keys():
+            self.states[key] = False
+        
     
 
 class avatar:
