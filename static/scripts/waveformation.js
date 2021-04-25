@@ -26,9 +26,8 @@ function audio_visualizer(audioElement) {
     function driver(frequencyData) {
         
         frequencyData = frequencyData.filter(freq=>freq>50)
-        console.log(frequencyData)
-        let xfunc = SummationHigherorder(freq=> Math.cos(realFreq(freq)), frequencyData)
-        let yfunc = SummationHigherorder(freq=> Math.sin(realFreq(freq)), frequencyData)
+        let xfunc = SummationHigherorder(freq=> Math.cos(Math.log2(realFreq(freq))), frequencyData)
+        let yfunc = SummationHigherorder(freq=> Math.sin(Math.log2(realFreq(freq))), frequencyData)
         graphEquation(xfunc, yfunc, N)
     }
 
@@ -37,7 +36,7 @@ function audio_visualizer(audioElement) {
         // for full period
         divisions = divisions/Math.PI
         
-        for (i=1; i<=divisions; i++){
+        for (i=2; i<=divisions; i++){
             //path
             canvasCtx.beginPath()
             //color
