@@ -14,7 +14,7 @@ function audio_visualizer(audioElement) {
     let HEIGHT = canvas.height
     let origin = [WIDTH / 2, HEIGHT / 2]
     let N = 1000
-    let manual_scale = 10000
+    let manual_scale = 50000
     let scaleFactor = Math.min(WIDTH / manual_scale, HEIGHT / manual_scale)
     function loopingFunction() {
         analyser.getByteFrequencyData(dataArray) 
@@ -35,23 +35,26 @@ function audio_visualizer(audioElement) {
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
         // for full period
         divisions = divisions/Math.PI
-        let old = {'x': origin[0] + xfunc(0) * scaleFactor, 'y': origin[1] + yfunc(0) * scaleFactor}
-        console.log(old)
+        
         for (i=1; i<=divisions; i++){
             //path
             canvasCtx.beginPath()
             //color
             canvasCtx.strokeStyle = `rgb(${255/i},0,0)`
             //starting point
-            canvasCtx.moveTo(old.x,old.y)
+            canvasCtx.moveTo(pointx(i-1),pointy(i-1))
             //end point
-            let newx = origin[0] + xfunc(i) * scaleFactor
-            let newy = origin[1] + yfunc(i) * scaleFactor
-            canvasCtx.lineTo(newx,newy)
-            old = {'x': newx, 'y':newy}
+            canvasCtx.lineTo(pointx(i),pointy(i))
             //draw line
             canvasCtx.stroke()
         }
+    }
+
+    function pointx (func, x){
+        return origin[0] + x * scaleFactor
+    }
+    function pointy (func, y){
+        return origin[1] + y * scaleFactor
     }
 
     //summmation (inclusive) of functions, returns the super func for adding up all circles
