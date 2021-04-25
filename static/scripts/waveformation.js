@@ -42,18 +42,18 @@ function audio_visualizer(audioElement) {
             //color
             canvasCtx.strokeStyle = `rgb(${255/i},0,0)`
             //starting point
-            canvasCtx.moveTo(pointx(funx(i-1)), pointy(funcy(i-1)))
+            canvasCtx.moveTo(xpoint(xfunc(i-1)), ypoint(yfunc(i-1)))
             //end point
-            canvasCtx.lineTo(pointx(funcx(i)), pointy(funcy(i)))
+            canvasCtx.lineTo(xpoint(xfunc(i)), ypoint(yfunc(i)))
             //draw line
             canvasCtx.stroke()
         }
     }
 
-    function pointx (x){
+    function xpoint (x){
         return origin[0] + x * scaleFactor
     }
-    function pointy (y){
+    function ypoint (y){
         return origin[1] + y * scaleFactor
     }
 
