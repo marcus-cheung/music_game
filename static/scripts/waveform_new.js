@@ -40,8 +40,8 @@ function audio_visualizer(audioElement) {
             let x = 0
             let y = 0
             for (let k = 0; k < frequencyData.length / 12; k++) {
-                x += frequencyData[k] * Math.cos(Math.phi**(k*t))
-                y += frequencyData[k] * Math.sin(Math.phi**(k*t))
+                x += frequencyData[k] * Math.cos(k*t)
+                y += frequencyData[k] * Math.sin(k*t)
             }
             plot(x, y)
         }

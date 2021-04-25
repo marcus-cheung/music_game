@@ -1,4 +1,3 @@
-
 function audio_visualizer(audioElement) {
     console.log('audio_visualizer called')
     let canvas = document.getElementById("audio_visualizer");
@@ -7,65 +6,72 @@ function audio_visualizer(audioElement) {
     let analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2 ** 8
     let bufferLength = analyser.frequencyBinCount
-    console.log(bufferLength)
     let source = audioCtx.createMediaElementSource(audioElement)
     source.connect(analyser)
     source.connect(audioCtx.destination)
     let dataArray = new Uint8Array(analyser.frequencyBinCount)
-    console.log(dataArray)
     let WIDTH = canvas.width
     let HEIGHT = canvas.height
     let origin = [WIDTH / 2, HEIGHT / 2]
     let N = 1000
-    let manual_scale = 5000
+    let manual_scale = 10000
     let scaleFactor = Math.min(WIDTH / manual_scale, HEIGHT / manual_scale)
     function loopingFunction() {
-        analyser.getByteFrequencyData(dataArray)
+        analyser.getByteFrequencyData(dataArray) 
         //graph data array
-        graph(dataArray)
+        driver(dataArray)
         requestAnimationFrame(loopingFunction)
     }
 
-    function graph(frequencyData) {
+    function driver(frequencyData) {
         console.log('Graphing!')
+        
+        let xfunc = SummationHigherorder(Math.cos, frequencyData)
+        let yfunc = SummationHigherorder(Math.sin, frequencyData)
+        graphEquation(xfunc, yfunc, N)
+    }
+
+    function graphEquation(xfunc, yfunc, divisions){
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
-
-
-        for (let j = 0; j < N; j++) {
-            console.log(`Graphing step ${j}`)
-            let t = 2 * Math.PI * j
-            let x1 = 0
-            let y1 = 0
-            for (let k = 0; k < frequencyData.length / 12; k++) {
-                x1 += frequencyData[k] * Math.cos(k * t)
-                y1 += frequencyData[k] * Math.sin(k * t)
-            }
-            let x2 = 0
-            let y2 = 0
-            for (let k = 0; k < frequencyData.length / 12; k++) {
-                x2 += frequencyData[k] * Math.sin(k * t)
-                y2 += frequencyData[k] * Math.cos(k * t)
-            }
-            let y = y1
-            let x = x2  
-            plot(x, y)
+        // for full period
+        divisions = divisions/Math.PI
+        let old = {'x': origin[0] + xfunc(0) * scaleFactor, 'y': origin[1] + yfunc(0) * scaleFactor}
+        console.log(old)
+        for (i=1; i<=divisions; i++){
+            //path
+            canvasCtx.beginPath()
+            //color
+            canvasCtx.strokeStyle = `rgb(${255/i},0,0)`
+            //starting point
+            canvasCtx.moveTo(old.x,old.y)
+            //end point
+            let newx = origin[0] + xfunc(i) * scaleFactor
+            let newy = origin[1] + yfunc(i) * scaleFactor
+            canvasCtx.lineTo(newx,newy)
+            old = {'x': newx, 'y':newy}
+            //draw line
+            canvasCtx.stroke()
         }
     }
 
-    function plot(x, y) {
-        console.log(`Plotted ${x}, ${y}`)
-
-        canvasCtx.fillType = 'rgb(0, 0, 0)'
-        canvasCtx.fillRect(origin[0] + x * scaleFactor, origin[1] - y * scaleFactor, 1, 1);
+    //summmation (inclusive) of functions, returns the super func for adding up all circles
+    function SummationHigherorder(func, frequencyData){
+        function higherOrder(freq){
+            return t => frequencyData[freq] * func(freq*t)
+        }
+        let listFuncs = []
+        for (const freq in frequencyData){
+            listFuncs.push(higherOrder(freq))
+        }
+        function compose(...fns){
+            return x => fns.reduce((result,f)=>result+f(x),0)
+        }
+        return compose(...listFuncs)
+        
     }
-
 
     requestAnimationFrame(loopingFunction)
 }
 
-function fourier_transform(freq){
-    return 
-}
 
 
-//summation of volume(i)*sin(i*)
