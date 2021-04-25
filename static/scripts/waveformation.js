@@ -24,10 +24,11 @@ function audio_visualizer(audioElement) {
     }
 
     function driver(frequencyData) {
-        console.log('Graphing!')
         
-        let xfunc = SummationHigherorder(Math.cos, frequencyData)
-        let yfunc = SummationHigherorder(Math.sin, frequencyData)
+        frequencyData = frequencyData.filter(freq=>freq>50)
+        console.log(frequencyData)
+        let xfunc = SummationHigherorder(freq=> Math.cos(realFreq(freq)), frequencyData)
+        let yfunc = SummationHigherorder(freq=> Math.sin(realFreq(freq)), frequencyData)
         graphEquation(xfunc, yfunc, N)
     }
 
@@ -40,7 +41,7 @@ function audio_visualizer(audioElement) {
             //path
             canvasCtx.beginPath()
             //color
-            canvasCtx.strokeStyle = `rgb(${255/i},0,0)`
+            canvasCtx.strokeStyle = `red`
             //starting point
             canvasCtx.moveTo(xpoint(xfunc(i-1)), ypoint(yfunc(i-1)))
             //end point
@@ -71,6 +72,10 @@ function audio_visualizer(audioElement) {
         }
         return compose(...listFuncs)
         
+    }
+
+    function realFreq(freq){
+        return freq*(44100/bufferLength/2)
     }
 
     requestAnimationFrame(loopingFunction)
