@@ -25,26 +25,26 @@ function audio_visualizer(audioElement) {
 
     function driver(frequencyData) {
         
-        frequencyData = frequencyData.filter(freq=>freq>50)
-        let xfunc = SummationHigherorder(freq=> Math.cos(Math.log2(realFreq(freq))), frequencyData)
-        let yfunc = SummationHigherorder(freq=> Math.sin(Math.log2(realFreq(freq))), frequencyData)
+        frequencyData = frequencyData.filter(freq=>freq>5)
+        let xfunc = SummationHigherorder(t=> Math.cos(t), frequencyData)
+        let yfunc = SummationHigherorder(t=> Math.sin(t), frequencyData)
         graphEquation(xfunc, yfunc, N)
     }
 
     function graphEquation(xfunc, yfunc, divisions){
         canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
         // for full period
-        divisions = divisions/Math.PI
-        
-        for (i=2; i<=divisions; i++){
+
+        for (i=1; i < divisions; i++){
+            t = 2 * Math.PI * i / divisions
             //path
             canvasCtx.beginPath()
-            //color
+            //colorz
             canvasCtx.strokeStyle = `red`
             //starting point
-            canvasCtx.moveTo(xpoint(xfunc(i-1)), ypoint(yfunc(i-1)))
+            canvasCtx.moveTo(xpoint(xfunc(t-1)), ypoint(yfunc(t-1)))
             //end point
-            canvasCtx.lineTo(xpoint(xfunc(i)), ypoint(yfunc(i)))
+            canvasCtx.lineTo(xpoint(xfunc(t)), ypoint(yfunc(t)))
             //draw line
             canvasCtx.stroke()
         }
@@ -54,10 +54,10 @@ function audio_visualizer(audioElement) {
         return origin[0] + x * scaleFactor
     }
     function ypoint (y){
-        return origin[1] + y * scaleFactor
+        return origin[1] - y * scaleFactor
     }
 
-    //summmation (inclusive) of functions, returns the super func for adding up all circles
+    //summmation (inclusive) of functions, returns the super func for adding up all circles   function rcosfreqtheta+rcostheta+...
     function SummationHigherorder(func, frequencyData){
         function higherOrder(freq){
             return t => frequencyData[freq] * func(freq*t)
@@ -66,15 +66,14 @@ function audio_visualizer(audioElement) {
         for (const freq in frequencyData){
             listFuncs.push(higherOrder(freq))
         }
-        function compose(...fns){
+        function sum(...fns){
             return x => fns.reduce((result,f)=>result+f(x),0)
         }
-        return compose(...listFuncs)
-        
+        return sum(...listFuncs)
     }
 
     function realFreq(freq){
-        return freq*(44100/bufferLength/2)
+        return (freq + 1)*(44100/bufferLength/2)
     }
 
     requestAnimationFrame(loopingFunction)
