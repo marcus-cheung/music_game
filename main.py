@@ -80,7 +80,7 @@ def setupMain():
         # adds spotify log in button
         socketio.emit("add_spotify_button", room=request.sid)
     playlist_infos = getPlaylists(getToken(session))
-    socketio.emit("add_playlist", [f'<button class="playlist" id="{playlist["name"]}" name="checkbox" value="{playlist["id"]}">{playlist["name"]}</button>' for playlist in playlist_infos], room=request.sid)
+    socketio.emit("add_playlist", [f"<button class='playlist' id='{playlist['id']}' value='{playlist['id']}''>{playlist['name']} onclick='add_playlist({playlist['id']},{playlist['name']})'</button>" for playlist in playlist_infos], room=request.sid)
 
 
 # spotify login

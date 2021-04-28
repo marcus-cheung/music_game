@@ -64,6 +64,7 @@
                 <div><input class="magnify" type="submit" id="create_game" value="Make a game" /></div>
             </div>
         </div>
+        <div id = 'selected'></div>
     </div>
 
     <div class='loading' id='loading'>LOADING...</div>
@@ -76,7 +77,6 @@
             const url = "https://knewsic.herokuapp.com/";
             console.log(url)
             var socket = io();
-
 
             socket.on('connect', () => {
                 const div = document.getElementById('playlist_div');
@@ -170,7 +170,34 @@
                     div.innerHTML += playlist
                 }
             })
-            
+
+
+
+
+            function add_playlist(id, name){
+                //remove from playlist list
+                let playlists = document.getElementById('playlist_div')
+                let playlist = playlists.removeChild(getElementById(id))
+                //add to selected
+                let div = document.getElementById('selected')
+                playlist.onclick = `remove_element(${id}, ${name})`
+                div.innerHTML += playlist
+            }
+
+            function remove_element(id, name){
+                let selected = document.getElementById('selected')
+                let element = selected.removeChild(getElementById(id))
+                let element_class = element.class
+                if (element_class=='playlist'){
+                    document.getElementById('playlist_div') += element
+                    element.onclick =         `add_playlist(${id}, ${name})`
+                }
+                else if (element_class=='artist'){
+                    document.getElementById('playlist_div') += element
+                    element.onclick =        `add_playlist(${id}, ${name})`
+                }
+            }
+
 
 
 
