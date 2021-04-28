@@ -73,7 +73,7 @@
         integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
         crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
-        function add_playlist(id, name) {
+        function add_playlist(id) {
             //remove from playlist list
             let playlists = document.getElementById('playlist_div')
             let playlist = playlists.removeChild(document.getElementById(`p${id}`))
@@ -83,7 +83,7 @@
             div.innerHTML += playlist
         }
 
-        function remove_element(id, name) {
+        function remove_element(id) {
             let selected = document.getElementById('selected')
             let element = selected.removeChild(document.getElementById(`p${id}`))
             let element_class = element.class
