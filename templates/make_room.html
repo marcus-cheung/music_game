@@ -9,7 +9,7 @@
 </head>
 <style>
     .magnify:hover,
-    .magnify :focus {
+    .magnify:focus {
         transition: .2s;
         transform: scale(1.15);
     }
@@ -177,7 +177,7 @@
             function add_playlist(id, name){
                 //remove from playlist list
                 let playlists = document.getElementById('playlist_div')
-                let playlist = playlists.removeChild(getElementById(id))
+                let playlist = playlists.removeChild(getElementById(`p${id}`))
                 //add to selected
                 let div = document.getElementById('selected')
                 playlist.onclick = `remove_element(${id}, ${name})`
@@ -186,15 +186,15 @@
 
             function remove_element(id, name){
                 let selected = document.getElementById('selected')
-                let element = selected.removeChild(getElementById(id))
+                let element = selected.removeChild(getElementById(`p${id}`))
                 let element_class = element.class
                 if (element_class=='playlist'){
                     document.getElementById('playlist_div') += element
-                    element.onclick =         `add_playlist(${id}, ${name})`
+                    element.onclick = `add_playlist(${id}, ${name})`
                 }
                 else if (element_class=='artist'){
                     document.getElementById('playlist_div') += element
-                    element.onclick =        `add_playlist(${id}, ${name})`
+                    element.onclick = `add_playlist(${id}, ${name})`
                 }
             }
 
