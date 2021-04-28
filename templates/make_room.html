@@ -64,7 +64,7 @@
                 <div><input class="magnify" type="submit" id="create_game" value="Make a game" /></div>
             </div>
         </div>
-        <div id = 'selected'></div>
+        <div id='selected'></div>
     </div>
 
     <div class='loading' id='loading'>LOADING...</div>
@@ -73,6 +73,29 @@
         integrity="sha384-DkkWv9oJFWLIydBXXjkBWnG1/fuVhw8YPBq37uvvD6WSYRFRqr21eY5Dg9ZhmWdy"
         crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
+        function add_playlist(id, name) {
+            //remove from playlist list
+            let playlists = document.getElementById('playlist_div')
+            let playlist = playlists.removeChild(getElementById(`p${id}`))
+            //add to selected
+            let div = document.getElementById('selected')
+            playlist.onclick = `remove_element(${id}, ${name})`
+            div.innerHTML += playlist
+        }
+
+        function remove_element(id, name) {
+            let selected = document.getElementById('selected')
+            let element = selected.removeChild(getElementById(`p${id}`))
+            let element_class = element.class
+            if (element_class == 'playlist') {
+                document.getElementById('playlist_div') += element
+                element.onclick = `add_playlist(${id}, ${name})`
+            }
+            else if (element_class == 'artist') {
+                document.getElementById('playlist_div') += element
+                element.onclick = `add_playlist(${id}, ${name})`
+            }
+        }
         document.addEventListener('DOMContentLoaded', () => {
             const url = "https://knewsic.herokuapp.com/";
             console.log(url)
@@ -165,8 +188,8 @@
 
 
             socket.on('add_playlist', (data) => {
-                const div = document.getElementById('playlist_div');
-                for (let i = 0, playlist; playlist=data[i]; i++){
+                let div = document.getElementById('playlist_div');
+                for (let i = 0, playlist; playlist = data[i]; i++) {
                     div.innerHTML += playlist
                 }
             })
@@ -174,29 +197,7 @@
 
 
 
-            function add_playlist(id, name){
-                //remove from playlist list
-                let playlists = document.getElementById('playlist_div')
-                let playlist = playlists.removeChild(getElementById(`p${id}`))
-                //add to selected
-                let div = document.getElementById('selected')
-                playlist.onclick = `remove_element(${id}, ${name})`
-                div.innerHTML += playlist
-            }
 
-            function remove_element(id, name){
-                let selected = document.getElementById('selected')
-                let element = selected.removeChild(getElementById(`p${id}`))
-                let element_class = element.class
-                if (element_class=='playlist'){
-                    document.getElementById('playlist_div') += element
-                    element.onclick = `add_playlist(${id}, ${name})`
-                }
-                else if (element_class=='artist'){
-                    document.getElementById('playlist_div') += element
-                    element.onclick = `add_playlist(${id}, ${name})`
-                }
-            }
 
 
 
