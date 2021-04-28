@@ -166,11 +166,11 @@
 
             socket.on('add_playlist', (data) => {
                 const div = document.getElementById('playlist_div');
-                if ("checkbox" in data && "label" in data) {
-                    div.innerHTML += data.checkbox;
-                    div.innerHTML += data.label
+                for (let i = 0, playlist; playlist=data[i]; i++){
+                    div.innerHTML += playlist
                 }
             })
+            
 
 
 
