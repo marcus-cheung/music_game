@@ -76,7 +76,7 @@
         function add_playlist(id, name) {
             //remove from playlist list
             let playlists = document.getElementById('playlist_div')
-            let playlist = playlists.removeChild(getElementById(`p${id}`))
+            let playlist = playlists.removeChild(document.getElementById(`p${id}`))
             //add to selected
             let div = document.getElementById('selected')
             playlist.onclick = `remove_element(${id}, ${name})`
@@ -85,7 +85,7 @@
 
         function remove_element(id, name) {
             let selected = document.getElementById('selected')
-            let element = selected.removeChild(getElementById(`p${id}`))
+            let element = selected.removeChild(document.getElementById(`p${id}`))
             let element_class = element.class
             if (element_class == 'playlist') {
                 document.getElementById('playlist_div') += element
