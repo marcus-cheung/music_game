@@ -74,12 +74,13 @@
         crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         function add_playlist(id) {
+            console.log("add_playlist called")
             //remove from playlist list
             let playlists = document.getElementById('playlist_div')
             let playlist = playlists.removeChild(document.getElementById(`p${id}`))
             //add to selected
             let div = document.getElementById('selected')
-            playlist.onclick = `remove_element(${id}, ${name})`
+            playlist.onclick = `remove_element(${id})`
             div.innerHTML += playlist
         }
 
@@ -89,11 +90,11 @@
             let element_class = element.class
             if (element_class == 'playlist') {
                 document.getElementById('playlist_div') += element
-                element.onclick = `add_playlist(${id}, ${name})`
+                element.onclick = `add_playlist(${id})`
             }
             else if (element_class == 'artist') {
                 document.getElementById('playlist_div') += element
-                element.onclick = `add_playlist(${id}, ${name})`
+                element.onclick = `add_playlist(${id})`
             }
         }
         document.addEventListener('DOMContentLoaded', () => {
