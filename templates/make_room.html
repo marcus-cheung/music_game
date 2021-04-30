@@ -80,7 +80,7 @@
             let playlist = playlists.removeChild(document.getElementById(`p${id}`))
             //add to selected
             let div = document.getElementById('selected')
-            playlist.onclick = `remove_element(${id})`
+            playlist.onclick = `remove_elemen6t(${id})`
             div.innerHTML += playlist
         }
 
@@ -197,13 +197,28 @@
 
 
 
+            document.body.addEventListener('click', handleClick);
 
 
-
-
-
-
-
+            function handleClick(event){
+                event = event || window.event
+                event.target = event.target || event.srcElement
+                let element = event.target
+                if (element.className.match('add_playlist')){
+                    // Remove from playlist div
+                    let playlists = document.getElementById('playlist_div')
+                    let playlist = playlists.removeChild(element)
+                    // Add to selected div
+                    playlist.class = 'remove_playlist'
+                    document.getElementById('selected').innerHTML += playlist
+                }
+                if (element.className.match('remove_playlist')){
+                    let selected = document.getElementById('selected')
+                    let playlist = selected.removeChild(element)
+                    playlist.class = 'add_playlist'
+                    document.getElementById('playlist_div').innerHTML += element
+                    }
+            }
         })
 
 
