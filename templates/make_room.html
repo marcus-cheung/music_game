@@ -190,14 +190,14 @@
                     let playlist = playlists.removeChild(element)
                     console.log(playlist)
                     // Add to selected div
-                    playlist.class = 'remove_playlist'
+                    playlist.className = 'remove_playlist'
                     document.getElementById('selected').appendChild(playlist)
                 }
                 if (element.className.match('remove_playlist')){
                     console.log('removing playlist')
                     let selected = document.getElementById('selected')
                     let playlist = selected.removeChild(element)
-                    playlist.class = 'add_playlist'
+                    playlist.className = 'add_playlist'
                     document.getElementById('playlist_div').appendchild(playlist)
                     }
             }
