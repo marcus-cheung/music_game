@@ -188,16 +188,17 @@
                     // Remove from playlist div
                     let playlists = document.getElementById('playlist_div')
                     let playlist = playlists.removeChild(element)
+                    console.log(playlist)
                     // Add to selected div
                     playlist.class = 'remove_playlist'
-                    document.getElementById('selected').innerHTML += playlist
+                    document.getElementById('selected').appendChild(playlist)
                 }
                 if (element.className.match('remove_playlist')){
                     console.log('removing playlist')
                     let selected = document.getElementById('selected')
                     let playlist = selected.removeChild(element)
                     playlist.class = 'add_playlist'
-                    document.getElementById('playlist_div').innerHTML += element
+                    document.getElementById('playlist_div').appendchild(playlist)
                     }
             }
         })
