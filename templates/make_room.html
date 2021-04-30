@@ -193,7 +193,7 @@
                     playlist.className = 'remove_playlist'
                     document.getElementById('selected').appendChild(playlist)
                 }
-                if (element.className.match('remove_playlist')){
+                else if (element.className.match('remove_playlist')){
                     console.log('removing playlist')
                     let selected = document.getElementById('selected')
                     let playlist = selected.removeChild(element)
