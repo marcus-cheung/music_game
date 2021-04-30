@@ -201,10 +201,12 @@
 
 
             function handleClick(event){
+                console.log('clicked)')
                 event = event || window.event
                 event.target = event.target || event.srcElement
                 let element = event.target
                 if (element.className.match('add_playlist')){
+                    console.log('adding playlist')
                     // Remove from playlist div
                     let playlists = document.getElementById('playlist_div')
                     let playlist = playlists.removeChild(element)
@@ -213,6 +215,7 @@
                     document.getElementById('selected').innerHTML += playlist
                 }
                 if (element.className.match('remove_playlist')){
+                    console.log('removing playlist')
                     let selected = document.getElementById('selected')
                     let playlist = selected.removeChild(element)
                     playlist.class = 'add_playlist'
