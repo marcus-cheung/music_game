@@ -103,10 +103,10 @@
                     let image = data[i].image
                     let name = data[i].name
                     let search_result = `<div class='search_result' id='result_{$i}'><div> `
-                    artist_results.appendChild(search_result)
+                    artist_results.innerHTML += search_result
                     search_result = document.getElementById(`result_${i}`)
-                    search_result.appendChild(`<img src='${image}' class='search_image></img>`)
-                    search_result.appendChild(`<div class='artist_name'>${name}</div>`)
+                    search_result.innerHTML += `<img src='${image}' class='search_image></img>`
+                    search_result.innerHTML += <div class='artist_name'>${name}</div>
                 }
             })
 
