@@ -202,8 +202,7 @@
                     }
                 else if (element.className.match('artist_name') || element.className.match('artist_image')){
                     let parent = element.parentNode
-                    console.log(parent.id)
-                    if (parent.id == 'search_results'){
+                    if (parent.className == 'search_result'){
                         // Add to selected div
                         document.getElementById('selected').appendChild(parent)
                         // Clear the search bar
@@ -211,7 +210,7 @@
                         document.getElementById('artist_results').innerHTML = ''
                     }
                     else{
-                        parent.removeChild(element)
+                        parent.parentNode.removeChild(parent)
                     }
                 }
             }
