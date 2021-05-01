@@ -100,7 +100,7 @@
                 let artist_results = document.getElementById('artist_results')
                 artist_results.innerHTML = ''
                 for (let i = 0; i < data.length; i++) {
-                    let image = `<img src='${data[i].image}' class='search_image'>`
+                    let image = `<img src='${data[i].image}' class='artist_image'>`
                     let name = `<div class='artist_name'>${data[i].name}</div>`
                     let search_result = `<div class='search_result' id='result_${i}'>${image}${name}<div> `
                     artist_results.innerHTML += search_result
@@ -200,6 +200,14 @@
                     playlist.className = 'add_playlist'
                     document.getElementById('playlist_div').appendChild(playlist)
                     }
+                else if (element.className.match('artist_name') || element.className.match('artist_image')){
+                    let search_result = element.parentNode
+                    // Add to selected div
+                    document.getElementById('selected').appendChild(search_result)
+                    // Clear the search bar
+                    document.getElementById('artist_search').value = ''
+                    document.getElementById('artist_results').innerHTML = ''
+                }
             }
         })
 
