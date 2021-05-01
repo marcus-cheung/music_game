@@ -103,9 +103,8 @@
                     let image = data[i].image
                     let name = data[i].name
                     let search_result = "<div class='search_result'><div>"
-                    search_result.appendChild += `<img src='${image}' class='search_image></img>`
-                    search_result.appendChild += `<div class='artist_name'>${name}</div>`
-                    images += `<img src='${data[i].image}' width='90px'>`
+                    search_result.appendChild(`<img src='${image}' class='search_image></img>`)
+                    search_result.appendChild(`<div class='artist_name'>${name}</div>`)
                     console.log(images)
                 }
                 document.getElementById('artist_results').innerHTML = images
