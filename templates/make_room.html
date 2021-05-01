@@ -97,9 +97,9 @@
 
             socket.on('artist_results', (data) => {
                 console.log('Search results received')
-                artist_results = document.getElementById('artist_results')
-                let images = ''
-                for (i = 0; i < data.length; i++) {
+                let artist_results = document.getElementById('artist_results')
+                artist_results.innerHTML = ''
+                for (let i = 0; i < data.length; i++) {
                     let image = data[i].image
                     let name = data[i].name
                     let search_result = `<div class='search_result' id='result_{$i}'><div> `
@@ -107,9 +107,7 @@
                     search_result = document.getElementById(`result_${i}`)
                     search_result.appendChild(`<img src='${image}' class='search_image></img>`)
                     search_result.appendChild(`<div class='artist_name'>${name}</div>`)
-                    console.log(images)
                 }
-                document.getElementById('artist_results').innerHTML = images
             })
 
             document.getElementById("create_game").onclick = () => {
