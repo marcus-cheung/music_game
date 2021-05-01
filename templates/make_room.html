@@ -202,7 +202,7 @@
                     }
                 else if (element.className.match('artist_name') || element.className.match('artist_image')){
                     let parent = element.parentNode
-                    if (parent.className == 'search_result'){
+                    if (parent.parentNode.className == 'artist_results'){
                         // Add to selected div
                         document.getElementById('selected').appendChild(parent)
                         // Clear the search bar
