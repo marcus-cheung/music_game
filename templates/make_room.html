@@ -201,12 +201,18 @@
                     document.getElementById('playlist_div').appendChild(playlist)
                     }
                 else if (element.className.match('artist_name') || element.className.match('artist_image')){
-                    let search_result = element.parentNode
-                    // Add to selected div
-                    document.getElementById('selected').appendChild(search_result)
-                    // Clear the search bar
-                    document.getElementById('artist_search').value = ''
-                    document.getElementById('artist_results').innerHTML = ''
+                    let parent = element.parentNode
+                    console.log(parent.id)
+                    if (parent.id == 'search_results'){
+                        // Add to selected div
+                        document.getElementById('selected').appendChild(parent)
+                        // Clear the search bar
+                        document.getElementById('artist_search').value = ''
+                        document.getElementById('artist_results').innerHTML = ''
+                    }
+                    else{
+                        parent.removeChild(element)
+                    }
                 }
             }
         })
