@@ -100,13 +100,10 @@
                 let artist_results = document.getElementById('artist_results')
                 artist_results.innerHTML = ''
                 for (let i = 0; i < data.length; i++) {
-                    let image = data[i].image
-                    let name = data[i].name
-                    let search_result = `<div class='search_result' id='result_{$i}'><div> `
+                    let image = `<img src='${data[i].image}' class='search_image'>`
+                    let name = `<div class='artist_name'>${data[i].name}</div>`
+                    let search_result = `<div class='search_result' id='result_${i}'>${image}${name}<div> `
                     artist_results.innerHTML += search_result
-                    search_result = document.getElementById(`result_${i}`)
-                    search_result.innerHTML += `<img src='${image}' class='search_image'>`
-                    search_result.innerHTML += `<div class='artist_name'>${name}</div>`
                 }
             })
 
