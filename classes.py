@@ -139,7 +139,7 @@ class GameState:
 
 
 class User:
-    def __init__(self, unique, username, avatar):
+    def __init__(self, unique, username, avatar=None):
         if username == "":
             self.username = "Guest" + str(randint(10000, 99999))
         else:

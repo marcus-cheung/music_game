@@ -235,7 +235,9 @@ def runGame(room):
         print('gamestate does not exist')
         return redirect(myurl)
     else:
+        print(session)
         if session.get("user_object"):
+            print('user object exists! huzzah!')
             session["room"] = room
             return render_template("game.html")
         else:
