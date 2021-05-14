@@ -234,11 +234,12 @@ def runGame(room):
     if not gamestate:
         return redirect(myurl)
     else:
-        if session.get["user_object"]:
+        if session.get("user_object"):
             session["room"] = room
             return render_template("game.html")
         else:
-            return render_template("user_creation.html")
+            pass
+            # TODO: Implement avatar creation page
 
 
 # What happens on game connect: Prints user joined, if host add start button /// assumes that userobj has already been created
