@@ -238,7 +238,7 @@ def runGame(room):
             session["room"] = room
             return render_template("game.html")
         else:
-            pass
+            redirect(myurl)
             # TODO: Implement avatar creation page
 
 
