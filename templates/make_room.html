@@ -102,7 +102,7 @@
                 for (let i = 0; i < data.length; i++) {
                     let image = `<img src='${data[i].image}' class='artist_image'>`
                     let name = `<div class='artist_name'>${data[i].name}</div>`
-                    let search_result = `<div class='search_result' id='a${data[i].id}'>${image}${name}<div> `
+                    let search_result = `<div class='search_result' id='${data[i].id}'>${image}${name}<div> `
                     artist_results.innerHTML += search_result
                 }
             })
@@ -119,15 +119,16 @@
                 let selected = document.getElementById('selected').children
                 for (let i = 0, element; element = selected[i]; i++){
                     if (element.className == 'search_result'){
-                        artist_id = element.id.slice(1)
-                        artists.push(artist_id)
+                        artists.push(element.id)
                     }
                     else if(element.className == 'remove_playlist'){
-                        playlist_id = element.id.slice(1)
-                        playlists.push(playlist_id)
+                        playlists.push(element.id)
                     }
                 }
-
+                
+                console.log(playlists)
+                console.log(artists)
+                
                 document.getElementById('wrapper').style.display = 'none'
                 document.getElementById('loading').style.display = 'block'
                 console.log(
