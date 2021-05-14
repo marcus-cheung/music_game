@@ -102,7 +102,7 @@
                 for (let i = 0; i < data.length; i++) {
                     let image = `<img src='${data[i].image}' class='artist_image'>`
                     let name = `<div class='artist_name'>${data[i].name}</div>`
-                    let search_result = `<div class='search_result' id='result_${i}'>${image}${name}<div> `
+                    let search_result = `<div class='search_result' id='a${data[i].id}'>${image}${name}<div> `
                     artist_results.innerHTML += search_result
                 }
             })
@@ -112,13 +112,22 @@
             }
 
             document.querySelector('#create_game').onclick = () => {
-                var arr = [];
-                var checkboxes = document.getElementsByName('checkbox');
-                for (var checkbox of checkboxes) {
-                    if (checkbox.checked) {
-                        arr.push(checkbox.value);
+                
+                let playlists = []
+                let artists = []
+                
+                let selected = document.getElementById('selected').children
+                for (let i = 0, element; element = selected[i]; i++){
+                    if (element.className == 'search_result'){
+                        artist_id = element.id.slice(1)
+                        artists.push(artist_id)
+                    }
+                    else if(element.className == 'add_playlist'){
+                        playlist_id = element.id.slice(1)
+                        playlists.push(playlist_id)
                     }
                 }
+
                 document.getElementById('wrapper').style.display = 'none'
                 document.getElementById('loading').style.display = 'block'
                 console.log(
@@ -128,7 +137,8 @@
                     'gamemode': document.querySelector('#gamemode').value,
                     'rounds': document.querySelector('#rounds').value,
                     'password': document.querySelector('#pin').value,
-                    'playlists': arr
+                    'playlists': playlists,
+                    'artists': artists
                 })
             }
 

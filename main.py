@@ -160,7 +160,7 @@ def makeRoom(data):
     while room in active_rooms:
         room = random.randint(1000, 9999)
     socketio.emit("room_loading", room)
-    allsongs = getPlaylistSongs(data["playlists"], getToken(session))
+    allsongs = getPlaylistSongs(data["playlists"], getToken(session)) + getArtistsSongs(data['artists'], getToken(session))
     # choose random from allsongs
     song_infos = song_selector(allsongs, int(data["rounds"]))
     print(song_infos)
@@ -244,8 +244,8 @@ def runGame(room):
 # What happens on game connect: Prints user joined, if host add start button /// assumes that userobj has already been created
 @socketio.on("connected_to_room")
 def gameConnect(room):
-    user = getUser(gamestate)
     gamestate = getGame(room)
+    user = getUser(gamestate)
     # if in users
     if user:
         # inactive handler
