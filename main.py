@@ -232,13 +232,15 @@ def runGame(room):
     # If gamestate doesn't exist or user is not whitelisted, entry for private/public only allowed through main
     gamestate = getGame(room)
     if not gamestate:
+        print('gamestate does not exist')
         return redirect(myurl)
     else:
         if session.get("user_object"):
             session["room"] = room
             return render_template("game.html")
         else:
-            redirect(myurl)
+            print('user object does not exist')
+            return redirect(myurl)
             # TODO: Implement avatar creation page
 
 
