@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout.html"}
 
 <head>
-    <meta charset="UTF-8">
+    {% block head %}
     <title>Main Menu</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/styles/mainmenu_styles.css">
+    {% endblock %}
 </head>
+{% block bodt %}
 <style>
     .magnify:hover,
     .magnify:focus {
@@ -230,5 +230,5 @@
 
     </script>
 </body>
-
+{% endblock %}
 </html>
