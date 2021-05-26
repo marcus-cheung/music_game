@@ -11,9 +11,9 @@
             <input type="text" id="username" placeholder="Username" autocomplete="off">
         </div>
         <div id="avatar">
-            <button id='left'></button>
+            <button id='left' type=button></button>
             <img id='avatar' src="/static/assets/avatars/1.png" alt="1.png">
-            <button id='right'></button>
+            <button id='right' type=button></button>
         </div>            
         
         <div id="create_button">
@@ -27,6 +27,7 @@
         let avatar_no = 1
         let n = 2 // Number of avatars
         let avatar = document.getElementById('avatar')
+        var socket = io();
 
         document.getElementById('create').onclick = () => {
             let username = document.getElementById('username').value
