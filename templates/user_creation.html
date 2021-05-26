@@ -7,7 +7,7 @@
 {% block body %}
 <body>
     <div id = "wrapper">
-        <div id = "username">
+        <div id="username_div">
             <input type="text" id="username" placeholder="Username" autocomplete="off">
         </div>
         <div id="avatar">
@@ -50,7 +50,7 @@
             console.log('left clicked')
             avatar_no = (avatar_no - 1) % n
             avatar.alt = `${avatar_no}.png`
-            avatar.src = `/static/assets/avatars/${avatar_no}.png}`
+            avatar.src = `/static/assets/avatars/${avatar_no}.png`
             console.log(avatar.src)
         }
 
@@ -58,7 +58,7 @@
             console.log('right clicked')
             avatar_no = (avatar_no + 1) % n
             avatar.alt = `${avatar_no}.png`
-            avatar.src = `/static/assets/avatars/${avatar_no}.png}`
+            avatar.src = `/static/assets/avatars/${avatar_no}.png`
             console.log(avatar.src)
 
         }
