@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% head block %}
+<title>Create User</title>
+{% endblock %}
+
+{% body block %}
+<body>
+    <div id = "wrapper">
+        <div id = "username">
+            <input type="text" id="username" placeholder="Username" autocomplete="off">
+        </div>
+        <div id="avatar">
+            <button id='left'></button>
+            <img id='avatar' src="/static/assets/avatars/1.png" alt="1.png">
+            <button id='right'></button>
+        </div>            
+        
+        <div id="create_button">
+            <button id="create" type=button>Create User</button>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" charset="utf-8">
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        let avatar_no = 1
+        let n = 2 // Number of avatars
+        let avatar = document.getElementById('avatar')
+
+        document.getElementById('create').onclick = () => {
+            let username = document.getElementById('username').value
+            let source = avatar.src
+            socketio.emit('create_user', {'username': username,
+                                          'avatar': source})
+        }
+
+        document.getElementById('left').onclick = () => {
+            avatar_no = (avatar_no - 1) % n
+            avatar.alt = `${avatar_no}.png`
+            avatar.src = `/static/assets/avatars/${avatar_no}.png}`
+        }
+
+        document.getElementById('right').onclick = () => {
+            avatar_no = (avatar_no + 1) % n
+            avatar.alt = `${avatar_no}.png`
+            avatar.src = `/static/assets/avatars/${avatar_no}.png}`
+        }
+
+
+        
+    })
+</script>
+{% endblock %}

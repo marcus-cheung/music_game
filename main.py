@@ -65,11 +65,14 @@ def joinRoom():
 
 @socketio.on("connect")
 def connect():
+    print('connected!!')
     if not session.get("unique"):
         session["unique"] = (
             "".join(random.choice(ascii_letters + digits + "_.-~") for i in range(128)),
             time.time(),
         )
+
+
 
 
 # If user logged into spotify adds playlists as options
@@ -142,8 +145,9 @@ def authentication():
 
 
 @socketio.on("create_user")
-def createUser(username):
-    print(username)
+def createUser(data):
+    username = data.username
+    avatar = data.avatar
     user = classes.User(username=username, unique=session.get("unique"))
     session["user_object"] = user
     session["test"] = "this passed"
