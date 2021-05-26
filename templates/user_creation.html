@@ -38,7 +38,7 @@
             console.log('create clicked')
             let username = document.getElementById('username').value
             let source = avatar.src
-            socketio.emit('create_user', {'username': username,
+            socket.emit('create_user', {'username': username,
                                           'avatar': source})
             const urlParams = new URLSearchParams(window.location.search);
             const redir = urlParams.get('redir'); 
@@ -50,6 +50,7 @@
             avatar_no = (avatar_no - 1) % n
             avatar.alt = `${avatar_no}.png`
             avatar.src = `/static/assets/avatars/${avatar_no}.png}`
+            print(avatar.src)
         }
 
         document.getElementById('right').onclick = () => {
@@ -57,7 +58,7 @@
             avatar_no = (avatar_no + 1) % n
             avatar.alt = `${avatar_no}.png`
             avatar.src = `/static/assets/avatars/${avatar_no}.png}`
-
+            print(avatar.src)
 
         }
 
