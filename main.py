@@ -154,8 +154,8 @@ def authentication():
 
 @socketio.on("create_user")
 def createUser(data):
-    username = data.username
-    avatar = data.avatar
+    username = data['username']
+    avatar = data['avatar']
     user = classes.User(username=username, unique=session.get("unique"))
     session["user_object"] = user
     print("User created: " + user.username)
