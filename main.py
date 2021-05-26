@@ -65,13 +65,13 @@ def joinRoom():
 
 @socketio.on("connect")
 def connect():
-    print('connected!!')
     if not session.get("unique"):
         session["unique"] = (
             "".join(random.choice(ascii_letters + digits + "_.-~") for i in range(128)),
             time.time(),
         )
-
+    if not session.get("user_object"):
+        return redirect(myurl + f'create_user/?redir={request.path}')
 
 
 
@@ -150,9 +150,6 @@ def createUser(data):
     avatar = data.avatar
     user = classes.User(username=username, unique=session.get("unique"))
     session["user_object"] = user
-    session["test"] = "this passed"
-    print(session)
-    print(session["user_object"])
     print("User created: " + user.username)
 
 
