@@ -49,17 +49,23 @@ state = "".join(random.choice(ascii_letters + digits + "_.-~") for i in range(47
 # main page
 @app.route("/")
 def main():
+    if not session.get("user_object"):
+        return redirect(myurl + f'user-creation/?redir={request.path}')
     return render_template("main_menu.html")
 
 
 @app.route("/make-room/")
 def makeRoom():
+    if not session.get("user_object"):
+        return redirect(myurl + f'user-creation/?redir={request.path}')
     print(session)
     return render_template("make_room.html")
 
 
 @app.route("/join-room/")
 def joinRoom():
+    if not session.get("user_object"):
+        return redirect(myurl + f'user-creation/?redir={request.path}')
     return render_template("join_room.html")
 
 
@@ -74,8 +80,6 @@ def connect():
             "".join(random.choice(ascii_letters + digits + "_.-~") for i in range(128)),
             time.time(),
         )
-    if not session.get("user_object"):
-        return redirect(myurl + f'create_user/?redir={request.path}')
 
 
 
@@ -241,14 +245,11 @@ def runGame(room):
         return redirect(myurl)
     else:
         print(session)
-        if session.get("user_object"):
-            print('user object exists! huzzah!')
-            session["room"] = room
-            return render_template("game.html")
-        else:
-            print('user object does not exist')
-            return redirect(myurl)
-            # TODO: Implement avatar creation page
+        if not session.get("user_object"):
+            return redirect(myurl + f'user-creation/?redir={request.path}')
+        print('user object exists! huzzah!')
+        session["room"] = room
+        return render_template("game.html")
 
 
 # What happens on game connect: Prints user joined, if host add start button /// assumes that userobj has already been created
