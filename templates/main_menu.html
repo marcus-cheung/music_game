@@ -39,13 +39,13 @@
 
             document.querySelector('#make_room').onclick = () => {
                 let username = document.querySelector('#username').value
-                socket.emit('create_user', username)
+                // socket.emit('create_user', username)
                 window.location.href = url+'make-room/'
             }
 
             document.querySelector('#join_room').onclick = () => {
                 let username = document.querySelector('#username').value
-                socket.emit('create_user', username)
+                // socket.emit('create_user', username)
                 window.location.href = url+'join-room/'
             }
 

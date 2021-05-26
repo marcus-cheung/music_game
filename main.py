@@ -63,6 +63,10 @@ def joinRoom():
     return render_template("join_room.html")
 
 
+@app.route("/user-creation/")
+def userCreation():
+    return render_template("user_creation.html")
+
 @socketio.on("connect")
 def connect():
     if not session.get("unique"):

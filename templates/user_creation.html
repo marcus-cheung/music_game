@@ -34,7 +34,7 @@
             socketio.emit('create_user', {'username': username,
                                           'avatar': source})
             const urlParams = new URLSearchParams(window.location.search);
-            const redir = urlParams.get('redir');
+            const redir = urlParams.get('redir'); 
             window.location.href = redir
         }
 
