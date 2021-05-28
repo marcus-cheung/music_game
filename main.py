@@ -157,7 +157,7 @@ def createUser(data):
     print(data)
     username = data['username']
     avatar = data['avatar']
-    user = classes.User(username=username, unique=session.get("unique"))
+    user = classes.User(username=username, unique=session.get("unique"), avatar=avatar)
     session["user_object"] = user
     print("User created: " + user.username)
 

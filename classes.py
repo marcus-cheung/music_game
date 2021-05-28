@@ -83,7 +83,7 @@ class GameState:
                 user.streak += 1
             else:
                 user.streak = 0
-        self.SuperstateWipe('correct', 'voted_skip')
+        self.SuperstateWipe('correct', 'voted_skip', 'already_answered')
         # Check if all rounds are up
         if self.current_round != len(self.song_infos):
             self.current_round += 1
