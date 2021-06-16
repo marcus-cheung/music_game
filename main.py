@@ -222,14 +222,17 @@ def joinRoom(data):
                 socketio.emit(
                     "password_correct", myurl + f"game/{room}", room=request.sid
                 )
-            # checking is password correct then redirecting to the room
-            elif gamestates[room - 1000].password == password:
-                socketio.emit(
-                    "password_correct", myurl + f"game/{room}", room=request.sid
-                )
-            # saying wrong password
+            # Prompt password
             else:
-                socketio.emit("wrong_pass", room=request.sid)
+                socketio.emit('prompt_password', room=request.sid)
+            # checking is password correct then redirecting to the room
+            # elif gamestates[room - 1000].password == password:
+            #     socketio.emit(
+            #         "password_correct", myurl + f"game/{room}", room=request.sid
+            #     )
+            # # saying wrong password
+            # else:
+            #     socketio.emit("wrong_pass", room=request.sid)
 
 
 @socketio.on("logout_spotify")
@@ -245,13 +248,12 @@ def runGame(room):
         print('gamestate does not exist')
         return redirect(myurl)
     else:
-        print(session)
+        # print(session)
         if not session.get("user_object"):
             return redirect(myurl + f'user-creation/?redir={request.path}')
-        print('user object exists! huzzah!')
+        # print('user object exists! huzzah!')
         session["room"] = room
         return render_template("game.html")
-
 
 # What happens on game connect: Prints user joined, if host add start button /// assumes that userobj has already been created
 @socketio.on("connected_to_room")
@@ -290,10 +292,21 @@ def gameConnect(room):
     # if just a user and there is a password
     elif gamestate.password:
         # make sure to wipe user score data
-        socketio.emit("prompt_pin", room=request.sid)
+        socketio.emit('password_prompt', room=request.sid)
     # no password and just a user
     else:
         joinGame(room)
+
+@socketio.on('password_attempt')
+def passwordAttempt(data):
+    password = data['password']
+    room = data['room']
+    gamestate = getGame(room)
+    if password == gamestate.password:
+        socketio.emit('password_correct')
+        joinGame(room)
+    else:
+        socketio.emit('password_incorrect')
 
 
 # first time only
@@ -319,15 +332,6 @@ def joinGame(room):
         room=request.sid,
     )
 
-
-@socketio.on("enter_pin")
-def enterPin(data):
-    gamestate = getGame(data["room"])
-    if data["pin"] == gamestate.password:
-        joinGame()
-        socketio.emit("correct_pin", room=request.sid)  # remove modal
-    else:
-        socketio.emit("incorrect_pin", room=request.sid)
 
 
 # Sends chat messages to everyone in room

@@ -23,6 +23,14 @@
     <div class='right_area'>
       <div class='lobby' id='lobby'>
         <button type="button" id='start' style='display:none'>Start Game</button>
+        <div id="password_modal" class="modal">
+          <div class="modal-content">
+            <form id="password_form">
+                <input type="password" id="password" placeholder="Password" autocomplete="off">
+                <input type="submit" value="Submit">
+            </form>
+          </div>
+        </div>
         <div id="end_modal" class="modal">
           <div class="modal-content">
             <button type="button" id='new_game' style='display:none'>Start New Game</button>
@@ -253,7 +261,20 @@
         let element = `<div class='user_join_${bgcolor}'>Skipping round...</div>`
         new_message(element)
       })
+      socket.on('password_prompt', () => {
+        // Bring up modal
+        document.getElementById('password_modal').style.display = 'block';
+        })
+
+      document.getElementById('password_form').addEventListener('submit', () => {
+        let password = document.getElementById('password').value
+        socket.emit('password_attempt', {
+                                        'password': password,
+                                        'room': room
+                                        })
+      })
     })
+
 
 
   </script>
