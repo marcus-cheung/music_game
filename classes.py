@@ -159,7 +159,7 @@ class User:
         }
     def stateWipe(self, *args):
         for arg in args:
-          self.states[arg] = False
+            self.states[arg] = False
     
     def reset(self):
         self.score = 0
