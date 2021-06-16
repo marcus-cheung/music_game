@@ -155,7 +155,7 @@ class User:
             'inactive': False,
             'voted_skip': False,
             'waitlist': False
-
+            'already_answered': False
         }
     def stateWipe(self, *args):
         for arg in args:
